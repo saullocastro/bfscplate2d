@@ -21,12 +21,12 @@ cdef class BFSCPlate2D(object):
     Nodal connectivity for plate element
     similar to Nastran's CQUAD4
 
-      ^ y (circumferential direction)
+      ^ y
       |
 
      4 ________ 3
       |       |
-      |       |   --> x (axial direction)
+      |       |   --> x
       |       |
       |_______|
      1         2
