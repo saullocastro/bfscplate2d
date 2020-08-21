@@ -23,20 +23,24 @@ jobs:
         pip install setuptools wheel twine
         pip install -r requirements.txt
     - name: Build
-      if: matrix.runs-on == windows-latest
+      if: matrix.runs-on == 'windows-latest'
       run: |
         python setup.py sdist bdist_wheel
-    - name: Publish manylinux Python wheels
-      if: matrix.runs-on == ubuntu-latest && matrix.python-version == 3.8
-      uses: RalfG/python-wheels-manylinux-build@v0.3.1-manylinux2010_x86_64
-      with:
-        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38m'
-        build-requirements: 'cython numpy'
     - name: Publish Windows Python wheels
-      if: matrix.runs-on == windows-latest
+      if: matrix.runs-on == 'windows-latest'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         twine upload dist/*.whl
-          
+    - name: Publish manylinux Python wheels
+      if: matrix.runs-on == 'ubuntu-latest' && matrix.python-version == 3.8
+      uses: RalfG/python-wheels-manylinux-build@v0.3.1-manylinux2010_x86_64
+      with:
+        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38m'
+        build-requirements: 'cython numpy'
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        twine upload dist/*-manylinux*.whl
