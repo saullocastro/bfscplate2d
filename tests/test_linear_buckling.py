@@ -3,7 +3,6 @@ sys.path.append('..')
 
 import numpy as np
 from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import eigsh
 from scipy.sparse.linalg import eigsh, spsolve
 import numpy as np
 from composites.laminate import read_stack
