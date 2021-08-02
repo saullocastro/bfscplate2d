@@ -12,7 +12,7 @@ Github Actions status:
 Coverage status:
 
 [![Coverage Status](https://coveralls.io/repos/github/saullocastro/bfscplate2d/badge.svg?branch=master)](https://coveralls.io/github/saullocastro/bfscplate2d?branch=master)
-
+[![codecov](https://codecov.io/gh/saullocastro/bfscplate2d/branch/master/graph/badge.svg?token=W7W7WZV59A)](https://codecov.io/gh/saullocastro/bfscplate2d)
 
 License
 -------
