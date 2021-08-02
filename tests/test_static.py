@@ -4,7 +4,7 @@ sys.path.append('..')
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import spsolve
-from composites.laminate import read_stack
+from composites import isotropic_plate
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, DOF, KC0_SPARSE_SIZE, DOUBLE,
         INT)
@@ -23,7 +23,8 @@ def test_static(plot=False):
     # material properties
     E = 0.7e11
     nu = 0.3
-    lam = read_stack(stack=[0], plyt=0.001, laminaprop=[E, E, nu])
+    h = 0.001
+    lam = isotropic_plate(thickness=h, E=E, nu=nu)
 
     x = np.linspace(0, a, nx)
     y = np.linspace(0, b, ny)

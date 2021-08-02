@@ -4,7 +4,7 @@ sys.path.append('..')
 from scipy.sparse import coo_matrix
 from scipy.linalg import eigh
 import numpy as np
-from composites.laminate import read_stack
+from composites import isotropic_plate
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_M, DOF, KC0_SPARSE_SIZE,
         M_SPARSE_SIZE, DOUBLE, INT)
@@ -26,7 +26,7 @@ def test_nat_freq(plot_mode=None):
     nu = 0.3
     rho = 7.8e3
     h = 0.001
-    lam = read_stack(stack=[0], plyt=h, laminaprop=[E, nu], rho=rho)
+    lam = isotropic_plate(thickness=h, E=E, nu=nu, rho=rho)
 
     # creating mesh
     x = np.linspace(0, a, nx)
@@ -67,7 +67,7 @@ def test_nat_freq(plot_mode=None):
         plate.c4 = DOF*nid_pos[n4]
         plate.ABD = lam.ABD
         plate.h = h
-        plate.rho = lam.rho
+        plate.rho = rho
         plate.lex = a/(nx - 1)
         plate.ley = b/(ny - 1)
         plate.init_k_KC0 = init_k_KC0
@@ -119,7 +119,6 @@ def test_nat_freq(plot_mode=None):
     # theoretical reference
     m = 1
     n = 1
-    rho = lam.rho
     D = 2*h**3*E/(3*(1 - nu**2))
     wmn = (m**2/a**2 + n**2/b**2)*np.sqrt(D*np.pi**4/(2*rho*h))/2
     print('Theoretical omega123', wmn)

@@ -5,7 +5,7 @@ import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh, spsolve
 import numpy as np
-from composites.laminate import read_stack
+from composites import laminated_plate
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_KG, DOF, KC0_SPARSE_SIZE,
         KG_SPARSE_SIZE, DOUBLE, INT)
@@ -34,7 +34,7 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
     laminaprop = (E11, E22, nu12, G12, G13, G23)
     stack = [0, 45, -45, 90, 90, -45, 45, 0]
     ply_thickness = 0.001
-    lam = read_stack(stack=stack, plyt=ply_thickness, laminaprop=laminaprop)
+    lam = laminated_plate(stack=stack, plyt=ply_thickness, laminaprop=laminaprop)
 
     # creating mesh
     x = np.linspace(0, a, nx)

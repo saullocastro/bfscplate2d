@@ -5,7 +5,7 @@ import numpy as np
 from numpy import isclose
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import spsolve
-from composites.laminate import read_stack
+from composites import isotropic_plate
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, DOF, KC0_SPARSE_SIZE, DOUBLE,
         INT)
@@ -25,7 +25,7 @@ def test_static_pressure(plot=False):
     E = 200e9
     nu = 0.3
     h = 0.005
-    lam = read_stack(stack=[0], plyt=h, laminaprop=[E, E, nu])
+    lam = isotropic_plate(thickness=h, E=E, nu=nu)
 
     xtmp = np.linspace(0, a, nx)
     ytmp = np.linspace(0, b, ny)

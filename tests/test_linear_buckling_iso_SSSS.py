@@ -6,7 +6,7 @@ from numpy import isclose
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh, spsolve
 import numpy as np
-from composites.laminate import read_stack
+from composites import isotropic_plate
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_KG, DOF, KC0_SPARSE_SIZE,
         KG_SPARSE_SIZE, DOUBLE, INT)
@@ -31,10 +31,8 @@ def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
     # material properties
     E = 200e9
     nu = 0.3
-    laminaprop = (E, E, nu)
-    stack = [0]
     h = 0.001
-    lam = read_stack(stack=stack, plyt=h, laminaprop=laminaprop)
+    lam = isotropic_plate(thickness=h, E=E, nu=nu)
 
     # creating mesh
     x = np.linspace(0, a, nx)
