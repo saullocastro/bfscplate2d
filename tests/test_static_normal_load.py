@@ -88,7 +88,7 @@ def test_static(plot=False):
 
     f = np.zeros(KC0.shape[0], dtype=float)
     check = np.isclose(ncoords[:, 0], a)
-    f[6::DOF] = check*1
+    f[6::DOF] = check*0.1
 
     Kuu = KC0[bu, :][:, bu]
     fu = f[bu]
@@ -127,7 +127,7 @@ def test_static(plot=False):
         plt.colorbar()
         plt.show()
 
-    assert np.isclose(w.max(), 0.0717, rtol=1e-3)
+    assert np.isclose(w.max(), 0.00717, rtol=1e-3)
 
 if __name__ == '__main__':
     test_static(plot=True)
