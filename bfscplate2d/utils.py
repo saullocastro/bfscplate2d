@@ -1,0 +1,20 @@
+def assign_constant_ABD(bfscplate2d, prop):
+    bfscplate2d.A11[:] = prop.A11
+    bfscplate2d.A12[:] = prop.A12
+    bfscplate2d.A16[:] = prop.A16
+    bfscplate2d.A22[:] = prop.A22
+    bfscplate2d.A26[:] = prop.A26
+    bfscplate2d.A66[:] = prop.A66
+    bfscplate2d.B11[:] = prop.B11
+    bfscplate2d.B12[:] = prop.B12
+    bfscplate2d.B16[:] = prop.B16
+    bfscplate2d.B22[:] = prop.B22
+    bfscplate2d.B26[:] = prop.B26
+    bfscplate2d.B66[:] = prop.B66
+    bfscplate2d.D11[:] = prop.D11
+    bfscplate2d.D12[:] = prop.D12
+    bfscplate2d.D16[:] = prop.D16
+    bfscplate2d.D22[:] = prop.D22
+    bfscplate2d.D26[:] = prop.D26
+    bfscplate2d.D66[:] = prop.D66
+
