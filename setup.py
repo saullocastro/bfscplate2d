@@ -11,7 +11,7 @@ from Cython.Build import cythonize
 
 
 is_released = True
-version = '0.2.0'
+version = '0.2.1'
 
 
 def git_version():
@@ -131,8 +131,8 @@ s = setup(
     version = fullversion,
     author = "Saullo G. P. Castro",
     author_email = "S.G.P.Castro@tudelft.nl",
-    description = ("Implementation of the BFSm plate finite element in 2D"),
-    license = "2-Clause BSD",
+    description = ("Implementation of the BFSC plate finite element in 2D"),
+    license = "3-Clause BSD",
     keywords = "finite elements shell plate structural analysis buckling vibration dynamics",
     url = "https://github.com/saullocastro/bfscplate2d",
     data_files=data_files,
