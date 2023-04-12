@@ -4,18 +4,17 @@
 #cython: nonecheck=False
 #cython: infer_types=False
 import numpy as np
-cimport numpy as np
 
-ctypedef np.int64_t cINT
+
 INT = np.int64
-ctypedef np.double_t cDOUBLE
 DOUBLE = np.float64
-cdef cINT DOF = 10
-cdef cINT num_nodes = 4
+cdef int DOF = 10
+cdef int num_nodes = 4
 KC0_SPARSE_SIZE = 1600
 KCNL_SPARSE_SIZE = 1024
 KG_SPARSE_SIZE = 256
 M_SPARSE_SIZE = 544
+
 
 cdef class BFSCPlate2D(object):
     """
@@ -33,23 +32,23 @@ cdef class BFSCPlate2D(object):
      1         2
 
     """
-    cdef public cINT n1, n2, n3, n4
-    cdef public cINT c1, c2, c3, c4
-    cdef public cINT init_k_KC0, init_k_KCNL, init_k_KG, init_k_M
+    cdef public int n1, n2, n3, n4
+    cdef public int c1, c2, c3, c4
+    cdef public int init_k_KC0, init_k_KCNL, init_k_KG, init_k_M
     cdef public double lex, ley, rho, h
-    cdef public cDOUBLE[:, :] ABD
-    cdef public cDOUBLE[:, :] Bm
-    cdef public cDOUBLE[:, :] Bb
-    cdef public cDOUBLE[:] Nu
-    cdef public cDOUBLE[:] Nu_x
-    cdef public cDOUBLE[:] Nu_y
-    cdef public cDOUBLE[:] Nv
-    cdef public cDOUBLE[:] Nv_x
-    cdef public cDOUBLE[:] Nv_y
-    cdef public cDOUBLE[:] Nw
-    cdef public cDOUBLE[:] Nw_x
-    cdef public cDOUBLE[:] Nw_y
-    cdef public cDOUBLE[:] u
+    cdef public double [:, ::1] ABD
+    cdef public double [:, ::1] Bm
+    cdef public double [:, ::1] Bb
+    cdef public double [::1] Nu
+    cdef public double [::1] Nu_x
+    cdef public double [::1] Nu_y
+    cdef public double [::1] Nv
+    cdef public double [::1] Nv_x
+    cdef public double [::1] Nv_y
+    cdef public double [::1] Nw
+    cdef public double [::1] Nw_x
+    cdef public double [::1] Nw_y
+    cdef public double [::1] u
     def __init__(BFSCPlate2D self):
         self.n1 = -1
         self.n2 = -1
@@ -364,12 +363,12 @@ cdef class BFSCPlate2D(object):
 
 
 cpdef void update_KC0(BFSCPlate2D plate,
-        np.ndarray[cDOUBLE, ndim=1] points,
-        np.ndarray[cDOUBLE, ndim=1] weights,
-        np.ndarray[cINT, ndim=1] KC0r,
-        np.ndarray[cINT, ndim=1] KC0c,
-        np.ndarray[cDOUBLE, ndim=1] KC0v,
-        ):
+                      double [::1] points,
+                      double [::1] weights,
+                      long [::1] KC0r,
+                      long [::1] KC0c,
+                      double [::1] KC0v,
+                      ):
     """Update sparse vectors for linear constitutive stiffness matrix KC0
 
     Properties
@@ -388,7 +387,7 @@ cpdef void update_KC0(BFSCPlate2D plate,
         Array to store sparse values
 
     """
-    cdef cINT c1, c2, c3, c4, nint, i, j, k
+    cdef int c1, c2, c3, c4, nint, i, j, k
     cdef double Bm1_01, Bm1_02, Bm1_03, Bm1_11, Bm1_12, Bm1_13, Bm1_21, Bm1_22, Bm1_23, Bm1_31, Bm1_32, Bm1_33, Bm2_04, Bm2_05, Bm2_06, Bm2_14, Bm2_15, Bm2_16, Bm2_24, Bm2_25, Bm2_26, Bm2_34, Bm2_35, Bm2_36, Bm3_01, Bm3_02, Bm3_03, Bm3_04, Bm3_05, Bm3_06, Bm3_11, Bm3_12, Bm3_13, Bm3_14, Bm3_15, Bm3_16, Bm3_21, Bm3_22, Bm3_23, Bm3_24, Bm3_25, Bm3_26, Bm3_31, Bm3_32, Bm3_33, Bm3_34, Bm3_35, Bm3_36
     cdef double Bb1_07, Bb1_08, Bb1_09, Bb1_10, Bb1_17, Bb1_18, Bb1_19, Bb1_20, Bb1_27, Bb1_28, Bb1_29, Bb1_30, Bb1_37, Bb1_38, Bb1_39, Bb1_40, Bb2_07, Bb2_08, Bb2_09, Bb2_10, Bb2_17, Bb2_18, Bb2_19, Bb2_20, Bb2_27, Bb2_28, Bb2_29, Bb2_30, Bb2_37, Bb2_38, Bb2_39, Bb2_40, Bb3_07, Bb3_08, Bb3_09, Bb3_10, Bb3_17, Bb3_18, Bb3_19, Bb3_20, Bb3_27, Bb3_28, Bb3_29, Bb3_30, Bb3_37, Bb3_38, Bb3_39, Bb3_40
     cdef double lex, ley
@@ -8537,14 +8536,14 @@ cpdef void update_KC0(BFSCPlate2D plate,
                 KC0v[k] += 0.25*lex*ley*weight*(Bb1_40*(Bb1_40*D11 + Bb2_40*D12 + Bb3_40*D16) + Bb2_40*(Bb1_40*D12 + Bb2_40*D22 + Bb3_40*D26) + Bb3_40*(Bb1_40*D16 + Bb2_40*D26 + Bb3_40*D66))
 
 
-cpdef void update_KCNL(np.ndarray[cDOUBLE, ndim=1] u,
-        BFSCPlate2D plate,
-        np.ndarray[cDOUBLE, ndim=1] points,
-        np.ndarray[cDOUBLE, ndim=1] weights,
-        np.ndarray[cINT, ndim=1] KCNLr,
-        np.ndarray[cINT, ndim=1] KCNLc,
-        np.ndarray[cDOUBLE, ndim=1] KCNLv,
-        ):
+cpdef void update_KCNL(double [::1] u,
+                       BFSCPlate2D plate,
+                       double [::1] points,
+                       double [::1] weights,
+                       long [::1] KCNLr,
+                       long [::1] KCNLc,
+                       double [::1] KCNLv,
+                       ):
     """Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
 
     Assuming that KCNL = KC0L + KCL0 + KCLL
@@ -8568,7 +8567,7 @@ cpdef void update_KCNL(np.ndarray[cDOUBLE, ndim=1] u,
 
     """
     cdef double *ue
-    cdef cINT c1, c2, c3, c4, nint, i, j, k
+    cdef int c1, c2, c3, c4, nint, i, j, k
     cdef double Bm1_01, Bm1_02, Bm1_03, Bm1_11, Bm1_12, Bm1_13, Bm1_21, Bm1_22, Bm1_23, Bm1_31, Bm1_32, Bm1_33, Bm2_04, Bm2_05, Bm2_06, Bm2_14, Bm2_15, Bm2_16, Bm2_24, Bm2_25, Bm2_26, Bm2_34, Bm2_35, Bm2_36, Bm3_01, Bm3_02, Bm3_03, Bm3_04, Bm3_05, Bm3_06, Bm3_11, Bm3_12, Bm3_13, Bm3_14, Bm3_15, Bm3_16, Bm3_21, Bm3_22, Bm3_23, Bm3_24, Bm3_25, Bm3_26, Bm3_31, Bm3_32, Bm3_33, Bm3_34, Bm3_35, Bm3_36
     cdef double BmL1_07, BmL1_08, BmL1_09, BmL1_10, BmL1_17, BmL1_18, BmL1_19, BmL1_20, BmL1_27, BmL1_28, BmL1_29, BmL1_30, BmL1_37, BmL1_38, BmL1_39, BmL1_40, BmL2_07, BmL2_08, BmL2_09, BmL2_10, BmL2_17, BmL2_18, BmL2_19, BmL2_20, BmL2_27, BmL2_28, BmL2_29, BmL2_30, BmL2_37, BmL2_38, BmL2_39, BmL2_40, BmL3_07, BmL3_08, BmL3_09, BmL3_10, BmL3_17, BmL3_18, BmL3_19, BmL3_20, BmL3_27, BmL3_28, BmL3_29, BmL3_30, BmL3_37, BmL3_38, BmL3_39, BmL3_40
     cdef double Bb1_07, Bb1_08, Bb1_09, Bb1_10, Bb1_17, Bb1_18, Bb1_19, Bb1_20, Bb1_27, Bb1_28, Bb1_29, Bb1_30, Bb1_37, Bb1_38, Bb1_39, Bb1_40, Bb2_07, Bb2_08, Bb2_09, Bb2_10, Bb2_17, Bb2_18, Bb2_19, Bb2_20, Bb2_27, Bb2_28, Bb2_29, Bb2_30, Bb2_37, Bb2_38, Bb2_39, Bb2_40, Bb3_07, Bb3_08, Bb3_09, Bb3_10, Bb3_17, Bb3_18, Bb3_19, Bb3_20, Bb3_27, Bb3_28, Bb3_29, Bb3_30, Bb3_37, Bb3_38, Bb3_39, Bb3_40
@@ -13894,14 +13893,14 @@ cpdef void update_KCNL(np.ndarray[cDOUBLE, ndim=1] u,
                 KCNLv[k] += 0.25*lex*ley*weight*(Bb1_40*(B11*BmL1_40 + B12*BmL2_40 + B16*BmL3_40) + Bb2_40*(B12*BmL1_40 + B22*BmL2_40 + B26*BmL3_40) + Bb3_40*(B16*BmL1_40 + B26*BmL2_40 + B66*BmL3_40) + BmL1_40*(A11*BmL1_40 + A12*BmL2_40 + A16*BmL3_40) + BmL1_40*(B11*Bb1_40 + B12*Bb2_40 + B16*Bb3_40) + BmL2_40*(A12*BmL1_40 + A22*BmL2_40 + A26*BmL3_40) + BmL2_40*(B12*Bb1_40 + B22*Bb2_40 + B26*Bb3_40) + BmL3_40*(A16*BmL1_40 + A26*BmL2_40 + A66*BmL3_40) + BmL3_40*(B16*Bb1_40 + B26*Bb2_40 + B66*Bb3_40))
 
 
-cpdef void update_KG(np.ndarray[cDOUBLE, ndim=1] u,
-        BFSCPlate2D plate,
-        np.ndarray[cDOUBLE, ndim=1] points,
-        np.ndarray[cDOUBLE, ndim=1] weights,
-        np.ndarray[cINT, ndim=1] KGr,
-        np.ndarray[cINT, ndim=1] KGc,
-        np.ndarray[cDOUBLE, ndim=1] KGv,
-        ):
+cpdef void update_KG(double [::1] u,
+                     BFSCPlate2D plate,
+                     double [::1] points,
+                     double [::1] weights,
+                     long [::1] KGr,
+                     long [::1] KGc,
+                     double [::1] KGv,
+                     ):
     """Update sparse vectors for geometric stiffness matrix KG
 
     Properties
@@ -13923,7 +13922,7 @@ cpdef void update_KG(np.ndarray[cDOUBLE, ndim=1] u,
 
     """
     cdef double *ue
-    cdef cINT c1, c2, c3, c4, i, j, k, nint
+    cdef int c1, c2, c3, c4, i, j, k, nint
     cdef double lex, ley, Nxx, Nyy, Nxy
     cdef double xi, eta, weight_xi, weight_eta, weight
     cdef double Bm1_01, Bm1_02, Bm1_03, Bm1_11, Bm1_12, Bm1_13, Bm1_21, Bm1_22, Bm1_23, Bm1_31, Bm1_32, Bm1_33, Bm2_04, Bm2_05, Bm2_06, Bm2_14, Bm2_15, Bm2_16, Bm2_24, Bm2_25, Bm2_26, Bm2_34, Bm2_35, Bm2_36, Bm3_01, Bm3_02, Bm3_03, Bm3_04, Bm3_05, Bm3_06, Bm3_11, Bm3_12, Bm3_13, Bm3_14, Bm3_15, Bm3_16, Bm3_21, Bm3_22, Bm3_23, Bm3_24, Bm3_25, Bm3_26, Bm3_31, Bm3_32, Bm3_33, Bm3_34, Bm3_35, Bm3_36
@@ -15394,17 +15393,16 @@ cpdef void update_KG(np.ndarray[cDOUBLE, ndim=1] u,
                 KGv[k] += G1_40*(0.25*G1_40*Nxx*lex*ley*weight + 0.25*G2_40*Nxy*lex*ley*weight) + G2_40*(0.25*G1_40*Nxy*lex*ley*weight + 0.25*G2_40*Nyy*lex*ley*weight)
 
 
-cpdef void update_KG_cte_N(
-        double Nxx,
-        double Nyy,
-        double Nxy,
-        BFSCPlate2D plate,
-        np.ndarray[cDOUBLE, ndim=1] points,
-        np.ndarray[cDOUBLE, ndim=1] weights,
-        np.ndarray[cINT, ndim=1] KGr,
-        np.ndarray[cINT, ndim=1] KGc,
-        np.ndarray[cDOUBLE, ndim=1] KGv,
-        ):
+cpdef void update_KG_cte_N(double Nxx,
+                           double Nyy,
+                           double Nxy,
+                           BFSCPlate2D plate,
+                           double [::1] points,
+                           double [::1] weights,
+                           long [::1] KGr,
+                           long [::1] KGc,
+                           double [::1] KGv,
+                           ):
     """Update sparse vectors for geometric stiffness matrix KG
 
     Properties
@@ -15426,7 +15424,7 @@ cpdef void update_KG_cte_N(
 
     """
     cdef double *ue
-    cdef cINT c1, c2, c3, c4, i, j, k, nint
+    cdef int c1, c2, c3, c4, i, j, k, nint
     cdef double lex, ley
     cdef double xi, eta, weight_xi, weight_eta, weight
     cdef double G1_07, G1_08, G1_09, G1_10, G1_17, G1_18, G1_19, G1_20, G1_27, G1_28, G1_29, G1_30, G1_37, G1_38, G1_39, G1_40, G2_07, G2_08, G2_09, G2_10, G2_17, G2_18, G2_19, G2_20, G2_27, G2_28, G2_29, G2_30, G2_37, G2_38, G2_39, G2_40
@@ -16768,10 +16766,10 @@ cpdef void update_KG_cte_N(
 
 
 cpdef void update_M(BFSCPlate2D plate,
-        np.ndarray[cINT, ndim=1] Mr,
-        np.ndarray[cINT, ndim=1] Mc,
-        np.ndarray[cDOUBLE, ndim=1] Mv,
-        ):
+                    long [::1] Mr,
+                    long [::1] Mc,
+                    double [::1] Mv,
+                    ):
     """Update sparse vectors for mass matrix M
 
     Properties
@@ -16786,7 +16784,7 @@ cpdef void update_M(BFSCPlate2D plate,
         Array to store sparse values
 
     """
-    cdef cINT c1, c2, c3, c4, k
+    cdef int c1, c2, c3, c4, k
     cdef double lex, ley, h, rho
 
     with nogil:
@@ -19524,12 +19522,12 @@ cpdef void update_M(BFSCPlate2D plate,
         Mv[k] += h*lex*ley*rho*(0.000105820105820106*h**2*lex**2 + 0.000105820105820106*h**2*ley**2 + 9.0702947845805e-5*lex**2*ley**2)
 
 
-cpdef void update_fint(np.ndarray[cDOUBLE, ndim=1] u,
-        BFSCPlate2D plate,
-        np.ndarray[cDOUBLE, ndim=1] points,
-        np.ndarray[cDOUBLE, ndim=1] weights,
-        np.ndarray[cDOUBLE, ndim=1] fint,
-        ):
+cpdef void update_fint(double [::1] u,
+                       BFSCPlate2D plate,
+                       double [::1] points,
+                       double [::1] weights,
+                       double [::1] fint,
+                       ):
     """Update global internal force vector
 
     Properties
@@ -19547,7 +19545,7 @@ cpdef void update_fint(np.ndarray[cDOUBLE, ndim=1] u,
 
     """
     cdef double *ue
-    cdef cINT c1, c2, c3, c4, nint, i, j
+    cdef int c1, c2, c3, c4, nint, i, j
     cdef double Bm1_01, Bm1_02, Bm1_03, Bm1_11, Bm1_12, Bm1_13, Bm1_21, Bm1_22, Bm1_23, Bm1_31, Bm1_32, Bm1_33, Bm2_04, Bm2_05, Bm2_06, Bm2_14, Bm2_15, Bm2_16, Bm2_24, Bm2_25, Bm2_26, Bm2_34, Bm2_35, Bm2_36, Bm3_01, Bm3_02, Bm3_03, Bm3_04, Bm3_05, Bm3_06, Bm3_11, Bm3_12, Bm3_13, Bm3_14, Bm3_15, Bm3_16, Bm3_21, Bm3_22, Bm3_23, Bm3_24, Bm3_25, Bm3_26, Bm3_31, Bm3_32, Bm3_33, Bm3_34, Bm3_35, Bm3_36
     cdef double BmL1_07, BmL1_08, BmL1_09, BmL1_10, BmL1_17, BmL1_18, BmL1_19, BmL1_20, BmL1_27, BmL1_28, BmL1_29, BmL1_30, BmL1_37, BmL1_38, BmL1_39, BmL1_40, BmL2_07, BmL2_08, BmL2_09, BmL2_10, BmL2_17, BmL2_18, BmL2_19, BmL2_20, BmL2_27, BmL2_28, BmL2_29, BmL2_30, BmL2_37, BmL2_38, BmL2_39, BmL2_40, BmL3_07, BmL3_08, BmL3_09, BmL3_10, BmL3_17, BmL3_18, BmL3_19, BmL3_20, BmL3_27, BmL3_28, BmL3_29, BmL3_30, BmL3_37, BmL3_38, BmL3_39, BmL3_40
     cdef double Bb1_07, Bb1_08, Bb1_09, Bb1_10, Bb1_17, Bb1_18, Bb1_19, Bb1_20, Bb1_27, Bb1_28, Bb1_29, Bb1_30, Bb1_37, Bb1_38, Bb1_39, Bb1_40, Bb2_07, Bb2_08, Bb2_09, Bb2_10, Bb2_17, Bb2_18, Bb2_19, Bb2_20, Bb2_27, Bb2_28, Bb2_29, Bb2_30, Bb2_37, Bb2_38, Bb2_39, Bb2_40, Bb3_07, Bb3_08, Bb3_09, Bb3_10, Bb3_17, Bb3_18, Bb3_19, Bb3_20, Bb3_27, Bb3_28, Bb3_29, Bb3_30, Bb3_37, Bb3_38, Bb3_39, Bb3_40
