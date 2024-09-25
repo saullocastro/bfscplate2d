@@ -109,7 +109,7 @@ def test_nat_freq(plot_mode=None):
     # solving generalized eigenvalue problem
     num_eigenvalues = 4
     print('eig solver begin')
-    eigvals, eigvecsu = eigh(a=Kuu.toarray(), b=Muu.toarray(), eigvals=(0,
+    eigvals, eigvecsu = eigh(a=Kuu.toarray(), b=Muu.toarray(), subset_by_index=(0,
         num_eigenvalues-1))
     print('eig solver end')
     eigvecs = np.zeros((KC0.shape[0], num_eigenvalues), dtype=float)
