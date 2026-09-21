@@ -9,7 +9,7 @@ from Cython.Build import cythonize
 
 
 is_released = True
-version = '0.3.1'
+version = '0.4.0'
 
 
 def git_version():
@@ -90,7 +90,8 @@ Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
-License :: OSI Approved :: BSD License
+Programming Language :: Python :: 3.13
+Programming Language :: Python :: 3.14
 
 """
 
