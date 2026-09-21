@@ -12,8 +12,7 @@ DOF = 10
 if True:
 #def main():
     var('xi, eta, lex, ley, rho, weight')
-    var('Nxx0, Nyy0, Nxy0, Mxx0, Myy0, Mxy0')
-    var('NxxL, NyyL, NxyL')
+    var('Nxx, Nyy, Nxy, Mxx, Myy, Mxy')
     var('A11, A12, A16, A22, A26, A66')
     var('B11, B12, B16, B22, B26, B66')
     var('D11, D12, D16, D22, D26, D66')
@@ -124,25 +123,6 @@ if True:
         Bbs.append(Bbis)
     Bb = Matrix(Bbs)
 
-    G = Matrix([
-        (2/lex)*Nw.diff(xi),
-        (2/ley)*Nw.diff(eta)
-        ])
-    print()
-    Gs = []
-    for i in range(G.shape[0]):
-        Gis = []
-        for j in range(G.shape[1]):
-            Gij = G[i, j]
-            if Gij != 0:
-                print('                G%d_%02d = %s' % ((i+1), (j+1), str(Gij)))
-                Gis.append(symbols('G%d_%02d' % (i+1, j+1)))
-            else:
-                Gis.append(0)
-        Gs.append(Gis)
-    print()
-    G = Matrix(Gs)
-
     A = Matrix([
         [A11, A12, A16],
         [A12, A22, A26],
@@ -157,49 +137,37 @@ if True:
         [D16, D26, D66]])
 
     ue = Matrix([symbols(r'ue[%d]' % i) for i in range(0, Bb.shape[1])])
-    N0 = A*Bm*ue + B*Bb*ue
-    M0 = B*Bm*ue + D*Bb*ue
-    NL = A*BmL*ue
-    print('Nxx0 =', N0[0])
-    print('Nyy0 =', N0[1])
-    print('Nxy0 =', N0[2])
-    print('Mxx0 =', M0[0])
-    print('Myy0 =', M0[1])
-    print('Mxy0 =', M0[2])
-    print('NxxL =', NL[0])
-    print('NyyL =', NL[1])
-    print('NxyL =', NL[2])
-
-    Nmatrix = Matrix([[Nxx0, Nxy0],
-                      [Nxy0, Nyy0]])
+    # NOTE BmL is the variation of the quadratic part of the membrane strain,
+    #      d(eps_NL)/d(ue). Because eps_NL is quadratic in ue, Euler's theorem
+    #      gives BmL*ue = 2*eps_NL, so the strain itself is Bm*ue + BmL*ue/2,
+    #      while its variation is (Bm + BmL)*delta_ue. Only the variation
+    #      carries the full BmL, and that is the one multiplying N in fint
+    #      below. Using (Bm + BmL)*ue for the strain counts the von Karman
+    #      terms twice and makes fint stop being the gradient of the strain
+    #      energy, so that KC0 + KCNL + KG is no longer its Jacobian
+    eps = (Bm + BmL/2)*ue
+    kappa = Bb*ue
+    N = A*eps + B*kappa
+    M = B*eps + D*kappa
+    print('Nxx =', N[0])
+    print('Nyy =', N[1])
+    print('Nxy =', N[2])
+    print('Mxx =', M[0])
+    print('Myy =', M[1])
+    print('Mxy =', M[2])
 
     # Internal force vector
     # PhD thesis Saullo, Eq. 3.8.14
-    N0 = Matrix([[Nxx0, Nyy0, Nxy0]]).T
-    M0 = Matrix([[Mxx0, Myy0, Mxy0]]).T
-    NL = Matrix([[NxxL, NyyL, NxyL]]).T
-    NG = Nmatrix*G*ue
-    print()
-    NGs = []
-    for i in range(NG.shape[0]):
-        NGis = []
-        for j in range(NG.shape[1]):
-            NGij = NG[i, j]
-            if NGij != 0:
-                print('                NG%d_%02d = %s' % ((i+1), (j+1), str(NGij)))
-                NGis.append(symbols('NG%d_%02d' % (i+1, j+1)))
-            else:
-                NGis.append(0)
-        NGs.append(NGis)
-    NG = Matrix(NGs)
-    print()
+    #
+    # NOTE the variation of the membrane strain is (Bm + BmL)*delta_ue, so
+    #      both terms multiply the same N, of the total strain. The separate
+    #      G.T*[N]*G*ue term this used to carry is BmL.T*N written a second
+    #      way, and adding it counted the geometric part of fint twice
+    N = Matrix([[Nxx, Nyy, Nxy]]).T
+    M = Matrix([[Mxx, Myy, Mxy]]).T
 
-    fint00 = Bm.T*N0 + Bb.T*M0
-    fint0L = Bm.T*NL
-    fintL0 = BmL.T*N0
-    fintLL = BmL.T*NL
-    fintKG = G.T*NG
-    fint = weight*(lex*ley)/4.*(fint00 + fint0L + fintL0 + fintLL + fintKG)
+    fint_terms = Bm.T*N + BmL.T*N + Bb.T*M
+    fint = weight*(lex*ley)/4.*(fint_terms)
 
     def name_ind(i):
         if i >=0 and i < DOF:
