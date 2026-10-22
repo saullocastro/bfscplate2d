@@ -41,7 +41,8 @@ The dates of the released versions are those of their tagged commits.
 
 ### Tests
 
-- `structsolve` is a requirement of the tests, listed in
+- `structsolve>=0.8.5`, with its module `structsolve.convergence`, is a
+  requirement of the tests, listed in
   `requirements.txt` and not in `install_requires`.
 - `tests/test_static_axial_load_nonlinear.py` solves the non-linear static
   analysis with `structsolve.Analysis` instead of hand-written
