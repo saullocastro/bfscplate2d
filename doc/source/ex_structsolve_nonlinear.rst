@@ -33,3 +33,16 @@ load:
 
 .. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
     :pyobject: test_static
+
+
+Follower pressure
+-----------------
+
+The callables of a follower pressure, ``FollowerCallables``, which receive
+the load factor ``inc``, are given in :ref:`solving-with-structsolve`.
+The cantilever of :doc:`ex_follower_pressure`, with free edges and an
+unsymmetric load stiffness matrix, solved with these callables in five
+load increments, against the reference values of panels:
+
+.. literalinclude:: ../../tests/test_follower_pressure_structsolve.py
+    :pyobject: test_cantilever_large_deflection_against_panels
