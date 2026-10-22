@@ -269,7 +269,8 @@ References
 .. [3] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
    Laminates, Springer, Dordrecht, 1992.
 .. [4] Reddy, J. N., Mechanics of Laminated Composite Plates and Shells:
-   Theory and Analysis, 2nd ed., CRC Press, Boca Raton, 2004.
+   Theory and Analysis, 2nd ed., CRC Press, Boca Raton, 2003,
+   doi:10.1201/b12409.
 .. [5] Hibbitt, H. D., Some follower forces and load stiffness,
    International Journal for Numerical Methods in Engineering, 14(6),
    937-941, 1979, doi:10.1002/nme.1620140613.
