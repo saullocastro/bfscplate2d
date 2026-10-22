@@ -226,9 +226,11 @@ vector. A positive `p` pushes along `+z`, and at `u = 0` the force vector
 is the dead pressure load. The tangent stiffness matrix of the residual
 `\{f_{int}\} - \lambda \{F_p(u)\}` is `[KC0] + [KCNL] + [KG] + \lambda
 [KCfollower]`. The load stiffness matrix is unsymmetric in general, a
-non-conservative load, and symmetric when `p` is uniform over the whole
-plate and, on each edge, `w = 0` or the displacement normal to the edge is
-zero, see the Notes of :func:`.update_KCfollower`.
+non-conservative load. For the first-order area vector it is symmetric, and
+the follower pressure conservative, if and only if `p` is uniform over the
+loaded region and, at each point of the boundary of the loaded region,
+either `w = 0` or the in-plane displacement normal to the boundary is zero,
+see the Notes of :func:`.update_KCfollower`.
 
 .. rubric:: Numerical integration
 
@@ -21332,26 +21334,34 @@ cpdef void update_KCfollower(double [::1] u,
           + p_{,y} (\delta v \, \Delta w - \delta w \, \Delta v) \right] dA
 
     with `\{n_x, n_y\}` the outward normal of the boundary of the loaded
-    region. The element matrix is therefore unsymmetric. In the assembled
-    matrix the integrals along the edges shared by two elements cancel when
-    `p` is continuous, since `u`, `v` and `w` are continuous, and the
-    matrix is symmetric when `p` is uniform over the whole plate and, on
-    each edge of the plate, either `w = 0` or the displacement normal to
-    the edge is zero, `u` on the edges at constant `x` and `v` on those at
-    constant `y`, e.g. simply supported or clamped edges and symmetry
-    planes, the result of [1]_ and [2]_ for pressures that depend on the
-    undeformed coordinates. A free or partially restrained edge, a pressure
-    on part of the plate or a non-uniform `p` gives an unsymmetric matrix,
-    a non-conservative load, which must not be symmetrized and requires
-    solvers of unsymmetric systems. For ``quadratic=1`` the matrix depends
-    on `u` and is not symmetric in general at `u \neq 0`; with `w = 0` on
-    the whole boundary and `p` uniform it is symmetric for every `u`, since
-    the load then has the potential `-p V`, with the volume `V = \int_A w
-    [(1 + u_{,x})(1 + v_{,y}) - u_{,y} v_{,x}] dA` swept by the
-    mid-surface, whose variation is `\int_A \mathbf{a} \cdot
-    \delta\mathbf{u} \, dA` after an integration by parts whose boundary
-    terms vanish with `w`. The integration is exact for the same ``nint``
-    as in :func:`.update_fext_follower`.
+    region. The load stiffness matrix is therefore symmetric, and the
+    follower pressure conservative, if and only if:
+
+    - `p` is uniform over the loaded region, such that the area integral
+      vanishes; and
+    - at each point of the boundary of the loaded region, either `w = 0` or
+      the in-plane displacement normal to the boundary vanishes, `u = 0` on
+      the edges at constant `x` and `v = 0` on those at constant `y`, such
+      that the contour integral vanishes.
+
+    These conditions are met by simply supported and clamped edges and by
+    symmetry planes, and the load potential is then the pressure times the
+    change of the enclosed volume. Conversely, the matrix is unsymmetric
+    for free or partially restrained edges, for a pressure applied on a
+    patch whose edges lie inside the plate, and for a pressure that varies
+    over the plate, the result of [1]_ and [2]_, who showed that the
+    pressure load stiffness is symmetric for closed surfaces or for loaded
+    surfaces with a fixed boundary. For the matrix of one element, the
+    boundary of the loaded region is the boundary of the element, where the
+    second condition does not hold, and the element matrix is unsymmetric.
+    In the assembled matrix the contour integrals along the edges shared by
+    two elements cancel when `p` is continuous, since `u`, `v` and `w` are
+    continuous, such that the conditions apply to the boundary of the
+    loaded region of the plate. An unsymmetric matrix, a non-conservative
+    load, must not be symmetrized and requires solvers of unsymmetric
+    systems. The conditions are those of the first-order area vector; for
+    ``quadratic=1`` the matrix depends on `u`. The integration is exact for
+    the same ``nint`` as in :func:`.update_fext_follower`.
 
     References
     ----------

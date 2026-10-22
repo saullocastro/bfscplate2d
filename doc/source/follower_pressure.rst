@@ -89,13 +89,17 @@ load stiffness matrix of ``p`` to `[K_G]` of the linear static solution of
 Unsymmetric load stiffness matrix
 ---------------------------------
 
-`[K_{Cfollower}]` is unsymmetric in general, a non-conservative load. The
-assembled matrix restricted to the unknown degrees of freedom is symmetric
-when the pressure is uniform over the whole plate and, on each edge, `w`
-or the displacement normal to the edge is constrained, e.g. simply
-supported or clamped edges and symmetry planes; the matrix of one element,
-a free edge, a pressure on part of the plate or a varying pressure give an
-unsymmetric matrix. The conditions are derived in the Notes of
+`[K_{Cfollower}]` is unsymmetric in general, a non-conservative load. For
+the first-order area vector, ``quadratic=0``, it is symmetric, and the
+follower pressure conservative, if and only if the pressure is uniform
+over the loaded region and, at each point of the boundary of the loaded
+region, `w = 0` or the in-plane displacement normal to the boundary is
+zero, e.g. simply supported or clamped edges and symmetry planes. The
+matrix of one element, free or partially restrained edges, a pressure on
+a patch whose edges lie inside the plate or a varying pressure give an
+unsymmetric matrix; in the assembled matrix, restricted to the unknown
+degrees of freedom, the contributions of the edges shared by two elements
+cancel. The conditions are derived in the Notes of
 :func:`.update_KCfollower` and checked by ``test_symmetry`` of
 ``tests/test_follower_pressure.py``. The matrix is written in full, not as
 an upper triangle, and must not be symmetrized: the linear systems and the
