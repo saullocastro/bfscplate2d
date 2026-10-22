@@ -14,20 +14,21 @@ internal forces of :func:`.update_fint`:
     :pyobject: build_model
 
 .. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
-    :pyobject: calc_KT
+    :pyobject: calc_KCNL
+
+.. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
+    :pyobject: calc_KG
 
 .. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
     :pyobject: calc_fint
 
-The full Newton-Raphson method, with the tangent stiffness matrix rebuilt at
-every iteration and the external forces applied in increments:
-
-.. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
-    :pyobject: newton_raphson
-
-The test checks the quadratic convergence and that the membrane stretching
-makes the plate stiffer than the linearised prediction
-`([K_{C0}] + [K_G])^{-1}\{f\}`, with `[K_G]` of the axial load:
+The full Newton-Raphson method of structsolve, with the tangent stiffness
+matrix `[K_{C0}] + [K_{CNL}] + [K_G]` rebuilt at every iteration and the
+external forces applied in four increments, ``newton_raphson(m, fext + ftrans,
+increments=4)``, see :doc:`ex_structsolve_nonlinear`. The test checks the
+quadratic convergence and that the membrane stretching makes the plate
+stiffer than the linearised prediction `([K_{C0}] + [K_G])^{-1}\{f\}`, with
+`[K_G]` of the axial load:
 
 .. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py
     :pyobject: test_large_deflection

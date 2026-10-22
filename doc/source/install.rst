@@ -27,6 +27,17 @@ are listed in ``requirements.txt``::
 
     python -m pip install -r requirements.txt
 
+``requirements.txt`` also lists `structsolve
+<https://saullocastro.github.io/structsolve/>`_, which solves the nonlinear
+static analysis of the tests and of the examples and cross-checks some of
+their linear buckling and natural frequency solutions, see
+:doc:`analyses`. It is a requirement of the tests and of the examples of
+the documentation only: bfscplate2d does not import it, and it is not
+installed with bfscplate2d, not being in ``install_requires`` of
+``setup.py``. The tests require a version of structsolve newer than 0.8.0,
+with the module ``structsolve.convergence`` and Crisfield's convergence
+criterion as default.
+
 To build in place, for running the tests from the source tree::
 
     python setup.py build_ext --inplace

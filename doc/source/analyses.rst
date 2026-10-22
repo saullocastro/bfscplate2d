@@ -5,8 +5,8 @@ Analyses
 
 The matrices and vectors of :doc:`assembling`, restricted to the unknown
 degrees of freedom ``bu``, give the systems of the analyses below, solved
-with SciPy as in the tests. The theory of each matrix is in the Notes of
-its function.
+with SciPy as in the tests, or with structsolve, see `Solving with
+structsolve`_. The theory of each matrix is in the Notes of its function.
 
 
 Linear static analysis
@@ -94,7 +94,117 @@ nonlinear terms, and for small displacements `\{f_{int}\} \approx [K_{C0}]
 
 The value arrays of `[K_{CNL}]` and `[K_G]` are zeroed before each
 assembly, since the functions add to them, see :doc:`assembling`. The test
-of :doc:`ex_nonlinear_static` writes the iterations explicitly, with the
-residual normalised by the norm of the external forces as the convergence
-criterion. A follower pressure adds its force vector to the residual and its
-load stiffness matrix to `[K_T]`, see :doc:`follower_pressure`.
+of :doc:`ex_nonlinear_static` solves the iterations with structsolve, see
+`Solving with structsolve`_ and :doc:`ex_structsolve_nonlinear`. A follower
+pressure adds its force vector to the residual and its load stiffness
+matrix to `[K_T]`, see :doc:`follower_pressure`.
+
+
+.. _solving-with-structsolve:
+
+Solving with structsolve
+------------------------
+
+The solvers of `structsolve <https://saullocastro.github.io/structsolve/>`_
+receive the matrices and vectors of the model, assembled by the user. It is
+used by the tests and the examples, and it is not a requirement of
+bfscplate2d, see :doc:`install`. The linear buckling and natural frequency
+problems above are solved by ``structsolve.lb(Kuu, KGuu)`` and
+``structsolve.freq(Kuu, Muu)``, which return the load multipliers
+`\lambda` and `-\omega_n^2`, as cross-checked in
+``tests/test_linear_buckling_iso_SSSS.py`` and
+``tests/test_natural_frequency.py``.
+
+The nonlinear static analysis is solved by ``structsolve.Analysis``, with
+four callables that loop over the elements, call the functions of the
+element and assemble, see :doc:`ex_structsolve_nonlinear`:
+
+- ``calc_fext(inc=1., silent=False)``, the external forces `\{f\}` times
+  the load factor ``inc``;
+- ``calc_fint(c, silent=False)``, the internal forces of
+  :func:`.update_fint` at the displacements ``c``;
+- ``calc_kC(c=None, NLgeom=False, silent=False)``, `[K_{C0}]` with
+  ``NLgeom=False``, and `[K_{C0}] + [K_{CNL}(c)]` with ``NLgeom=True``;
+- ``calc_kG(c=None, NLgeom=False, silent=False)``, `[K_G(c)]` of
+  :func:`.update_KG`, called with ``NLgeom=True``;
+
+such that ``calc_kC + calc_kG`` is the tangent stiffness matrix `[K_T]` and
+the residual of structsolve, `\lambda \{f\} - \{f_{int}(c)\}`, is the one
+above with the opposite sign. The value arrays are zeroed in each call. The
+load factor goes from 0 to 1 in increments, the first one of size
+``Analysis.initialInc`` and the next ones growing up to
+``Analysis.maxInc``, each starting from a predictor extrapolated from the
+previous increment, the linear solution of `[K_{C0}]` in the first one;
+``Analysis.static`` returns the load factors and the solutions of the
+converged increments.
+
+structsolve imposes no boundary condition itself. The constrained degrees
+of freedom are removed in one of two ways:
+
+- the partition of the free degrees of freedom, as in the tests: the
+  callables receive ``c = u[bu]`` and return the vectors restricted to
+  ``bu`` and the matrices to ``bu`` by ``bu``, and the solutions are
+  expanded with ``u[bu] = c``;
+- null rows and columns: the callables return the vectors and matrices of
+  the whole model, with the rows and columns of the constrained degrees of
+  freedom zeroed in all the matrices. The solvers remove them and return
+  vectors with the size of the model, zero at these degrees of freedom.
+
+The convergence criterion is, by default, Crisfield's: the residual and the
+reference forces, the external forces and the internal forces, are scaled
+with the diagonal of the linear stiffness matrix ``calc_kC()`` over the
+free degrees of freedom, and the iterations stop when their ratio is below
+``Analysis.relTOL = 1e-9``. The scaled norm does not depend on the units of
+the degrees of freedom, which here mix displacements, their first
+derivatives and `w_{,xy}`, and leaves out the reactions at the constrained
+ones; ``Analysis.convergence = 'relative'`` selects the Euclidean norm
+instead. With a consistent tangent the criterion is reached in a few
+iterations.
+
+A follower pressure `\lambda p`, see :doc:`follower_pressure`, enters
+through the optional keyword argument ``inc``, the load factor, which
+structsolve passes to the callables that declare it. The external forces
+are the dead part `\{F_p(0)\}` of ``p``, ``calc_fint`` subtracts the part
+that depends on the displacements, ``reference=0``, and ``calc_kC`` adds the
+load stiffness matrix of `\lambda p`, e.g. with the list ``pressures`` of
+the pressure of each element::
+
+    fp0 = np.zeros(N)
+    for plate, p in zip(elements, pressures):
+        update_fext_follower(np.zeros(N), plate, points, weights, p, fp0,
+                             quadratic)
+
+    def calc_fext(inc=1., silent=False):
+        return inc*fp0[bu]
+
+    def calc_fint(c, inc=1., silent=False):
+        u = expand(c)
+        fint = np.zeros(N)
+        for plate, p in zip(elements, pressures):
+            update_fint(u, plate, points, weights, fint)
+            # minus the part of the follower pressure that depends on u
+            update_fext_follower(u, plate, points, weights, -inc*p, fint,
+                                 quadratic, 0)
+        return fint[bu]
+
+    def calc_kC(c=None, NLgeom=False, inc=1., silent=False):
+        if not NLgeom:
+            return KC0[bu, :][:, bu]
+        u = expand(c)
+        KCNLv[:] = 0
+        KCfv[:] = 0
+        for plate, p in zip(elements, pressures):
+            update_KCNL(u, plate, points, weights, KCNLr, KCNLc, KCNLv)
+            update_KCfollower(u, plate, points, weights, inc*p, KCfr, KCfc,
+                              KCfv, quadratic)
+        KCNL = coo_matrix((KCNLv, (KCNLr, KCNLc)), shape=(N, N))
+        KCf = coo_matrix((KCfv, (KCfr, KCfc)), shape=(N, N))
+        return (KC0 + KCNL + KCf).tocsc()[bu, :][:, bu]
+
+with ``expand(c)`` the displacements of the model from ``c = u[bu]``, and
+``calc_kG`` as above. The tangent stiffness matrix is then unsymmetric in
+general, which the solvers of structsolve support with LU factorizations.
+For the arc-length methods, ``Analysis.NL_method``, ``calc_fext`` also
+declares the configuration ``c`` and returns the follower force vector
+`\{F_p(c)\}` of ``p``, the derivative of the residual with respect to the
+load factor.
