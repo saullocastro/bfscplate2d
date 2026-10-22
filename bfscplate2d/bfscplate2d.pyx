@@ -60,10 +60,6 @@ polynomials, with `u`, `u_{,x}`, `u_{,y}` and `v`, `v_{,x}`, `v_{,y}` as
 nodal degrees of freedom, without the cross derivatives `u_{,xy}` and
 `v_{,xy}`.
 
-TODO(author): confirm that [2]_ is the source to cite for the BFSC element
-and that the interpolation of `u` and `v` described above is what
-distinguishes it from the BFS element.
-
 .. rubric:: Interpolation
 
 The element is a rectangle with sides parallel to `x` and `y`, such that
@@ -238,18 +234,15 @@ References
    inter-element-compatible stiffness and mass matrices by the use of
    interpolation formulas, Proceedings of the Conference on Matrix Methods
    in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air Force
-   Base, Ohio, 1965.
-   TODO(author): confirm this source
+   Base, Dayton, Ohio, 26-28 October 1965, pp. 395-444.
 .. [2] Castro, S. G. P., and Jansen, E. L., Displacement-based formulation
    of Koiter's method: application to multi-modal post-buckling finite
-   element analysis of plates, Thin-Walled Structures, 2021.
-   TODO(author): confirm this source
+   element analysis of plates, Thin-Walled Structures, 159, 107217, 2021,
+   doi:10.1016/j.tws.2020.107217.
 .. [3] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
    Laminates, Springer, Dordrecht, 1992.
-   TODO(author): confirm this source
 .. [4] Reddy, J. N., Mechanics of Laminated Composite Plates and Shells:
-   Theory and Analysis, 2nd ed., CRC Press, 2004.
-   TODO(author): confirm this source
+   Theory and Analysis, 2nd ed., CRC Press, Boca Raton, 2004.
 
 """
 import numpy as np
