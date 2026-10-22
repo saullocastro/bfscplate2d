@@ -310,11 +310,10 @@ cdef class BFSCPlate2D(object):
      1         2
 
     The constructor takes no parameters. It sets ``n1, n2, n3, n4`` and
-    ``c1, c2, c3, c4`` to ``-1``, ``init_k_KC0``, ``init_k_KG``,
-    ``init_k_M`` and ``init_k_KCfollower`` to ``0`` (``init_k_KCNL`` is not
-    set by the constructor and starts at ``0``), ``lex``, ``ley``, ``h`` and
-    ``rho`` to ``0``, and allocates ``ABD``, ``Bm``, ``Bb``, ``Nu`` to ``Nw_y`` and ``u`` filled
-    with zeros. Before calling the functions of the module, the caller sets
+    ``c1, c2, c3, c4`` to ``-1``, ``init_k_KC0``, ``init_k_KCNL``,
+    ``init_k_KG``, ``init_k_M`` and ``init_k_KCfollower`` to ``0``, ``lex``,
+    ``ley``, ``h`` and ``rho`` to ``0``, and allocates ``ABD``, ``Bm``,
+    ``Bb``, ``Nu`` to ``Nw_y`` and ``u`` filled with zeros. Before calling the functions of the module, the caller sets
     ``c1, c2, c3, c4``, ``lex``, ``ley``, ``ABD`` and the ``init_k_*``
     positions of the matrices to be computed, and ``h`` and ``rho`` for
     :func:`.update_M`.
@@ -424,6 +423,7 @@ cdef class BFSCPlate2D(object):
         self.c3 = -1
         self.c4 = -1
         self.init_k_KC0 = 0
+        self.init_k_KCNL = 0
         self.init_k_KG = 0
         self.init_k_M = 0
         self.init_k_KCfollower = 0
