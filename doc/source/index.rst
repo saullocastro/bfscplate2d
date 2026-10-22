@@ -81,6 +81,15 @@ Installing bfscplate2d
     install.rst
 
 
+Changelog
+---------
+
+.. toctree::
+    :maxdepth: 1
+
+    changelog.rst
+
+
 License
 -------
 
