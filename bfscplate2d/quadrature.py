@@ -1,6 +1,42 @@
+"""Gauss-Legendre quadrature
+
+The module has the function :func:`.get_points_weights`, which gives the
+points and weights passed to the ``update_*`` functions of
+:mod:`bfscplate2d.bfscplate2d`.
+
+"""
 import numpy as np
 
 def get_points_weights(nint):
+    """Points and weights of the one-dimensional Gauss-Legendre quadrature
+
+    The values are tabulated for ``nint`` from ``2`` to ``10``, over the
+    interval from ``-1`` to ``1``.
+
+    Parameters
+    ----------
+    nint : int
+        Number of integration points, from ``2`` to ``10``.
+
+    Returns
+    -------
+    points : ndarray
+        1-D array of ``float`` of size ``nint`` with the points in
+        ascending order, dimensionless, from ``-1`` to ``1``.
+    weights : ndarray
+        1-D array of ``float`` of size ``nint`` with the weight of each
+        point, dimensionless, summing to ``2``.
+
+    Raises
+    ------
+    NotImplementedError
+        If ``nint`` is not one of ``2`` to ``10``.
+
+    See Also
+    --------
+    bfscplate2d.bfscplate2d.update_KC0 : uses ``points`` and ``weights``.
+
+    """
     points = [0]*nint
     weights = [0]*nint
     if nint == 2:

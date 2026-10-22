@@ -4,6 +4,52 @@
 #cython: nonecheck=False
 #cython: initializedcheck=False
 #cython: infer_types=False
+"""BFSC plate element and the functions computing its matrices
+
+The module has the element class :class:`.BFSCPlate2D` and the functions
+:func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
+:func:`.update_KG_cte_N` and :func:`.update_M`, which write the
+contributions of one element in sparse row, column and value arrays, from
+the positions given by the ``init_k_*`` attributes of the element, and
+:func:`.update_fint`, which adds the internal forces of one element to a
+global internal force vector.
+
+The element is a rectangle with four nodes, of length ``lex`` along `x` and
+``ley`` along `y`. The natural coordinates ``xi`` and ``eta`` go from ``-1``
+to ``1`` over the element, node 1 being at ``xi = eta = -1``, node 2 at
+``xi = 1, eta = -1``, node 3 at ``xi = eta = 1`` and node 4 at ``xi = -1,
+eta = 1``. Each node has 10 degrees of freedom, in the order `u`, `u_{,x}`,
+`u_{,y}`, `v`, `v_{,x}`, `v_{,y}`, `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`: the
+displacements `u`, `v`, `w` along `x`, `y`, `z`, with dimension of length,
+their first derivatives with respect to `x` and `y`, dimensionless, and the
+second derivative of `w` with respect to `x` and `y`, with dimension of one
+over length. The degrees of freedom of nodes 1, 2, 3 and 4 are at the
+positions ``c1`` to ``c1 + 9``, ``c2`` to ``c2 + 9``, ``c3`` to ``c3 + 9``
+and ``c4`` to ``c4 + 9`` of the global vectors and matrices, ``c1`` to
+``c4`` being attributes of the element.
+
+The functions other than :func:`.update_M` integrate numerically over the
+element with ``nint`` by ``nint`` points, the products of the
+one-dimensional ``points`` and ``weights`` given to them, e.g. from
+:func:`bfscplate2d.quadrature.get_points_weights`. :func:`.update_M`
+computes its entries with explicit expressions, without numerical
+integration. The functions evaluate the interpolation functions themselves:
+they do not read or change the attributes ``Bm``, ``Bb``, ``Nu``, ...,
+``Nw_y`` of :class:`.BFSCPlate2D`, which are updated only by the methods of
+the element.
+
+The module also defines:
+
+- ``KC0_SPARSE_SIZE = 1600``, ``KCNL_SPARSE_SIZE = 1024``,
+  ``KG_SPARSE_SIZE = 256`` and ``M_SPARSE_SIZE = 544``: number of entries
+  that one element writes in the row, column and value arrays of ``KC0``,
+  ``KCNL``, ``KG`` and ``M``, starting at the position given by its
+  attribute ``init_k_KC0``, ``init_k_KCNL``, ``init_k_KG`` or
+  ``init_k_M``. For ``n`` elements the arrays need ``n`` times these
+  sizes;
+- ``DOUBLE = np.float64``: NumPy type of the arrays of values.
+
+"""
 import numpy as np
 
 
@@ -18,6 +64,8 @@ M_SPARSE_SIZE = 544
 
 cdef class BFSCPlate2D(object):
     """
+    Four-node rectangular BFSC plate element
+
     Nodal connectivity for plate element
     similar to Nastran's CQUAD4
 
@@ -30,6 +78,74 @@ cdef class BFSCPlate2D(object):
       |       |
       |_______|
      1         2
+
+    The constructor takes no parameters. It sets ``n1, n2, n3, n4`` and
+    ``c1, c2, c3, c4`` to ``-1``, ``init_k_KC0``, ``init_k_KG`` and
+    ``init_k_M`` to ``0`` (``init_k_KCNL`` is not set by the constructor and
+    starts at ``0``), ``lex``, ``ley``, ``h`` and ``rho`` to ``0``, and
+    allocates ``ABD``, ``Bm``, ``Bb``, ``Nu`` to ``Nw_y`` and ``u`` filled
+    with zeros. Before calling the functions of the module, the caller sets
+    ``c1, c2, c3, c4``, ``lex``, ``ley``, ``ABD`` and the ``init_k_*``
+    positions of the matrices to be computed, and ``h`` and ``rho`` for
+    :func:`.update_M`.
+
+    Attributes
+    ----------
+    n1, n2, n3, n4 : int
+        Node identification numbers. Not read by the functions of the
+        module.
+    c1, c2, c3, c4 : int
+        Position of the first degree of freedom of nodes 1, 2, 3 and 4 in
+        the global vectors and matrices, e.g. ``DOF`` times the index of
+        the node. The 10 degrees of freedom of node 1 are at the positions
+        ``c1`` to ``c1 + 9``, and likewise for the other nodes.
+    init_k_KC0, init_k_KCNL, init_k_KG, init_k_M : int
+        Position of the first entry written by the element in the sparse
+        row, column and value arrays of ``KC0`` (:func:`.update_KC0`),
+        ``KCNL`` (:func:`.update_KCNL`), ``KG`` (:func:`.update_KG` and
+        :func:`.update_KG_cte_N`) and ``M`` (:func:`.update_M`).
+    lex, ley : double
+        Lengths of the element sides along `x`, from node 1 to node 2, and
+        along `y`, from node 1 to node 4. Dimension of length.
+    rho : double
+        Density, mass per unit volume. Read only by :func:`.update_M`.
+    h : double
+        Thickness, dimension of length. Read only by :func:`.update_M`.
+    ABD : double[:, ::1]
+        Constitutive matrix ``[[A, B], [B, D]]`` of shape ``(6, 6)``, e.g.
+        the ``ABD`` attribute of a :class:`composites.core.Laminate` created
+        with :func:`composites.isotropic_plate` or
+        :func:`composites.laminated_plate`. ``A`` has dimension of force per
+        unit length, ``B`` of force and ``D`` of force times length. Only
+        the entries on and above the diagonal of the blocks ``ABD[:3, :3]``
+        (``A11, A12, A16, A22, A26, A66``), ``ABD[:3, 3:]`` (``B11, B12,
+        B16, B22, B26, B66``) and ``ABD[3:, 3:]`` (``D11, ..., D66``) are
+        read.
+    Bm : double[:, ::1]
+        Array of shape ``(3, 40)``, updated by :meth:`.update_Bm`. The
+        products of its rows with the element degrees of freedom give
+        `u_{,x}`, `v_{,y}` and `u_{,y} + v_{,x}`, dimensionless.
+    Bb : double[:, ::1]
+        Array of shape ``(3, 40)``, updated by :meth:`.update_Bb`. The
+        products of its rows with the element degrees of freedom give
+        `-w_{,xx}`, `-w_{,yy}` and `-2 w_{,xy}`, with dimension of one over
+        length.
+    Nu, Nv, Nw : double[::1]
+        Arrays of size ``40``, updated by :meth:`.update_Nu`,
+        :meth:`.update_Nv` and :meth:`.update_Nw`. Their products with the
+        element degrees of freedom give `u`, `v` and `w`, dimension of
+        length.
+    Nu_x, Nu_y, Nv_x, Nv_y, Nw_x, Nw_y : double[::1]
+        Arrays of size ``40``, updated by the methods of the same name,
+        :meth:`.update_Nu_x` to :meth:`.update_Nw_y`. Their products with
+        the element degrees of freedom give `u_{,x}`, `u_{,y}`, `v_{,x}`,
+        `v_{,y}`, `w_{,x}` and `w_{,y}`, dimensionless.
+    u : double[::1]
+        Array of size ``40`` with the element degrees of freedom, the 10 of
+        node 1 followed by those of nodes 2, 3 and 4, with the dimensions
+        given in the module documentation. Overwritten with values read
+        from the global displacement vector by :func:`.update_KCNL`,
+        :func:`.update_KG` and :func:`.update_fint`.
 
     """
     cdef public int n1, n2, n3, n4
@@ -80,6 +196,21 @@ cdef class BFSCPlate2D(object):
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCPlate2D self, double xi, double eta):
+        """Update the membrane rows ``Bm`` at a natural coordinate point
+
+        The entries of ``Bm`` in the columns of the in-plane degrees of
+        freedom are computed from ``lex`` and ``ley``: row 0 in the columns
+        of `u`, `u_{,x}`, `u_{,y}`, row 1 in those of `v`, `v_{,x}`,
+        `v_{,y}` and row 2 in both, of the four nodes. The other entries are
+        not changed (zero after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -134,6 +265,20 @@ cdef class BFSCPlate2D(object):
             self.Bm[2, 35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Bb(BFSCPlate2D self, double xi, double eta):
+        """Update the bending rows ``Bb`` at a natural coordinate point
+
+        The entries of the three rows of ``Bb`` in the columns of the
+        out-of-plane degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`
+        of the four nodes are computed from ``lex`` and ``ley``. The other
+        entries are not changed (zero after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -188,6 +333,20 @@ cdef class BFSCPlate2D(object):
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
     cpdef void update_Nu(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nu`` at a natural coordinate point
+
+        The entries of ``Nu`` at the positions of the degrees of freedom `u`,
+        `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nu`` with the element degrees of freedom
+        gives `u`. The other entries are not changed (zero after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -206,6 +365,21 @@ cdef class BFSCPlate2D(object):
             self.Nu[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Nu_x(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nu_x`` at a natural coordinate point
+
+        The entries of ``Nu_x`` at the positions of the degrees of freedom `u`,
+        `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nu_x`` with the element degrees of freedom
+        gives `u_{,x}`. The other entries are not changed (zero after
+        construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -224,6 +398,21 @@ cdef class BFSCPlate2D(object):
             self.Nu_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nu_y(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nu_y`` at a natural coordinate point
+
+        The entries of ``Nu_y`` at the positions of the degrees of freedom `u`,
+        `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nu_y`` with the element degrees of freedom
+        gives `u_{,y}`. The other entries are not changed (zero after
+        construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -242,6 +431,20 @@ cdef class BFSCPlate2D(object):
             self.Nu_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Nv(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nv`` at a natural coordinate point
+
+        The entries of ``Nv`` at the positions of the degrees of freedom `v`,
+        `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nv`` with the element degrees of freedom
+        gives `v`. The other entries are not changed (zero after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -260,6 +463,21 @@ cdef class BFSCPlate2D(object):
             self.Nv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Nv_x(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nv_x`` at a natural coordinate point
+
+        The entries of ``Nv_x`` at the positions of the degrees of freedom `v`,
+        `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nv_x`` with the element degrees of freedom
+        gives `v_{,x}`. The other entries are not changed (zero after
+        construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -278,6 +496,21 @@ cdef class BFSCPlate2D(object):
             self.Nv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nv_y(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nv_y`` at a natural coordinate point
+
+        The entries of ``Nv_y`` at the positions of the degrees of freedom `v`,
+        `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
+        ``ley``; the product of ``Nv_y`` with the element degrees of freedom
+        gives `v_{,y}`. The other entries are not changed (zero after
+        construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -296,6 +529,21 @@ cdef class BFSCPlate2D(object):
             self.Nv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Nw(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nw`` at a natural coordinate point
+
+        The entries of ``Nw`` at the positions of the degrees of freedom `w`,
+        `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
+        ``lex`` and ``ley``; the product of ``Nw`` with the element degrees of
+        freedom gives `w`. The other entries are not changed (zero after
+        construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -318,6 +566,21 @@ cdef class BFSCPlate2D(object):
             self.Nw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
     cpdef void update_Nw_x(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nw_x`` at a natural coordinate point
+
+        The entries of ``Nw_x`` at the positions of the degrees of freedom `w`,
+        `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
+        ``lex`` and ``ley``; the product of ``Nw_x`` with the element degrees
+        of freedom gives `w_{,x}`. The other entries are not changed (zero
+        after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -340,6 +603,21 @@ cdef class BFSCPlate2D(object):
             self.Nw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nw_y(BFSCPlate2D self, double xi, double eta):
+        """Update the row ``Nw_y`` at a natural coordinate point
+
+        The entries of ``Nw_y`` at the positions of the degrees of freedom `w`,
+        `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
+        ``lex`` and ``ley``; the product of ``Nw_y`` with the element degrees
+        of freedom gives `w_{,y}`. The other entries are not changed (zero
+        after construction).
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the evaluation point. Dimensionless, from
+            ``-1`` to ``1`` over the element.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -371,20 +649,48 @@ cpdef void update_KC0(BFSCPlate2D plate,
                       ):
     """Update sparse vectors for linear constitutive stiffness matrix KC0
 
-    Properties
+    The element matrix, of size 40 by 40, is computed from ``lex``, ``ley``
+    and the ``A``, ``B`` and ``D`` blocks of ``ABD`` of ``plate``, with
+    ``nint`` by ``nint`` integration points, ``nint`` being the size of
+    ``points``. Its ``KC0_SPARSE_SIZE = 1600`` entries, all the pairs of
+    degrees of freedom of the element, are written from the position
+    ``init_k_KC0`` to ``init_k_KC0 + KC0_SPARSE_SIZE - 1``: the global row
+    and column indices to ``KC0r`` and ``KC0c``, and the values added to
+    ``KC0v``. The attributes of ``plate`` are not changed.
+
+    Parameters
     ----------
     plate : `.BFSCPlate2D` object
         The plate element being added to KC0
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
+        ``ABD`` and ``init_k_KC0`` are read and must have been set.
     points : np.array
         Integration poins
+        1-D array of size ``nint`` with the points of the one-dimensional
+        quadrature in natural coordinates, dimensionless, from ``-1`` to
+        ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
+        The same points are used along ``xi`` and ``eta``.
     weights : np.array
         Integration weights
+        1-D array with the weights of ``points``, of size at least
+        ``nint``, dimensionless.
     KC0r : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least ``init_k_KC0 +
+        KC0_SPARSE_SIZE``. The entries at these positions are overwritten.
     KC0c : np.array
         Array to store column positions of sparse values
+        Same type and size as ``KC0r``.
     KC0v : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KC0r``. The values are
+        added to the existing ones. Dimension of force times length divided
+        by the product of the dimensions of the row and column degrees of
+        freedom, e.g. force per unit length between two of `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KCNL, update_KG, update_M
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -8548,22 +8854,59 @@ cpdef void update_KCNL(double [::1] u,
 
     Assuming that KCNL = KC0L + KCL0 + KCLL
 
-    Properties
+    The 40 degrees of freedom of the element are read from ``u`` and
+    written to the attribute ``u`` of ``plate``, which is overwritten. The
+    element matrix is computed from them, with the slopes `w_{,x}` and
+    `w_{,y}` they give at each integration point, and from ``lex``, ``ley``
+    and the ``A`` and ``B`` blocks of ``ABD`` (``D`` is not read), with
+    ``nint`` by ``nint`` integration points, ``nint`` being the size of
+    ``points``. Its ``KCNL_SPARSE_SIZE = 1024`` entries are the pairs of an
+    in-plane degree of freedom (`u` to `v_{,y}` of a node) with an
+    out-of-plane one (`w` to `w_{,xy}`), in both orders, and the pairs of
+    two out-of-plane degrees of freedom; the pairs of two in-plane degrees
+    of freedom are not written. They are written from the position
+    ``init_k_KCNL`` to ``init_k_KCNL + KCNL_SPARSE_SIZE - 1``: the global
+    row and column indices to ``KCNLr`` and ``KCNLc``, and the values added
+    to ``KCNLv``.
+
+    Parameters
     ----------
     u : np.array
         Global displacement vector
+        1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
+        read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
+        9``, with the dimensions given in the module documentation.
     plate : `.BFSCPlate2D` object
         The plate element being added to K
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
+        ``ABD`` and ``init_k_KCNL`` are read and must have been set.
     points : np.array
         Integration poins
+        1-D array of size ``nint`` with the points of the one-dimensional
+        quadrature in natural coordinates, dimensionless, from ``-1`` to
+        ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
+        The same points are used along ``xi`` and ``eta``.
     weights : np.array
         Integration weights
+        1-D array with the weights of ``points``, of size at least
+        ``nint``, dimensionless.
     KCNLr : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least ``init_k_KCNL +
+        KCNL_SPARSE_SIZE``. The entries at these positions are overwritten.
     KCNLc : np.array
         Array to store column positions of sparse values
+        Same type and size as ``KCNLr``.
     KCNLv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KCNLr``. The values are
+        added to the existing ones. Dimension of force times length divided
+        by the product of the dimensions of the row and column degrees of
+        freedom, e.g. force per unit length between two of `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KC0, update_KG, update_fint
 
     """
     cdef double *ue
@@ -13937,22 +14280,57 @@ cpdef void update_KG(double [::1] u,
                      ):
     """Update sparse vectors for geometric stiffness matrix KG
 
-    Properties
+    The 40 degrees of freedom of the element are read from ``u`` and
+    written to the attribute ``u`` of ``plate``, which is overwritten. At
+    each of the ``nint`` by ``nint`` integration points, ``nint`` being the
+    size of ``points``, the membrane forces ``Nxx``, ``Nyy`` and ``Nxy``
+    are computed from them, linear in the degrees of freedom, with the
+    ``A`` and ``B`` blocks of ``ABD`` (``D`` is not read), and used with
+    ``lex`` and ``ley`` to compute the element matrix. Its ``KG_SPARSE_SIZE
+    = 256`` entries are the pairs of out-of-plane degrees of freedom (`w`,
+    `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes). They are written from
+    the position ``init_k_KG`` to ``init_k_KG + KG_SPARSE_SIZE - 1``: the
+    global row and column indices to ``KGr`` and ``KGc``, and the values
+    added to ``KGv``.
+
+    Parameters
     ----------
     u : np.array
         Global displacement vector
+        1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
+        read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
+        9``, with the dimensions given in the module documentation.
     plate : `.BFSCPlate2D` object
         The plate element being added to KG
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
+        ``ABD`` and ``init_k_KG`` are read and must have been set.
     points : np.array
         Integration poins
+        1-D array of size ``nint`` with the points of the one-dimensional
+        quadrature in natural coordinates, dimensionless, from ``-1`` to
+        ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
+        The same points are used along ``xi`` and ``eta``.
     weights : np.array
         Integration weights
+        1-D array with the weights of ``points``, of size at least
+        ``nint``, dimensionless.
     KGr : np.array
-       Array to store row positions of sparse values
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least ``init_k_KG +
+        KG_SPARSE_SIZE``. The entries at these positions are overwritten.
     KGc : np.array
-       Array to store column positions of sparse values
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
     KGv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are
+        added to the existing ones. Dimension of force times length divided
+        by the product of the dimensions of the row and column degrees of
+        freedom, e.g. force per unit length between two of `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KG_cte_N : same matrix with constant membrane forces.
 
     """
     cdef double *ue
@@ -15439,22 +15817,52 @@ cpdef void update_KG_cte_N(double Nxx,
                            ):
     """Update sparse vectors for geometric stiffness matrix KG
 
-    Properties
+    The element matrix is computed from the membrane forces ``Nxx``,
+    ``Nyy`` and ``Nxy``, the same at all the ``nint`` by ``nint``
+    integration points, ``nint`` being the size of ``points``, and from
+    ``lex`` and ``ley``; ``ABD`` and the displacements are not read. Its
+    ``KG_SPARSE_SIZE = 256`` entries, at the same pairs of degrees of
+    freedom as in :func:`.update_KG`, are written from the position
+    ``init_k_KG`` to ``init_k_KG + KG_SPARSE_SIZE - 1``: the global row and
+    column indices to ``KGr`` and ``KGc``, and the values added to ``KGv``.
+    The attributes of ``plate`` are not changed.
+
+    Parameters
     ----------
-    Nxx, Nyy, Nxy: float
+    Nxx, Nyy, Nxy : float
         Constant membrane forces within element of the ``plate`` parameter
+        Dimension of force per unit length.
     plate : `.BFSCPlate2D` object
         The plate element being added to KG
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
+        ``init_k_KG`` are read and must have been set.
     points : np.array
         Integration poins
+        1-D array of size ``nint`` with the points of the one-dimensional
+        quadrature in natural coordinates, dimensionless, from ``-1`` to
+        ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
+        The same points are used along ``xi`` and ``eta``.
     weights : np.array
         Integration weights
+        1-D array with the weights of ``points``, of size at least
+        ``nint``, dimensionless.
     KGr : np.array
-       Array to store row positions of sparse values
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least ``init_k_KG +
+        KG_SPARSE_SIZE``. The entries at these positions are overwritten.
     KGc : np.array
-       Array to store column positions of sparse values
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
     KGv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are
+        added to the existing ones. Dimension of force times length divided
+        by the product of the dimensions of the row and column degrees of
+        freedom, e.g. force per unit length between two of `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KG : same matrix with the membrane forces from the displacements.
 
     """
     cdef double *ue
@@ -16806,16 +17214,39 @@ cpdef void update_M(BFSCPlate2D plate,
                     ):
     """Update sparse vectors for mass matrix M
 
-    Properties
+    The element matrix is computed with explicit expressions, without
+    numerical integration, from ``lex``, ``ley``, ``h`` and ``rho`` of
+    ``plate``; ``ABD`` is not read. Its ``M_SPARSE_SIZE = 544`` entries
+    are, for each pair of nodes, the pairs of degrees of freedom among `u`,
+    `u_{,x}`, `u_{,y}`, the pairs among `v`, `v_{,x}`, `v_{,y}` and the
+    pairs among `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`. They are written from
+    the position ``init_k_M`` to ``init_k_M + M_SPARSE_SIZE - 1``: the
+    global row and column indices to ``Mr`` and ``Mc``, and the values
+    added to ``Mv``. The attributes of ``plate`` are not changed.
+
+    Parameters
     ----------
     plate : `.BFSCPlate2D` object
         The plate element being added to M
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
+        ``h``, ``rho`` and ``init_k_M`` are read and must have been set.
     Mr : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least ``init_k_M +
+        M_SPARSE_SIZE``. The entries at these positions are overwritten.
     Mc : np.array
         Array to store column positions of sparse values
+        Same type and size as ``Mr``.
     Mv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``Mr``. The values are added
+        to the existing ones. Dimension of mass times length squared
+        divided by the product of the dimensions of the row and column
+        degrees of freedom, e.g. mass between two of `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KC0
 
     """
     cdef int c1, c2, c3, c4, k
@@ -19564,18 +19995,48 @@ cpdef void update_fint(double [::1] u,
                        ):
     """Update global internal force vector
 
-    Properties
+    The 40 degrees of freedom of the element are read from ``u`` and
+    written to the attribute ``u`` of ``plate``, which is overwritten. At
+    each of the ``nint`` by ``nint`` integration points, ``nint`` being the
+    size of ``points``, the membrane forces and the moments are computed
+    from them with the ``A``, ``B`` and ``D`` blocks of ``ABD``, including
+    the terms that depend on the slopes `w_{,x}` and `w_{,y}` (there is no
+    option for the linear internal forces only). The element internal
+    forces computed from them are added to ``fint`` at the positions ``c1``
+    to ``c1 + 9``, ..., ``c4`` to ``c4 + 9``. The ``init_k_*`` attributes
+    are not used.
+
+    Parameters
     ----------
     u : np.array
         Global displacement vector
-    plate : `.BFSCylinder` object
+        1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
+        read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
+        9``, with the dimensions given in the module documentation.
+    plate : `.BFSCPlate2D` object
         The plate element being added to fint
+        Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
+        ``ABD`` are read and must have been set.
     points : np.array
         Integration poins
+        1-D array of size ``nint`` with the points of the one-dimensional
+        quadrature in natural coordinates, dimensionless, from ``-1`` to
+        ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
+        The same points are used along ``xi`` and ``eta``.
     weights : np.array
         Integration weights
+        1-D array with the weights of ``points``, of size at least
+        ``nint``, dimensionless.
     fint : np.array
         Global internal force array
+        1-D array of ``DOUBLE`` with the same positions as ``u``. The
+        values are added to the existing ones. Dimension of force times
+        length divided by the dimension of the degree of freedom, e.g.
+        force for `u`, `v`, `w`.
+
+    See Also
+    --------
+    update_KC0, update_KCNL, update_KG
 
     """
     cdef double *ue
