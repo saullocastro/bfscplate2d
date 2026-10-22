@@ -4,9 +4,10 @@ BFSCPLATE2D - Implementation of the BFSC plate finite element in 2D
 The ``bfscplate2d`` namespace gives the element class
 :class:`.BFSCPlate2D` and the functions :func:`.update_KC0`,
 :func:`.update_KCNL`, :func:`.update_KG`, :func:`.update_KG_cte_N`,
-:func:`.update_M` and :func:`.update_fint` of the module
-:mod:`bfscplate2d.bfscplate2d`, with its sizes ``KC0_SPARSE_SIZE``,
-``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE`` and ``M_SPARSE_SIZE`` of the
+:func:`.update_M`, :func:`.update_fint`, :func:`.update_fext_follower` and
+:func:`.update_KCfollower` of the module :mod:`bfscplate2d.bfscplate2d`,
+with its sizes ``KC0_SPARSE_SIZE``, ``KCNL_SPARSE_SIZE``,
+``KG_SPARSE_SIZE``, ``M_SPARSE_SIZE`` and ``KCfollower_SPARSE_SIZE`` of the
 sparse arrays that one element fills. The quadrature points and weights
 used by the functions are given by
 :func:`bfscplate2d.quadrature.get_points_weights`, which is not imported in
@@ -28,7 +29,9 @@ import numpy as np
 
 
 from .bfscplate2d import BFSCPlate2D, update_KC0, update_KCNL, update_KG, update_KG_cte_N, update_M, update_fint
+from .bfscplate2d import update_fext_follower, update_KCfollower
 from .bfscplate2d import KC0_SPARSE_SIZE, KCNL_SPARSE_SIZE, KG_SPARSE_SIZE, M_SPARSE_SIZE
+from .bfscplate2d import KCfollower_SPARSE_SIZE
 
 
 if ctypes.sizeof(ctypes.c_long) == 8:
