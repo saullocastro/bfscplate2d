@@ -297,7 +297,7 @@ cdef class BFSCPlate2D(object):
     Four-node rectangular BFSC plate element
 
     Nodal connectivity for plate element
-    similar to Nastran's CQUAD4
+    similar to Nastran's CQUAD4::
 
       ^ y
       |
@@ -996,7 +996,7 @@ cpdef void update_KC0(BFSCPlate2D plate,
 
     Parameters
     ----------
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to KC0
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KC0`` are read and must have been set.
@@ -9231,7 +9231,7 @@ cpdef void update_KCNL(double [::1] u,
         1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
         read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
         9``, with the dimensions given in the module documentation.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to K
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KCNL`` are read and must have been set.
@@ -14703,7 +14703,7 @@ cpdef void update_KG(double [::1] u,
         1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
         read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
         9``, with the dimensions given in the module documentation.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to KG
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KG`` are read and must have been set.
@@ -16269,7 +16269,7 @@ cpdef void update_KG_cte_N(double Nxx,
     Nxx, Nyy, Nxy : float
         Constant membrane forces within element of the ``plate`` parameter
         Dimension of force per unit length.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to KG
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``init_k_KG`` are read and must have been set.
@@ -17687,7 +17687,7 @@ cpdef void update_M(BFSCPlate2D plate,
 
     Parameters
     ----------
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to M
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``h``, ``rho`` and ``init_k_M`` are read and must have been set.
@@ -20495,7 +20495,7 @@ cpdef void update_fint(double [::1] u,
         1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
         read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
         9``, with the dimensions given in the module documentation.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to fint
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``ABD`` are read and must have been set.
@@ -20846,7 +20846,7 @@ cpdef void update_fext_follower(double [::1] u,
         1-D array of ``DOUBLE`` with the degrees of freedom of all nodes,
         read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
         9``, with the dimensions given in the module documentation.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to fext
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex`` and ``ley``
         are read and must have been set.
@@ -21233,7 +21233,7 @@ cpdef void update_KCfollower(double [::1] u,
         read at the positions ``c1`` to ``c1 + 9``, ..., ``c4`` to ``c4 +
         9``, with the dimensions given in the module documentation. Only
         used with ``quadratic`` not ``0``.
-    plate : `.BFSCPlate2D` object
+    plate : :class:`.BFSCPlate2D` object
         The plate element being added to KCfollower
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``init_k_KCfollower`` are read and must have been set.
