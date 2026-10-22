@@ -29,7 +29,7 @@ version = release
 
 project = 'bfscplate2d'
 author = 'Saullo G. P. Castro'
-copyright = '2020-2024, %s' % author
+copyright = '2020-2026, %s' % author
 
 
 # -- General configuration ---------------------------------------------------

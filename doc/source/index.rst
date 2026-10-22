@@ -97,6 +97,26 @@ License
     :encoding: latin-1
 
 
+Citing this library
+-------------------
+
+Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.4.1). https://github.com/saullocastro/bfscplate2d.
+
+In BibTeX:
+
+.. code-block:: bibtex
+
+    @misc{castro_bfscplate2d,
+      author  = {Castro, Saullo G. P.},
+      title   = {Implementation of the BFSC plate finite element in 2D},
+      year    = {2026},
+      version = {0.4.1},
+      url     = {https://github.com/saullocastro/bfscplate2d}
+    }
+
+The repository also has a ``CITATION.cff`` file with the same data.
+
+
 Indices and tables
 ------------------
 
