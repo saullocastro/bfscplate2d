@@ -4,7 +4,7 @@
 #cython: nonecheck=False
 #cython: initializedcheck=False
 #cython: infer_types=False
-"""BFSC plate element and the functions computing its matrices
+r"""BFSC plate element and the functions computing its matrices
 
 The module has the element class :class:`.BFSCPlate2D` and the functions
 :func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
@@ -49,6 +49,208 @@ The module also defines:
   sizes;
 - ``DOUBLE = np.float64``: NumPy type of the arrays of values.
 
+Notes
+-----
+The element is the rectangular plate element of Bogner, Fox and Schmit
+(BFS) [1]_, whose deflection `w` is interpolated with products of
+one-dimensional cubic Hermite polynomials, with `w`, `w_{,x}`, `w_{,y}`
+and `w_{,xy}` as nodal degrees of freedom. In the BFSC element [2]_ the
+in-plane displacements `u` and `v` are interpolated with the same
+polynomials, with `u`, `u_{,x}`, `u_{,y}` and `v`, `v_{,x}`, `v_{,y}` as
+nodal degrees of freedom, without the cross derivatives `u_{,xy}` and
+`v_{,xy}`.
+
+TODO(author): confirm that [2]_ is the source to cite for the BFSC element
+and that the interpolation of `u` and `v` described above is what
+distinguishes it from the BFS element.
+
+.. rubric:: Interpolation
+
+The element is a rectangle with sides parallel to `x` and `y`, such that
+`x = x_1 + lex (\xi + 1)/2` and `y = y_1 + ley (\eta + 1)/2`, with
+`(x_1, y_1)` the position of node 1, and
+
+.. math::
+
+    \frac{\partial}{\partial x} = \frac{2}{lex} \frac{\partial}{\partial \xi},
+    \qquad
+    \frac{\partial}{\partial y} = \frac{2}{ley} \frac{\partial}{\partial \eta},
+    \qquad
+    dA = dx \, dy = \frac{lex \, ley}{4} d\xi \, d\eta
+
+For node `i` at `(\xi_i, \eta_i)`, with `\xi_i, \eta_i = \pm 1`, the
+interpolation functions are [3]_
+
+.. math::
+
+    H_i = \frac{1}{16} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+          (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+    H_{x,i} = -\frac{lex}{32} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+              (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+    H_{y,i} = -\frac{ley}{32} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+              \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+    H_{xy,i} = \frac{lex \, ley}{64} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+               \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+and the displacements are
+
+.. math::
+
+    u = \sum_{i=1}^{4} \left( H_i u_i + H_{x,i} u_{,x i} + H_{y,i} u_{,y i}
+        \right), \qquad
+    v = \sum_{i=1}^{4} \left( H_i v_i + H_{x,i} v_{,x i} + H_{y,i} v_{,y i}
+        \right)
+
+    w = \sum_{i=1}^{4} \left( H_i w_i + H_{x,i} w_{,x i} + H_{y,i} w_{,y i}
+        + H_{xy,i} w_{,xy i} \right)
+
+i.e. `u = \{N_u\}\{u_e\}`, `v = \{N_v\}\{u_e\}` and `w =
+\{N_w\}\{u_e\}`, with the rows ``Nu``, ``Nv`` and ``Nw`` of
+:class:`.BFSCPlate2D` and the 40 element degrees of freedom `\{u_e\}`,
+``ue`` in the code. Each function gives the value 1 to the nodal degree of
+freedom it multiplies and 0 to the other nodal degrees of freedom of the
+element, e.g. `\partial H_{x,i}/\partial x = 1` at node `i`. The functions
+are bicubic, of degree 3 in `\xi` and in `\eta`. Without the functions
+`H_{xy,i}` in `u` and `v`, the interpolation gives `u_{,xy} = v_{,xy} = 0`
+at the nodes.
+
+.. rubric:: Kinematics
+
+The kinematics is that of the classical laminated plate theory, without
+transverse shear deformation, with the nonlinear strains of von Karman
+[4]_: the displacements at the distance `z` from the reference surface are
+`u - z w_{,x}`, `v - z w_{,y}` and `w`, and, for small strains and moderate
+rotations, only the squares and products of the slopes `w_{,x}` and
+`w_{,y}` are kept in the membrane strains:
+
+.. math::
+
+    \{\epsilon\} =
+    \begin{Bmatrix} \epsilon_{xx} \\ \epsilon_{yy} \\ \gamma_{xy} \end{Bmatrix}
+    = \begin{Bmatrix} u_{,x} + w_{,x}^2/2 \\ v_{,y} + w_{,y}^2/2 \\
+      u_{,y} + v_{,x} + w_{,x} w_{,y} \end{Bmatrix}, \qquad
+    \{\kappa\} =
+    \begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy} \end{Bmatrix}
+    = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy} \end{Bmatrix}
+
+In terms of the element degrees of freedom
+
+.. math::
+
+    \{\epsilon\} = \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\},
+    \qquad
+    \{\kappa\} = [B_b] \{u_e\}
+
+with the operators of the code: `[B_m]` (``Bm``), with the rows
+`\{N_{u,x}\}`, `\{N_{v,y}\}` and `\{N_{u,y}\} + \{N_{v,x}\}`; `[B_b]`
+(``Bb``), with the rows `-\{N_{w,xx}\}`, `-\{N_{w,yy}\}` and
+`-2\{N_{w,xy}\}`; `[G]` (``G``), with the rows `\{N_{w,x}\}` and
+`\{N_{w,y}\}`, which give the slopes `w_{,x} = \{N_{w,x}\}\{u_e\}` and
+`w_{,y} = \{N_{w,y}\}\{u_e\}` (``w_x`` and ``w_y``); and `[B_{mL}]`
+(``BmL``), with the rows `w_{,x}\{N_{w,x}\}`, `w_{,y}\{N_{w,y}\}` and
+`w_{,x}\{N_{w,y}\} + w_{,y}\{N_{w,x}\}`. In the functions of the module the
+nonzero entries of these operators are the local variables ``Bm1_01``,
+..., ``BmL3_40``, the digit after the name being the row, from 1, and the
+two last digits the column, from 1. Since the nonlinear strains are
+quadratic in `\{u_e\}`, `[B_{mL}]\{u_e\}` is twice the nonlinear strains,
+whereas the variation of the strains is
+
+.. math::
+
+    \delta\{\epsilon\} = \left( [B_m] + [B_{mL}] \right) \delta\{u_e\}
+
+`[B_{mL}]` and `[G]` have nonzero entries only in the columns of `w`,
+`w_{,x}`, `w_{,y}` and `w_{,xy}`.
+
+.. rubric:: Constitutive relation and strain energy
+
+The membrane forces `\{N\} = \{Nxx, Nyy, Nxy\}^T` and the moments `\{M\}
+= \{Mxx, Myy, Mxy\}^T` are
+
+.. math::
+
+    \{N\} = [A]\{\epsilon\} + [B]\{\kappa\}, \qquad
+    \{M\} = [B]\{\epsilon\} + [D]\{\kappa\}
+
+with the symmetric blocks of ``ABD``, `[A]` of ``A11``, ``A12``,
+``A16``, ``A22``, ``A26``, ``A66``, and likewise `[B]` and `[D]`, constant
+over the element, which assumes a linear elastic laminate whose stiffness
+does not vary over the element. The strain energy of the element is
+
+.. math::
+
+    U = \frac{1}{2} \int_A \left( \{\epsilon\}^T [A] \{\epsilon\}
+        + 2 \{\epsilon\}^T [B] \{\kappa\}
+        + \{\kappa\}^T [D] \{\kappa\} \right) dA
+
+.. rubric:: Element matrices and internal forces
+
+The internal force vector is the gradient of `U`, :func:`.update_fint`:
+
+.. math::
+
+    \{f_{int}\} = \frac{\partial U}{\partial \{u_e\}} = \int_A \left(
+        ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right) dA
+
+and its Jacobian, the tangent stiffness matrix, is split as
+
+.. math::
+
+    \frac{\partial \{f_{int}\}}{\partial \{u_e\}} = [KC0] + [KCNL] + [KG]
+
+with the linear constitutive stiffness matrix of :func:`.update_KC0`,
+independent of `\{u_e\}`, the nonlinear constitutive stiffness matrix of
+:func:`.update_KCNL`, null for null slopes, and the geometric stiffness
+matrix of :func:`.update_KG`, linear in `\{u_e\}`. For small displacements
+`\{f_{int}\} \approx [KC0]\{u_e\}`, the relation of a linear static
+analysis; :func:`.update_KG` and :func:`.update_KG_cte_N` give the
+geometric stiffness matrix of a linear buckling analysis. The mass matrix
+of :func:`.update_M` follows from the kinetic energy of the same
+kinematics.
+
+.. rubric:: Numerical integration
+
+The integrals over the element are computed as
+
+.. math::
+
+    \int_A f \, dA = \frac{lex \, ley}{4} \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        weights_i \, weights_j \, f(points_i, points_j)
+
+where ``0.25*lex*ley*weight`` of the code is `lex \, ley \, weights_i \,
+weights_j / 4`. With the Gauss-Legendre points of
+:func:`bfscplate2d.quadrature.get_points_weights`, which integrate exactly
+the polynomials of degree up to `2 \, nint - 1` in each of `\xi` and
+`\eta`, and since the interpolation functions are bicubic, the integration
+is exact, for a constant ``ABD``, with ``nint >= 4`` for KC0 and for
+:func:`.update_KG_cte_N`, whose integrands have a degree of at most 6 in
+`\xi` and in `\eta`, with ``nint >= 5`` for :func:`.update_KG`, of degree
+at most 9, and with ``nint >= 7`` for KCNL and the internal forces, of
+degree at most 12. With fewer points, KC0 + KCNL + KG is still the exact
+Jacobian of the internal forces computed with the same points.
+
+References
+----------
+.. [1] Bogner, F. K., Fox, R. L., and Schmit, L. A., The generation of
+   inter-element-compatible stiffness and mass matrices by the use of
+   interpolation formulas, Proceedings of the Conference on Matrix Methods
+   in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air Force
+   Base, Ohio, 1965.
+   TODO(author): confirm this source
+.. [2] Castro, S. G. P., and Jansen, E. L., Displacement-based formulation
+   of Koiter's method: application to multi-modal post-buckling finite
+   element analysis of plates, Thin-Walled Structures, 2021.
+   TODO(author): confirm this source
+.. [3] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
+   Laminates, Springer, Dordrecht, 1992.
+   TODO(author): confirm this source
+.. [4] Reddy, J. N., Mechanics of Laminated Composite Plates and Shells:
+   Theory and Analysis, 2nd ed., CRC Press, 2004.
+   TODO(author): confirm this source
+
 """
 import numpy as np
 
@@ -63,7 +265,7 @@ M_SPARSE_SIZE = 544
 
 
 cdef class BFSCPlate2D(object):
-    """
+    r"""
     Four-node rectangular BFSC plate element
 
     Nodal connectivity for plate element
@@ -147,6 +349,22 @@ cdef class BFSCPlate2D(object):
         from the global displacement vector by :func:`.update_KCNL`,
         :func:`.update_KG` and :func:`.update_fint`.
 
+    Notes
+    -----
+    The rows ``Nu`` to ``Nw_y`` are the interpolation functions `H_i`,
+    `H_{x,i}`, `H_{y,i}`, `H_{xy,i}` of the Notes of
+    :mod:`bfscplate2d.bfscplate2d`, and their derivatives with respect to
+    `x` and `y`, at the positions of the degrees of freedom they multiply.
+    ``Bm`` and ``Bb`` are the operators `[B_m]` and `[B_b]` of the same
+    Notes, which give the linear membrane strains `\{u_{,x}, v_{,y},
+    u_{,y} + v_{,x}\}^T` and the curvatures `\{\kappa\} = \{-w_{,xx},
+    -w_{,yy}, -2 w_{,xy}\}^T` of the classical laminated plate theory.
+    ``ABD`` gives the membrane forces `\{N\} = [A]\{\epsilon\} +
+    [B]\{\kappa\}` and the moments `\{M\} = [B]\{\epsilon\} + [D]\{\kappa\}`
+    from the membrane strains `\{\epsilon\}` and the curvatures, and ``h``
+    and ``rho`` the mass per unit area `\rho h` and the rotary inertia `\rho
+    h^3/12` of :func:`.update_M`.
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4
@@ -196,7 +414,7 @@ cdef class BFSCPlate2D(object):
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCPlate2D self, double xi, double eta):
-        """Update the membrane rows ``Bm`` at a natural coordinate point
+        r"""Update the membrane rows ``Bm`` at a natural coordinate point
 
         The entries of ``Bm`` in the columns of the in-plane degrees of
         freedom are computed from ``lex`` and ``ley``: row 0 in the columns
@@ -209,6 +427,20 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Bm`` is the operator `[B_m]` of the linear membrane strains of the
+        Notes of :mod:`bfscplate2d.bfscplate2d`, with the rows
+
+        .. math::
+
+            \frac{2}{lex} \frac{\partial \{N_u\}}{\partial \xi}, \qquad
+            \frac{2}{ley} \frac{\partial \{N_v\}}{\partial \eta}, \qquad
+            \frac{2}{ley} \frac{\partial \{N_u\}}{\partial \eta}
+            + \frac{2}{lex} \frac{\partial \{N_v\}}{\partial \xi}
+
+        i.e. ``Nu_x``, ``Nv_y`` and ``Nu_y + Nv_x``.
 
         """
         cdef double lex, ley
@@ -265,7 +497,7 @@ cdef class BFSCPlate2D(object):
             self.Bm[2, 35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Bb(BFSCPlate2D self, double xi, double eta):
-        """Update the bending rows ``Bb`` at a natural coordinate point
+        r"""Update the bending rows ``Bb`` at a natural coordinate point
 
         The entries of the three rows of ``Bb`` in the columns of the
         out-of-plane degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`
@@ -277,6 +509,22 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Bb`` is the operator `[B_b]` of the curvatures `\{\kappa\} =
+        \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T` of the Notes of
+        :mod:`bfscplate2d.bfscplate2d`, with the rows
+
+        .. math::
+
+            -\frac{4}{lex^2} \frac{\partial^2 \{N_w\}}{\partial \xi^2}, \qquad
+            -\frac{4}{ley^2} \frac{\partial^2 \{N_w\}}{\partial \eta^2}, \qquad
+            -\frac{8}{lex \, ley}
+            \frac{\partial^2 \{N_w\}}{\partial \xi \partial \eta}
+
+        The curvatures are those of the rotations `-w_{,x}` and `-w_{,y}` of
+        the normal to the reference surface.
 
         """
         cdef double lex, ley
@@ -333,7 +581,7 @@ cdef class BFSCPlate2D(object):
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
     cpdef void update_Nu(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nu`` at a natural coordinate point
+        r"""Update the row ``Nu`` at a natural coordinate point
 
         The entries of ``Nu`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
@@ -345,6 +593,13 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nu`` is the row `\{N_u\}` of the interpolation of `u` of the Notes
+        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        `H_{x,i}` and `H_{y,i}` of each node `i` at the positions of its
+        degrees of freedom `u`, `u_{,x}` and `u_{,y}`.
 
         """
         cdef double lex, ley
@@ -365,7 +620,7 @@ cdef class BFSCPlate2D(object):
             self.Nu[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Nu_x(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nu_x`` at a natural coordinate point
+        r"""Update the row ``Nu_x`` at a natural coordinate point
 
         The entries of ``Nu_x`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
@@ -378,6 +633,11 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nu_x`` is `\{N_{u,x}\} = (2/lex) \, \partial \{N_u\} / \partial \xi`,
+        with `\{N_u\}` of :meth:`.update_Nu`.
 
         """
         cdef double lex, ley
@@ -398,7 +658,7 @@ cdef class BFSCPlate2D(object):
             self.Nu_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nu_y(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nu_y`` at a natural coordinate point
+        r"""Update the row ``Nu_y`` at a natural coordinate point
 
         The entries of ``Nu_y`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
@@ -411,6 +671,11 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nu_y`` is `\{N_{u,y}\} = (2/ley) \, \partial \{N_u\} / \partial
+        \eta`, with `\{N_u\}` of :meth:`.update_Nu`.
 
         """
         cdef double lex, ley
@@ -431,7 +696,7 @@ cdef class BFSCPlate2D(object):
             self.Nu_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Nv(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nv`` at a natural coordinate point
+        r"""Update the row ``Nv`` at a natural coordinate point
 
         The entries of ``Nv`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
@@ -443,6 +708,13 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nv`` is the row `\{N_v\}` of the interpolation of `v` of the Notes
+        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        `H_{x,i}` and `H_{y,i}` of each node `i` at the positions of its
+        degrees of freedom `v`, `v_{,x}` and `v_{,y}`.
 
         """
         cdef double lex, ley
@@ -463,7 +735,7 @@ cdef class BFSCPlate2D(object):
             self.Nv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Nv_x(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nv_x`` at a natural coordinate point
+        r"""Update the row ``Nv_x`` at a natural coordinate point
 
         The entries of ``Nv_x`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
@@ -476,6 +748,11 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nv_x`` is `\{N_{v,x}\} = (2/lex) \, \partial \{N_v\} / \partial \xi`,
+        with `\{N_v\}` of :meth:`.update_Nv`.
 
         """
         cdef double lex, ley
@@ -496,7 +773,7 @@ cdef class BFSCPlate2D(object):
             self.Nv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nv_y(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nv_y`` at a natural coordinate point
+        r"""Update the row ``Nv_y`` at a natural coordinate point
 
         The entries of ``Nv_y`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
@@ -509,6 +786,11 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nv_y`` is `\{N_{v,y}\} = (2/ley) \, \partial \{N_v\} / \partial
+        \eta`, with `\{N_v\}` of :meth:`.update_Nv`.
 
         """
         cdef double lex, ley
@@ -529,7 +811,7 @@ cdef class BFSCPlate2D(object):
             self.Nv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Nw(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nw`` at a natural coordinate point
+        r"""Update the row ``Nw`` at a natural coordinate point
 
         The entries of ``Nw`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
@@ -542,6 +824,14 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nw`` is the row `\{N_w\}` of the interpolation of `w` of the Notes
+        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        `H_{x,i}`, `H_{y,i}` and `H_{xy,i}` of each node `i` at the positions
+        of its degrees of freedom `w`, `w_{,x}`, `w_{,y}` and `w_{,xy}`, the
+        interpolation of the BFS element.
 
         """
         cdef double lex, ley
@@ -566,7 +856,7 @@ cdef class BFSCPlate2D(object):
             self.Nw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
     cpdef void update_Nw_x(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nw_x`` at a natural coordinate point
+        r"""Update the row ``Nw_x`` at a natural coordinate point
 
         The entries of ``Nw_x`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
@@ -579,6 +869,13 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nw_x`` is `\{N_{w,x}\} = (2/lex) \, \partial \{N_w\} / \partial
+        \xi`, with `\{N_w\}` of :meth:`.update_Nw`, the first row of the
+        operator `[G]` of the Notes of :mod:`bfscplate2d.bfscplate2d`, which
+        gives the slope `w_{,x}` of the nonlinear membrane strains.
 
         """
         cdef double lex, ley
@@ -603,7 +900,7 @@ cdef class BFSCPlate2D(object):
             self.Nw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Nw_y(BFSCPlate2D self, double xi, double eta):
-        """Update the row ``Nw_y`` at a natural coordinate point
+        r"""Update the row ``Nw_y`` at a natural coordinate point
 
         The entries of ``Nw_y`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
@@ -616,6 +913,13 @@ cdef class BFSCPlate2D(object):
         xi, eta : double
             Natural coordinates of the evaluation point. Dimensionless, from
             ``-1`` to ``1`` over the element.
+
+        Notes
+        -----
+        ``Nw_y`` is `\{N_{w,y}\} = (2/ley) \, \partial \{N_w\} / \partial
+        \eta`, with `\{N_w\}` of :meth:`.update_Nw`, the second row of the
+        operator `[G]` of the Notes of :mod:`bfscplate2d.bfscplate2d`, which
+        gives the slope `w_{,y}` of the nonlinear membrane strains.
 
         """
         cdef double lex, ley
@@ -647,7 +951,7 @@ cpdef void update_KC0(BFSCPlate2D plate,
                       long [::1] KC0c,
                       double [::1] KC0v,
                       ):
-    """Update sparse vectors for linear constitutive stiffness matrix KC0
+    r"""Update sparse vectors for linear constitutive stiffness matrix KC0
 
     The element matrix, of size 40 by 40, is computed from ``lex``, ``ley``
     and the ``A``, ``B`` and ``D`` blocks of ``ABD`` of ``plate``, with
@@ -691,6 +995,27 @@ cpdef void update_KC0(BFSCPlate2D plate,
     See Also
     --------
     update_KCNL, update_KG, update_M
+
+    Notes
+    -----
+    The element matrix is the Hessian of the strain energy `U` of the Notes of
+    :mod:`bfscplate2d.bfscplate2d` at `\{u_e\} = \{0\}`, with the operators
+    `[B_m]` and `[B_b]` of the linear membrane strains and of the curvatures:
+
+    .. math::
+
+        [KC0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            \left( [B_m]^T [A] [B_m] + [B_m]^T [B] [B_b] + [B_b]^T [B] [B_m]
+            + [B_b]^T [D] [B_b] \right)
+
+    with ``weight = weights[i]*weights[j]`` and the operators evaluated at
+    ``xi = points[i]`` and ``eta = points[j]``. The terms are the membrane
+    stiffness, the membrane-bending coupling, null when `[B] = [0]`, e.g. for a
+    symmetric laminate with the reference surface at mid-thickness, and the
+    bending stiffness. The matrix is symmetric and independent of the
+    displacements. The integration is exact with ``nint >= 4``, see the Notes
+    of :mod:`bfscplate2d.bfscplate2d`.
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -8850,9 +9175,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    """Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
-
-    Assuming that KCNL = KC0L + KCL0 + KCLL
+    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
 
     The 40 degrees of freedom of the element are read from ``u`` and
     written to the attribute ``u`` of ``plate``, which is overwritten. The
@@ -8907,6 +9230,54 @@ cpdef void update_KCNL(double [::1] u,
     See Also
     --------
     update_KC0, update_KG, update_fint
+
+    Notes
+    -----
+    KCNL = KC0L + KCL0 + KCLL + KGLL is the part of the tangent stiffness
+    matrix `\partial \{f_{int}\} / \partial \{u_e\}` of the Notes of
+    :mod:`bfscplate2d.bfscplate2d` that is neither in KC0 nor in the KG of
+    :func:`.update_KG`:
+
+    .. math::
+
+        [KC0L] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            \left( [B_m]^T [A] [B_{mL}] + [B_b]^T [B] [B_{mL}] \right)
+
+        [KCL0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            \left( [B_{mL}]^T [A] [B_m] + [B_{mL}]^T [B] [B_b] \right)
+
+        [KCLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            [B_{mL}]^T [A] [B_{mL}]
+
+        [KGLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            [G]^T
+            \begin{bmatrix} N_{NL,xx} & N_{NL,xy} \\ N_{NL,xy} & N_{NL,yy}
+            \end{bmatrix} [G]
+
+    with ``weight = weights[i]*weights[j]`` and the operators evaluated at
+    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    slopes `w_{,x}` and `w_{,y}` (``w_x`` and ``w_y``) of the element degrees
+    of freedom at the point, and the membrane forces of the nonlinear strains
+
+    .. math::
+
+        \begin{Bmatrix} N_{NL,xx} \\ N_{NL,yy} \\ N_{NL,xy} \end{Bmatrix}
+        = [A] \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y}
+        \end{Bmatrix}
+
+    KC0L and KCL0 are linear in the slopes, KCLL and KGLL quadratic, and
+    `[KCL0] = [KC0L]^T`. KGLL is the geometric term of the membrane forces of
+    the nonlinear strains, whereas the geometric term of the membrane forces of
+    the linear strains is the KG of :func:`.update_KG`, such that KC0 + KCNL +
+    KG is the exact Jacobian of the internal forces of :func:`.update_fint`
+    computed with the same points. Since `[B_{mL}]` and `[G]` have entries only
+    in the columns of the out-of-plane degrees of freedom, KCNL has no entries
+    between two in-plane degrees of freedom. The integration is exact with
+    ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
     cdef double *ue
@@ -14278,7 +14649,7 @@ cpdef void update_KG(double [::1] u,
                      long [::1] KGc,
                      double [::1] KGv,
                      ):
-    """Update sparse vectors for geometric stiffness matrix KG
+    r"""Update sparse vectors for geometric stiffness matrix KG
 
     The 40 degrees of freedom of the element are read from ``u`` and
     written to the attribute ``u`` of ``plate``, which is overwritten. At
@@ -14331,6 +14702,40 @@ cpdef void update_KG(double [::1] u,
     See Also
     --------
     update_KG_cte_N : same matrix with constant membrane forces.
+
+    Notes
+    -----
+    .. math::
+
+        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            [G]^T
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+
+    with ``weight = weights[i]*weights[j]`` and the operators evaluated at
+    ``xi = points[i]`` and ``eta = points[j]``, `[G]` of the Notes of
+    :mod:`bfscplate2d.bfscplate2d`, and the membrane forces of the linear
+    membrane strains and of the curvatures
+
+    .. math::
+
+        \{Nxx, Nyy, Nxy\}^T = [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
+
+    It is the geometric term `\partial ([B_{mL}]^T \{N\}) / \partial \{u_e\} =
+    [G]^T [N] [G]` of the tangent stiffness matrix for the part of the membrane
+    forces `\{N\}` that is linear in `\{u_e\}`; the part of the nonlinear
+    strains is in the KGLL of :func:`.update_KCNL`. Since KG is linear in the
+    displacements, KG computed with the solution `\{u\}` of the linear static
+    problem `[KC0]\{u\} = \{f_{ext}\}` is proportional to the load, and the
+    linear buckling problem
+
+    .. math::
+
+        ([KC0] + \lambda [KG]) \{\phi\} = \{0\}
+
+    gives the load multipliers `\lambda` of the critical loads `\lambda
+    \{f_{ext}\}` and the buckling modes `\{\phi\}`. The integration is exact
+    with ``nint >= 5``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
     cdef double *ue
@@ -15815,7 +16220,7 @@ cpdef void update_KG_cte_N(double Nxx,
                            long [::1] KGc,
                            double [::1] KGv,
                            ):
-    """Update sparse vectors for geometric stiffness matrix KG
+    r"""Update sparse vectors for geometric stiffness matrix KG
 
     The element matrix is computed from the membrane forces ``Nxx``,
     ``Nyy`` and ``Nxy``, the same at all the ``nint`` by ``nint``
@@ -15863,6 +16268,30 @@ cpdef void update_KG_cte_N(double Nxx,
     See Also
     --------
     update_KG : same matrix with the membrane forces from the displacements.
+
+    Notes
+    -----
+    The matrix is the KG of :func:`.update_KG` for prescribed membrane forces,
+    uniform over the element:
+
+    .. math::
+
+        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            [G]^T
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+
+    with ``weight = weights[i]*weights[j]`` and the operators evaluated at
+    ``xi = points[i]`` and ``eta = points[j]`` and `[G]` of the Notes of
+    :mod:`bfscplate2d.bfscplate2d`. The membrane forces are positive in
+    tension, e.g. ``Nxx = -1`` in all the elements for a unit compressive force
+    per unit length along `x`, for which the load multiplier `\lambda` of the
+    linear buckling problem `([KC0] + \lambda [KG]) \{\phi\} = \{0\}` is the
+    critical compressive force per unit length. The membrane forces of a
+    pre-buckling state computed with the stiffness of the structure, e.g.
+    non-uniform because of the boundary conditions, are given instead by
+    :func:`.update_KG`. The integration is exact with ``nint >= 4``, see the
+    Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
     cdef double *ue
@@ -17212,7 +17641,7 @@ cpdef void update_M(BFSCPlate2D plate,
                     long [::1] Mc,
                     double [::1] Mv,
                     ):
-    """Update sparse vectors for mass matrix M
+    r"""Update sparse vectors for mass matrix M
 
     The element matrix is computed with explicit expressions, without
     numerical integration, from ``lex``, ``ley``, ``h`` and ``rho`` of
@@ -17247,6 +17676,27 @@ cpdef void update_M(BFSCPlate2D plate,
     See Also
     --------
     update_KC0
+
+    Notes
+    -----
+    The element matrix is the consistent mass matrix of the kinetic energy of
+    the kinematics of the Notes of :mod:`bfscplate2d.bfscplate2d`, with the
+    displacements `u - z w_{,x}`, `v - z w_{,y}` and `w` at the distance `z`
+    from the reference surface, for the density ``rho`` constant through the
+    thickness ``h`` and the reference surface at mid-thickness:
+
+    .. math::
+
+        [M] = \int_A \rho \left( h \left( \{N_u\}^T \{N_u\} + \{N_v\}^T \{N_v\}
+            + \{N_w\}^T \{N_w\} \right) + \frac{h^3}{12} \left( \{N_{w,x}\}^T
+            \{N_{w,x}\} + \{N_{w,y}\}^T \{N_{w,y}\} \right) \right) dA
+
+    The term with `h^3/12` is the rotary inertia of the normal. The terms with
+    `\int \rho \, z \, dz`, which couple `u` and `v` with the slopes of `w`,
+    vanish with the reference surface at mid-thickness, such that ``M`` has no
+    entries between in-plane and out-of-plane degrees of freedom; they are not
+    included for a reference surface elsewhere, e.g. an offset one. The
+    integrands are polynomials, integrated in closed form.
 
     """
     cdef int c1, c2, c3, c4, k
@@ -19993,7 +20443,7 @@ cpdef void update_fint(double [::1] u,
                        double [::1] weights,
                        double [::1] fint,
                        ):
-    """Update global internal force vector
+    r"""Update global internal force vector
 
     The 40 degrees of freedom of the element are read from ``u`` and
     written to the attribute ``u`` of ``plate``, which is overwritten. At
@@ -20037,6 +20487,41 @@ cpdef void update_fint(double [::1] u,
     See Also
     --------
     update_KC0, update_KCNL, update_KG
+
+    Notes
+    -----
+    The internal forces are the gradient of the strain energy `U` of the Notes
+    of :mod:`bfscplate2d.bfscplate2d` with respect to the element degrees of
+    freedom:
+
+    .. math::
+
+        \{f_{int}\} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+            \frac{lex \, ley}{4} \, weight
+            \left( ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right)
+
+    with ``weight = weights[i]*weights[j]`` and the operators evaluated at
+    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    slopes ``w_x`` and ``w_y`` at the point, and the membrane forces and
+    moments of the total strains
+
+    .. math::
+
+        \{Nxx, Nyy, Nxy\}^T = [A] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
+            \{u_e\} + [B][B_b]\{u_e\}
+
+        \{Mxx, Myy, Mxy\}^T = [B] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
+            \{u_e\} + [D][B_b]\{u_e\}
+
+    The factor `1/2` of the strains and the full `[B_{mL}]` of their variation
+    come from the nonlinear strains being quadratic in `\{u_e\}`, see the Notes
+    of :mod:`bfscplate2d.bfscplate2d`. KC0 + KCNL + KG of :func:`.update_KC0`,
+    :func:`.update_KCNL` and :func:`.update_KG` is the exact Jacobian of these
+    internal forces computed with the same points, and for small displacements
+    `\{f_{int}\} \approx [KC0]\{u_e\}`. In a nonlinear static analysis the
+    residual is the difference between the external force vector and the
+    assembled internal force vector. The integration is exact with
+    ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
     cdef double *ue

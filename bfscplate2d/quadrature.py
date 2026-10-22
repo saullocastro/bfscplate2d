@@ -8,7 +8,7 @@ points and weights passed to the ``update_*`` functions of
 import numpy as np
 
 def get_points_weights(nint):
-    """Points and weights of the one-dimensional Gauss-Legendre quadrature
+    r"""Points and weights of the one-dimensional Gauss-Legendre quadrature
 
     The values are tabulated for ``nint`` from ``2`` to ``10``, over the
     interval from ``-1`` to ``1``.
@@ -35,6 +35,23 @@ def get_points_weights(nint):
     See Also
     --------
     bfscplate2d.bfscplate2d.update_KC0 : uses ``points`` and ``weights``.
+
+    Notes
+    -----
+    The points `\xi_i` are the roots of the Legendre polynomial `P_{nint}`
+    and the weights are `2 / ((1 - \xi_i^2) P'_{nint}(\xi_i)^2)`, such
+    that the Gauss-Legendre rule
+
+    .. math::
+
+        \int_{-1}^{1} f(\xi) \, d\xi \approx \sum_{i=1}^{nint} weights_i \,
+        f(points_i)
+
+    is exact for the polynomials `f` of degree up to `2 \, nint - 1`. The
+    functions of :mod:`bfscplate2d.bfscplate2d` use the products of these
+    points and weights along `\xi` and `\eta`; the values of ``nint`` that
+    integrate each element matrix exactly are given in the Notes of
+    :mod:`bfscplate2d.bfscplate2d`.
 
     """
     points = [0]*nint
