@@ -17,8 +17,9 @@ From the source code
 The element is written in Cython, translated to C++ and compiled when the
 package is built, such that installing from the source code requires a C++
 compiler, e.g. Microsoft Visual C++ on Windows, GCC on Linux or Clang on
-macOS. Cython, NumPy, setuptools and wheel are the build requirements of
-``pyproject.toml``, installed by ``pip`` in an isolated environment::
+macOS. The package metadata, with the version, and the build requirements,
+setuptools and Cython, are in ``pyproject.toml``; ``pip`` installs the build
+requirements in an isolated environment::
 
     python -m pip install .
 
@@ -33,12 +34,13 @@ static analysis of the tests and of the examples and cross-checks some of
 their linear buckling and natural frequency solutions, see
 :doc:`analyses`. It is a requirement of the tests and of the examples of
 the documentation only: bfscplate2d does not import it, and it is not
-installed with bfscplate2d, not being in ``install_requires`` of
-``setup.py``. The tests require a version of structsolve newer than 0.8.0,
+installed with bfscplate2d, not being in the ``dependencies`` of
+``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
 with the module ``structsolve.convergence`` and Crisfield's convergence
 criterion as default.
 
-To build in place, for running the tests from the source tree::
+To build in place, for running the tests from the source tree, which also
+writes ``bfscplate2d/version.py`` with the version of ``pyproject.toml``::
 
     python setup.py build_ext --inplace
 
