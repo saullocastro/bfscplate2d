@@ -7,6 +7,7 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh, spsolve
 import numpy as np
 from composites import isotropic_plate
+from structsolve import lb
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_KG, DOF, KC0_SPARSE_SIZE,
         KG_SPARSE_SIZE, DOUBLE, INT)
@@ -215,6 +216,11 @@ def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
     print(Nxxcr_theoretical, eigvals[0])
     print(eigvals[0]/(E*np.pi**2*(h/b)**2/(12*(1 - nu**2))*h))
     assert isclose(eigvals[0], Nxxcr_theoretical, rtol=0.05)
+
+    # the same critical loads with the linear buckling solver of structsolve
+    eigvals_lb, _ = lb(Kuu, KGuu, num_eigvalues=num_eigenvalues,
+                       symmetric=True, silent=True)
+    assert np.allclose(eigvals_lb, eigvals, rtol=1e-6)
 
 
 if __name__ == '__main__':

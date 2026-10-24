@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+title: >-
+  Implementation of the BFSC plate finite element in 2D
+type: software
+abstract: >-
+  The `bfscplate2d` module implements the BFSC plate finite element in 2D,
+  a four-node rectangular element of the classical laminated plate theory,
+  with the nonlinear strains of von Karman, aiming linear and nonlinear
+  analyses. It computes the contributions of each element to:
+
+  * The linear constitutive stiffness matrix, for linear static analyses
+
+  * The geometric stiffness matrix, for linear buckling analyses
+
+  * The mass matrix, for natural frequency analyses
+
+  * The internal force vector and the tangent stiffness matrix, for
+    geometrically nonlinear static analyses
+
+  * The force vector and the unsymmetric load stiffness matrix of a
+    follower pressure, normal to the deformed mid-surface, for nonlinear
+    static and linear buckling analyses
+message: >-
+  Please, cite this software using:
+  Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.5.0). https://github.com/saullocastro/bfscplate2d.
+authors:
+  - family-names: Castro
+    given-names: Saullo G. P.
+    email: S.G.P.Castro@tudelft.nl
+    affiliation: Delft University of Technology
+    orcid: 'https://orcid.org/0000-0001-9711-0991'
+repository-code: 'https://github.com/saullocastro/bfscplate2d'
+license: BSD-3-Clause
+keywords:
+  - finite elements
+  - plate
+  - static analysis
+  - buckling
+  - vibration
+  - structural dynamics
+version: 0.5.0
+date-released: '2026-10-24'

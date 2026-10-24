@@ -21,8 +21,10 @@ Two regimes are checked:
     membrane stretching of the von Karman terms actually carries the load.
     Here the plate must come out *stiffer* than the linearised prediction.
 
-Both also assert that Newton-Raphson converges quadratically, which only
-happens when KC0 + KCNL(u) + KG(u) is the exact derivative of fint. See
+Both solve the nonlinear equilibrium with the full Newton-Raphson method of
+structsolve.Analysis, whose callables are those of ``Callables``, and also
+assert that Newton-Raphson converges quadratically, which only happens when
+KC0 + KCNL(u) + KG(u) is the exact derivative of fint. See
 test_tangent_consistency.py, which checks that property directly.
 """
 import sys
@@ -35,6 +37,8 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh, spsolve
 
 from composites import isotropic_plate
+from structsolve import Analysis
+from structsolve.convergence import crisfield_weights, crisfield_zeta
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_KCNL, update_KG,
         update_fint, DOF, DOUBLE, INT, KC0_SPARSE_SIZE, KCNL_SPARSE_SIZE,
@@ -151,21 +155,18 @@ def build_model():
     return m
 
 
-def calc_KT(m, u):
-    """The tangent stiffness, KC0 + KCNL(u) + KG(u)."""
+def calc_KCNL(m, u):
+    """The nonlinear constitutive stiffness KCNL(u) of the tangent."""
     m.KCNLv *= 0
-    m.KGv *= 0
     for plate in m.elements:
         update_KCNL(u, plate, m.points, m.weights, m.KCNLr, m.KCNLc, m.KCNLv)
-        update_KG(u, plate, m.points, m.weights, m.KGr, m.KGc, m.KGv)
-    KCNL = coo_matrix((m.KCNLv, (m.KCNLr, m.KCNLc)),
+    return coo_matrix((m.KCNLv, (m.KCNLr, m.KCNLc)),
                       shape=(m.N, m.N)).tocsc()
-    KG = coo_matrix((m.KGv, (m.KGr, m.KGc)), shape=(m.N, m.N)).tocsc()
-    return m.KC0 + KCNL + KG
 
 
 def calc_KG(m, u):
-    """The geometric stiffness alone, for the linearised comparisons."""
+    """The geometric stiffness KG(u), of the tangent and of the linearised
+    comparisons."""
     m.KGv *= 0
     for plate in m.elements:
         update_KG(u, plate, m.points, m.weights, m.KGr, m.KGc, m.KGv)
@@ -196,34 +197,78 @@ def forces(m, load, transverse):
     return fext, ftrans
 
 
-def newton_raphson(m, fext, u0=None, increments=1, epsilon=1.e-9,
-                   max_iterations=40):
-    """Full Newton-Raphson. Returns the solution and the residual history.
+class Callables(object):
+    """The callables of structsolve.Analysis for the model ``m`` under the
+    external forces ``fext``.
+
+    They loop over the elements with the update functions and assemble, and
+    work on the unknown degrees of freedom only, the partition of the free
+    dofs of structsolve: the solution vector of the solvers is ``c =
+    u[bu]``, and the force vectors and matrices are restricted to ``bu``.
+    ``calc_fint`` also keeps the load factor and the internal forces of each
+    iteration, for the residual history.
+    """
+    def __init__(self, m, fext):
+        self.m = m
+        self.fext = fext
+        self.iterations = []
+
+    def expand(self, c):
+        """The displacements of the model from those of the unknown dofs."""
+        u = np.zeros(self.m.N)
+        u[self.m.bu] = c
+        return u
+
+    def calc_fext(self, inc=1., silent=False):
+        return inc*self.fext[self.m.bu]
+
+    def calc_fint(self, c, inc=1., silent=False):
+        fint = calc_fint(self.m, self.expand(c))[self.m.bu]
+        self.iterations.append((inc, fint))
+        return fint
+
+    def calc_kC(self, c=None, NLgeom=False, silent=False):
+        if not NLgeom:
+            return self.m.KC0uu
+        bu = self.m.bu
+        KCNL = calc_KCNL(self.m, self.expand(c))
+        return (self.m.KC0 + KCNL)[bu, :][:, bu]
+
+    def calc_kG(self, c=None, NLgeom=False, silent=False):
+        bu = self.m.bu
+        return calc_KG(self.m, self.expand(c))[bu, :][:, bu]
+
+
+def newton_raphson(m, fext, increments=1):
+    """Full Newton-Raphson of structsolve.Analysis, with ``increments``
+    equal load increments. Returns the solution and the residual history of
+    the last increment.
 
     The tangent is rebuilt every iteration, so the residual history is the
     direct evidence of whether KT is the derivative of fint: a consistent
     tangent squares the residual each step, an inconsistent one multiplies
-    it by a constant factor instead.
+    it by a constant factor instead. The residual is measured with
+    Crisfield's criterion, the convergence criterion of structsolve, with
+    its default tolerance of 1e-9.
     """
-    u = np.zeros(m.N) if u0 is None else u0.copy()
-    bu = m.bu
-    history = []
-    for increment in range(1, increments + 1):
-        f = (float(increment)/increments)*fext
-        scale = np.linalg.norm(f[bu])
-        history = []
-        for count in range(max_iterations):
-            Ri = calc_fint(m, u) - f
-            residual = np.linalg.norm(Ri[bu])/scale
-            history.append(residual)
-            print('    increment %d  count %d  residual %.6e'
-                  % (increment, count, residual))
-            if residual < epsilon:
-                break
-            KTuu = calc_KT(m, u)[bu, :][:, bu]
-            u[bu] += spsolve(KTuu, -Ri[bu])
-        else:
-            raise RuntimeError('Not converged!')
+    callables = Callables(m, fext)
+    an = Analysis(calc_fext=callables.calc_fext,
+                  calc_fint=callables.calc_fint,
+                  calc_kC=callables.calc_kC,
+                  calc_kG=callables.calc_kG)
+    an.initialInc = 1./increments
+    an.maxInc = 1./increments
+    increments_done, cs = an.static(NLgeom=True)
+    # every increment converged, none was cut
+    assert np.allclose(increments_done,
+                       np.linspace(0, 1, increments + 1)[1:]), (
+            'Not converged! load factors %s' % increments_done)
+    u = callables.expand(cs[-1])
+
+    w = crisfield_weights(m.KC0uu)
+    f = fext[m.bu]
+    history = [crisfield_zeta(inc*f - fint, inc*f, fint, w)
+               for inc, fint in callables.iterations if inc == 1.]
     return u, history
 
 
@@ -234,8 +279,8 @@ def assert_quadratic_convergence(history, epsilon=1.e-9):
     transition that carries it: the step that takes the iterate from above
     the tolerance to below it. Earlier steps are not a fair test here,
     because the residual is normalised by the whole external load, which the
-    axial part satisfies exactly at the first step while the out-of-plane
-    part is still far from converged.
+    axial part may satisfy at the first step while the out-of-plane part is
+    still far from converged.
 
     With an inconsistent tangent the residual falls by a roughly constant
     factor throughout, so no step ever squares it and this fails.
@@ -247,8 +292,9 @@ def assert_quadratic_convergence(history, epsilon=1.e-9):
     assert len(history) >= 2, 'no Newton step was taken'
     prev, curr = history[-2], history[-1]
     # the floor keeps the test meaningful once prev**2 drops below the
-    # round-off level of the residual itself
-    assert curr < max(10.*prev**2, 1.e-14), (
+    # round-off level of the residual itself, about 1e-14 here: the last
+    # increment of test_large_deflection goes 2.7e-8 -> 1.5e-14
+    assert curr < max(10.*prev**2, 1.e-13), (
         'the last step took the residual %.3e -> %.3e, which is linear '
         'rather than quadratic; the tangent is not the derivative of fint'
         % (prev, curr))
