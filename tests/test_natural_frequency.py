@@ -5,6 +5,7 @@ from scipy.sparse import coo_matrix
 from scipy.linalg import eigh
 import numpy as np
 from composites import isotropic_plate
+from structsolve import freq
 
 from bfscplate2d import (BFSCPlate2D, update_KC0, update_M, DOF, KC0_SPARSE_SIZE,
         M_SPARSE_SIZE, DOUBLE, INT)
@@ -124,6 +125,12 @@ def test_nat_freq(plot_mode=None):
     print('Theoretical omega123', wmn)
     print(omegan)
     assert np.isclose(omegan[0], wmn, rtol=0.01)
+
+    # the same natural frequencies with the sparse solver of structsolve,
+    # which returns lambda2 = -omegan**2
+    lambda2, _ = freq(Kuu, Muu, num_eigvalues=num_eigenvalues,
+                      symmetric=True, silent=True)
+    assert np.allclose((-lambda2)**0.5, omegan, rtol=1e-6)
 
     if plot_mode is not None:
         import matplotlib

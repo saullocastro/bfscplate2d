@@ -29,6 +29,14 @@ what the derivation scripts already emit:
              sparse entries
 ``stress``   the ``Nxx = ...`` .. ``Mxy = ...`` lines of update_fint
 ``fint``     the ``fint[i + c1] += ...`` lines
+``fext``     the ``fext[i + c1] += ...`` lines of update_fext_follower
+``kin``      the ``ux = ...`` .. ``wy = ...`` displacement gradients and the
+             ``ax = ...`` .. ``az = ...`` components of the area vector of the
+             follower pressure, in runs of consecutive lines
+
+One derivation script may write the blocks of several functions, e.g. the
+force vector and the load stiffness matrix of the follower pressure; it is
+run once.
 """
 import argparse
 import io
@@ -54,6 +62,9 @@ SOURCES = [
     ('update_KG', 'derive_bfscplate2d_KG_sparse.py', 'KG'),
     ('update_M', 'derive_bfscplate2d_M_sparse.py', 'M'),
     ('update_fint', 'derive_bfscplate2d_fint.py', None),
+    ('update_fext_follower', 'derive_bfscplate2d_follower_pressure.py', None),
+    ('update_KCfollower', 'derive_bfscplate2d_follower_pressure.py',
+     'KCfollower'),
 ]
 
 OPERATORS = ('Bm', 'BmL', 'Bb', 'G', 'Nu', 'Nv', 'Nw', 'Su', 'Sv', 'Sw')
@@ -61,6 +72,9 @@ _assign = re.compile(r'^(%s)(\d)_(\d\d) = ' % '|'.join(OPERATORS))
 _stress = re.compile(r'^(Nxx|Nyy|Nxy|Mxx|Myy|Mxy) = ')
 _size = re.compile(r'^(\w+)_SPARSE_SIZE (\d+)$')
 _size_decl = re.compile(r'^(\w+)_SPARSE_SIZE = (\d+)$')
+# a single assignment, such that a hand-written "ux = uy = ... = 0." is not
+# taken for a generated line
+_kin = re.compile(r'^(ux|uy|vx|vy|wx|wy|ax|ay|az) = [^=]*$')
 
 
 class Drift(Exception):
@@ -71,13 +85,22 @@ class Drift(Exception):
     """
 
 
+_derivations = {}
+
+
 def run_derivation(path):
-    """Run a derivation script and return its stdout as a list of lines."""
+    """Run a derivation script and return its stdout as a list of lines.
+
+    The output is kept, since one script may serve several functions.
+    """
+    if path in _derivations:
+        return _derivations[path]
     out = subprocess.run([sys.executable, path], capture_output=True,
                          text=True, cwd=ROOT)
     if out.returncode != 0:
         raise RuntimeError('%s failed:\n%s' % (path, out.stderr[-4000:]))
-    return out.stdout.replace('\r\n', '\n').split('\n')
+    _derivations[path] = out.stdout.replace('\r\n', '\n').split('\n')
+    return _derivations[path]
 
 
 def function_span(lines, name):
@@ -145,6 +168,29 @@ def fint_block(lines, lo, hi):
     return idx[0], idx[-1] + 1
 
 
+def fext_block(lines, lo, hi):
+    idx = [i for i in range(lo, hi) if lines[i].strip().startswith('fext[')]
+    if not idx:
+        return None
+    return idx[0], idx[-1] + 1
+
+
+def kin_runs(lines, lo, hi):
+    """Runs [start, end) of consecutive ``ux = ...`` .. ``az = ...`` lines."""
+    runs = []
+    i = lo
+    while i < hi:
+        if _kin.match(lines[i].strip()) is None:
+            i += 1
+            continue
+        j = i
+        while j < hi and _kin.match(lines[j].strip()) is not None:
+            j += 1
+        runs.append((i, j))
+        i = j
+    return runs
+
+
 def gen_assigns(gen, op):
     """Generated ``op`` assignment lines, in order, de-duplicated."""
     seen = {}
@@ -182,6 +228,20 @@ def gen_stress(gen):
 
 def gen_fint(gen):
     return [ln.strip() for ln in gen if ln.strip().startswith('fint[')]
+
+
+def gen_fext(gen):
+    return [ln.strip() for ln in gen if ln.strip().startswith('fext[')]
+
+
+def gen_kin(gen):
+    """Generated ``ux = ...`` .. ``az = ...`` lines, by name."""
+    out = {}
+    for line in gen:
+        m = _kin.match(line.strip())
+        if m is not None:
+            out[m.group(1)] = line.strip()
+    return out
 
 
 def gen_sparse_size(gen, tag):
@@ -326,6 +386,28 @@ def plan(kin, verbose=False):
             edits.append(Edit('%s/%s cdef' % (kin, fname), at, at,
                               [dpad + 'cdef double ' + ', '.join(missing)]))
 
+        # displacement gradients and area vector: each run of these lines in
+        # the .pyx is rewritten with the generated lines of the names it
+        # holds, such that a function may use only some of them
+        want = gen_kin(gen)
+        if want:
+            covered = set()
+            for a, b in kin_runs(lines, lo, hi):
+                names = [_kin.match(lines[i].strip()).group(1)
+                         for i in range(a, b)]
+                unknown = [n for n in names if n not in want]
+                if unknown:
+                    raise Drift('%s: %s assigns %s, which %s does not write'
+                                % (kin, fname, ', '.join(unknown), script))
+                covered.update(names)
+                pad = indent_of(lines[a])
+                edits.append(Edit('%s/%s kin' % (kin, fname), a, b,
+                                  [pad + want[n] for n in names]))
+            if not covered:
+                raise Drift('%s: %s has no displacement-gradient or area '
+                            'vector lines, but %s writes %d of them'
+                            % (kin, fname, script, len(want)))
+
         if tag is not None:
             want = gen_values(gen, tag)
             have = value_block(lines, lo, hi, tag)
@@ -369,6 +451,13 @@ def plan(kin, verbose=False):
                 a, b = have
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s fint' % (kin, fname), a, b,
+                                  [pad + w for w in want]))
+            want = gen_fext(gen)
+            have = fext_block(lines, lo, hi)
+            if require(want, have, 'fext', fname):
+                a, b = have
+                pad = indent_of(lines[a])
+                edits.append(Edit('%s/%s fext' % (kin, fname), a, b,
                                   [pad + w for w in want]))
 
     for e in edits:
