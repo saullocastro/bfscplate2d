@@ -30,7 +30,7 @@ what the derivation scripts already emit:
 ``stress``   the ``Nxx = ...`` .. ``Mxy = ...`` lines of update_fint
 ``fint``     the ``fint[i + c1] += ...`` lines
 ``fext``     the ``fext[i + c1] += ...`` lines of update_fext_follower
-``kin``      the ``ux = ...`` .. ``wy = ...`` displacement gradients and the
+``kin``      the ``u_x = ...`` .. ``w_y = ...`` displacement gradients and the
              ``ax = ...`` .. ``az = ...`` components of the area vector of the
              follower pressure, in runs of consecutive lines
 
@@ -72,9 +72,11 @@ _assign = re.compile(r'^(%s)(\d)_(\d\d) = ' % '|'.join(OPERATORS))
 _stress = re.compile(r'^(Nxx|Nyy|Nxy|Mxx|Myy|Mxy) = ')
 _size = re.compile(r'^(\w+)_SPARSE_SIZE (\d+)$')
 _size_decl = re.compile(r'^(\w+)_SPARSE_SIZE = (\d+)$')
-# a single assignment, such that a hand-written "ux = uy = ... = 0." is not
-# taken for a generated line
-_kin = re.compile(r'^(ux|uy|vx|vy|wx|wy|ax|ay|az) = [^=]*$')
+# a single assignment, such that a hand-written "u_x = u_y = ... = 0." is not
+# taken for a generated line, and not a sympy Matrix, such that the slopes
+# "w_x = Matrix([[...]])" printed by the derivation of update_KCNL, which
+# its .pyx carries without the Matrix, are not taken for these lines
+_kin = re.compile(r'^(u_x|u_y|v_x|v_y|w_x|w_y|ax|ay|az) = (?!Matrix\()[^=]*$')
 
 
 class Drift(Exception):
@@ -176,7 +178,7 @@ def fext_block(lines, lo, hi):
 
 
 def kin_runs(lines, lo, hi):
-    """Runs [start, end) of consecutive ``ux = ...`` .. ``az = ...`` lines."""
+    """Runs [start, end) of consecutive ``u_x = ...`` .. ``az = ...`` lines."""
     runs = []
     i = lo
     while i < hi:
@@ -235,7 +237,7 @@ def gen_fext(gen):
 
 
 def gen_kin(gen):
-    """Generated ``ux = ...`` .. ``az = ...`` lines, by name."""
+    """Generated ``u_x = ...`` .. ``az = ...`` lines, by name."""
     out = {}
     for line in gen:
         m = _kin.match(line.strip())

@@ -228,12 +228,12 @@ def rows(t, s, lex, ley):
 
 
 def area_vector(R, ue, quadratic):
-    ux, uy = R['u'][1] @ ue, R['u'][2] @ ue
-    vx, vy = R['v'][1] @ ue, R['v'][2] @ ue
-    wx, wy = R['w'][1] @ ue, R['w'][2] @ ue
+    u_x, u_y = R['u'][1] @ ue, R['u'][2] @ ue
+    v_x, v_y = R['v'][1] @ ue, R['v'][2] @ ue
+    w_x, w_y = R['w'][1] @ ue, R['w'][2] @ ue
     if quadratic:
-        return np.cross([1 + ux, vx, wx], [uy, 1 + vy, wy])
-    return np.array([-wx, -wy, 1 + ux + vy])
+        return np.cross([1 + u_x, v_x, w_x], [u_y, 1 + v_y, w_y])
+    return np.array([-w_x, -w_y, 1 + u_x + v_y])
 
 
 def fext_follower_reference(m, u, func, quadratic, npts=8):

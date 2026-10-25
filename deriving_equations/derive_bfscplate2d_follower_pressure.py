@@ -44,7 +44,7 @@ DOF = 10
 
 def main():
     var('xi, eta, lex, ley, weight, pressure, qf, ref')
-    var('ux, uy, vx, vy, wx, wy')
+    var('u_x, u_y, v_x, v_y, w_x, w_y')
     var('ax, ay, az')
 
     ONE = sympy.Integer(1)
@@ -110,26 +110,26 @@ def main():
     # displacement gradients at the integration point
     ue = Matrix([symbols(r'ue[%d]' % i) for i in range(0, num_nodes*DOF)])
     grads = {
-        'ux': (Sus[1, :]*ue)[0],
-        'uy': (Sus[2, :]*ue)[0],
-        'vx': (Svs[1, :]*ue)[0],
-        'vy': (Svs[2, :]*ue)[0],
-        'wx': (Sws[1, :]*ue)[0],
-        'wy': (Sws[2, :]*ue)[0],
+        'u_x': (Sus[1, :]*ue)[0],
+        'u_y': (Sus[2, :]*ue)[0],
+        'v_x': (Svs[1, :]*ue)[0],
+        'v_y': (Svs[2, :]*ue)[0],
+        'w_x': (Sws[1, :]*ue)[0],
+        'w_y': (Sws[2, :]*ue)[0],
         }
-    for name in ('ux', 'uy', 'vx', 'vy', 'wx', 'wy'):
+    for name in ('u_x', 'u_y', 'v_x', 'v_y', 'w_x', 'w_y'):
         print('%s =' % name, grads[name])
 
     # area vector of the deformed mid-surface, plate: kw = kv = 0
-    A = Matrix([1 + ux, vx, wx])
-    B = Matrix([uy, 1 + vy, wy])
+    A = Matrix([1 + u_x, v_x, w_x])
+    B = Matrix([u_y, 1 + v_y, w_y])
     a_full = A.cross(B)
     a0 = Matrix([0, 0, 1])
-    a1 = Matrix([-wx, -wy, ux + vy])
+    a1 = Matrix([-w_x, -w_y, u_x + v_y])
     a2 = (a_full - a0 - a1).expand()
-    assert (a2 - Matrix([vx*wy - wx*vy,
-                         wx*uy - ux*wy,
-                         ux*vy - vx*uy])).expand() == sympy.zeros(3, 1)
+    assert (a2 - Matrix([v_x*w_y - w_x*v_y,
+                         w_x*u_y - u_x*w_y,
+                         u_x*v_y - v_x*u_y])).expand() == sympy.zeros(3, 1)
     a = ref*a0 + a1 + qf*a2
     print()
     print('ax =', a[0])
@@ -160,7 +160,7 @@ def main():
         print('fext[%d + %s] +=' % (i%DOF, si), fi)
 
     # load stiffness, chain rule through the displacement gradients
-    gradsyms = Matrix([ux, uy, vx, vy, wx, wy])
+    gradsyms = Matrix([u_x, u_y, v_x, v_y, w_x, w_y])
     dgrad = Matrix([Sus[1, :], Sus[2, :], Svs[1, :], Svs[2, :],
                     Sws[1, :], Sws[2, :]])
     da = a.jacobian(gradsyms)*dgrad
