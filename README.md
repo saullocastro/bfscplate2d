@@ -46,7 +46,7 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.5.0 (2026-10-24)
+* version 0.5.0 (2026-10-26)
     - The shape functions renamed from `N` to `S`, as in bfsccylinder: the
       attributes `Nu`, ..., `Nw_y` and the methods `update_Nu`, ...,
       `update_Nw_y` of `BFSCPlate2D` are `Su`, ..., `Sw_y` and

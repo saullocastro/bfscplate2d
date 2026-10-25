@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.5.0 (2026-10-24)
+## 0.5.0 (2026-10-26)
 
 ### Breaking
 
