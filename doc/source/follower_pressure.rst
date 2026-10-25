@@ -38,7 +38,7 @@ Sign
 
 A positive ``p`` pushes along `+z`, like a positive force on `w`, in the
 undeformed state. At `\{u\} = \{0\}` the force vector is the dead pressure
-load, `\int_A p \{N_w\}^T dA`, the consistent load vector of a dead
+load, `\int_A p (\boldsymbol{S}^w)^T dA`, the consistent load vector of a dead
 pressure.
 
 

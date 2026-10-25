@@ -6,9 +6,11 @@ first order in the displacement gradients (``quadratic=0``) or complete
 (``quadratic=1``). The checks, for both truncations:
 
 1. in the undeformed state the force vector equals the dead pressure load
-   `\int p N_w dA`, computed with the rows of :meth:`.BFSCPlate2D.update_Nw`;
-2. the force vector against an independent integration of `\int p N \cdot a
-   dA`, with cubic Hermite polynomials written here and ``np.cross``;
+   `\int p \boldsymbol{S}^w dA`, computed with the rows of
+   :meth:`.BFSCPlate2D.update_Sw`;
+2. the force vector against an independent integration of `\int p
+   \boldsymbol{S} \cdot a dA`, with cubic Hermite polynomials written here
+   and ``np.cross``;
 3. directional Taylor test of the force vector against `-KCfollower d`:
    exact for the first-order area vector, for which `F_p` is affine, and a
    remainder falling as `O(h)` for the complete one;
@@ -235,7 +237,8 @@ def area_vector(R, ue, quadratic):
 
 
 def fext_follower_reference(m, u, func, quadratic, npts=8):
-    r"""`\int p (N_u a_x + N_v a_y + N_w a_z) dA` element by element"""
+    r"""`\int p (\boldsymbol{S}^u a_x + \boldsymbol{S}^v a_y
+    + \boldsymbol{S}^w a_z) dA` element by element"""
     pts, wts = leggauss(npts)
     out = np.zeros(m.N)
     for plate in m.elements:
@@ -296,9 +299,9 @@ def test_undeformed_state_equals_dead_load(quadratic):
         fe = np.zeros(4*DOF)
         for i, xi in enumerate(m.points):
             for j, eta in enumerate(m.points):
-                plate.update_Nw(xi, eta)
+                plate.update_Sw(xi, eta)
                 fe += (plate.lex*plate.ley/4*m.weights[i]*m.weights[j]
-                       *p[i, j]*np.asarray(plate.Nw))
+                       *p[i, j]*np.asarray(plate.Sw))
         dead[m.positions(plate)] += fe
     u0 = np.zeros(m.N)
     f = m.fext_follower(u0, p_function, quadratic)

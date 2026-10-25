@@ -155,9 +155,9 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
         fe = np.zeros(4*DOF, dtype=float)
         for j in range(nint):
             eta = points[j]
-            plate.update_Nu(xi, eta)
-            Nu = np.asarray(plate.Nu)
-            fe += ley/2*weights[j]*Nu*Nxx
+            plate.update_Su(xi, eta)
+            Su = np.asarray(plate.Su)
+            fe += ley/2*weights[j]*Su*Nxx
         fext[indices] += fe
 
     Kuu = KC0[bu, :][:, bu]

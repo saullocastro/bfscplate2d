@@ -21,7 +21,7 @@ a0 + a1 + a2``, of orders 0, 1 and 2 in the displacement gradients,
 ``a2`` (``quadratic`` of the .pyx). The force vector and the load stiffness
 are
 
-    F_p = int p (Nu^T a_x + Nv^T a_y + Nw^T a_z) dA
+    F_p = int p (Su^T a_x + Sv^T a_y + Sw^T a_z) dA
     KCfollower = -dF_p/due
 
 KCfollower is unsymmetric in general and is printed in full. Its sparse
@@ -29,10 +29,10 @@ layout is that of ``qf = 1``, such that ``KCfollower_SPARSE_SIZE`` does not
 depend on the truncation; with ``qf = 0`` the [u, v] and [v, u] blocks are
 written as zeros.
 
-The rows of the interpolation are the operators ``Nu``, ``Nv`` and ``Nw`` of
+The rows of the interpolation are the operators ``Su``, ``Sv`` and ``Sw`` of
 three rows each: row 1 the function, row 2 its derivative with respect to
-`x` and row 3 with respect to `y`, e.g. ``Nw2_08`` is the entry of `N_{w,x}`
-at the 8th degree of freedom of the element.
+`x` and row 3 with respect to `y`, e.g. ``Sw2_08`` is the entry of
+`\boldsymbol{S}^w_{,x}` at the 8th degree of freedom of the element.
 """
 import numpy as np
 import sympy
@@ -63,21 +63,21 @@ def main():
     # node 3 (+1, +1)
     # node 4 (-1, +1)
 
-    Nu = Matrix([[
+    Su = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0, 0, 0, 0,
         Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0, 0, 0, 0,
         ]])
-    Nv = Matrix([[
+    Sv = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0,
         0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0,
         ]])
-    Nw = Matrix([[
+    Sw = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, 0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), Hxyi(-1, -1),
         0, 0, 0, 0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), Hxyi(+1, -1),
@@ -86,8 +86,8 @@ def main():
         ]])
 
     # interpolation operators, rows: function, d/dx, d/dy
-    def operator(name, N):
-        op = Matrix([N, (2/lex)*N.diff(xi), (2/ley)*N.diff(eta)])
+    def operator(name, S):
+        op = Matrix([S, (2/lex)*S.diff(xi), (2/ley)*S.diff(eta)])
         ops = []
         print()
         for i in range(op.shape[0]):
@@ -103,19 +103,19 @@ def main():
         print()
         return Matrix(ops)
 
-    Nus = operator('Nu', Nu)
-    Nvs = operator('Nv', Nv)
-    Nws = operator('Nw', Nw)
+    Sus = operator('Su', Su)
+    Svs = operator('Sv', Sv)
+    Sws = operator('Sw', Sw)
 
     # displacement gradients at the integration point
     ue = Matrix([symbols(r'ue[%d]' % i) for i in range(0, num_nodes*DOF)])
     grads = {
-        'ux': (Nus[1, :]*ue)[0],
-        'uy': (Nus[2, :]*ue)[0],
-        'vx': (Nvs[1, :]*ue)[0],
-        'vy': (Nvs[2, :]*ue)[0],
-        'wx': (Nws[1, :]*ue)[0],
-        'wy': (Nws[2, :]*ue)[0],
+        'ux': (Sus[1, :]*ue)[0],
+        'uy': (Sus[2, :]*ue)[0],
+        'vx': (Svs[1, :]*ue)[0],
+        'vy': (Svs[2, :]*ue)[0],
+        'wx': (Sws[1, :]*ue)[0],
+        'wy': (Sws[2, :]*ue)[0],
         }
     for name in ('ux', 'uy', 'vx', 'vy', 'wx', 'wy'):
         print('%s =' % name, grads[name])
@@ -138,8 +138,8 @@ def main():
 
     # force vector, with ax, ay, az computed once per integration point
     print()
-    fe = weight*(lex*ley)/4.*pressure*(Nus[0, :].T*ax + Nvs[0, :].T*ay
-                                       + Nws[0, :].T*az)
+    fe = weight*(lex*ley)/4.*pressure*(Sus[0, :].T*ax + Svs[0, :].T*ay
+                                       + Sws[0, :].T*az)
 
     def name_ind(i):
         if i >=0 and i < DOF:
@@ -161,12 +161,12 @@ def main():
 
     # load stiffness, chain rule through the displacement gradients
     gradsyms = Matrix([ux, uy, vx, vy, wx, wy])
-    dgrad = Matrix([Nus[1, :], Nus[2, :], Nvs[1, :], Nvs[2, :],
-                    Nws[1, :], Nws[2, :]])
+    dgrad = Matrix([Sus[1, :], Sus[2, :], Svs[1, :], Svs[2, :],
+                    Sws[1, :], Sws[2, :]])
     da = a.jacobian(gradsyms)*dgrad
-    KCfollower = -weight*(lex*ley)/4.*pressure*(Nus[0, :].T*da[0, :]
-                                               + Nvs[0, :].T*da[1, :]
-                                               + Nws[0, :].T*da[2, :])
+    KCfollower = -weight*(lex*ley)/4.*pressure*(Sus[0, :].T*da[0, :]
+                                               + Svs[0, :].T*da[1, :]
+                                               + Sws[0, :].T*da[2, :])
 
     print()
     print('printing code for sparse implementation')

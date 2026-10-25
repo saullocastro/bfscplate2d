@@ -2,6 +2,37 @@
 
 The dates of the released versions are those of their tagged commits.
 
+## Unreleased
+
+### Breaking
+
+- The shape functions renamed from `N` to `S`, as in bfsccylinder since
+  0.5.0; the results are unchanged. Old and new public names of
+  `BFSCPlate2D`:
+  - attributes `Nu`, `Nu_x`, `Nu_y`, `Nv`, `Nv_x`, `Nv_y`, `Nw`, `Nw_x`,
+    `Nw_y` renamed `Su`, `Su_x`, `Su_y`, `Sv`, `Sv_x`, `Sv_y`, `Sw`, `Sw_x`,
+    `Sw_y`;
+  - methods `update_Nu`, `update_Nu_x`, `update_Nu_y`, `update_Nv`,
+    `update_Nv_x`, `update_Nv_y`, `update_Nw`, `update_Nw_x`, `update_Nw_y`
+    renamed `update_Su`, `update_Su_x`, `update_Su_y`, `update_Sv`,
+    `update_Sv_x`, `update_Sv_y`, `update_Sw`, `update_Sw_x`,
+    `update_Sw_y`.
+
+### Documentation
+
+- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
+  `\boldsymbol{S}^w` and their derivatives, e.g.
+  `\boldsymbol{S}^w_{,x}`, instead of `\{N_u\}`, `\{N_{w,x}\}`, ..., as
+  in pyfe3d.
+
+### Derivations
+
+- The local variables `Nu1_01`, ..., `Nw3_40` of `update_fext_follower` and
+  `update_KCfollower` renamed `Su1_01`, ..., `Sw3_40`, and the shape
+  functions of the scripts of `deriving_equations/` renamed from `N` to
+  `S`; `regenerate.py` no longer looks for operators named `Nu`, `Nv` and
+  `Nw`.
+
 ## 0.5.0 (2026-10-24)
 
 ### Python versions
