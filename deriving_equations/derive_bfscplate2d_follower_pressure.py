@@ -1,4 +1,4 @@
-"""
+r"""
 Follower pressure for BFSC plate 2D: force vector and load stiffness matrix
 
 The pressure ``pressure`` (force per unit undeformed area, a function of the

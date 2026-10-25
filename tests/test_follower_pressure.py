@@ -1,7 +1,8 @@
 r"""Follower pressure: update_fext_follower and update_KCfollower
 
 A follower pressure stays normal to the deformed mid-surface and acts on its
-deformed area, with the area vector `a = X_{,x} \times X_{,y}` truncated to
+deformed area, with the area vector `\boldsymbol{a} = \boldsymbol{X}_{,x}
+\times \boldsymbol{X}_{,y}` truncated to
 first order in the displacement gradients (``quadratic=0``) or complete
 (``quadratic=1``). The checks, for both truncations:
 
@@ -9,12 +10,14 @@ first order in the displacement gradients (``quadratic=0``) or complete
    `\int p \boldsymbol{S}^w dA`, computed with the rows of
    :meth:`.BFSCPlate2D.update_Sw`;
 2. the force vector against an independent integration of `\int p
-   \boldsymbol{S} \cdot a dA`, with cubic Hermite polynomials written here
-   and ``np.cross``;
-3. directional Taylor test of the force vector against `-KCfollower d`:
-   exact for the first-order area vector, for which `F_p` is affine, and a
-   remainder falling as `O(h)` for the complete one;
-4. ``reference=0`` gives `F_p(u) - F_p(0)`;
+   \boldsymbol{S} \cdot \boldsymbol{a} dA`, with cubic Hermite polynomials
+   written here and ``np.cross``;
+3. directional Taylor test of the force vector against `-\boldsymbol{K}_F
+   \boldsymbol{d}`: exact for the first-order area vector, for which
+   `\boldsymbol{F}_p` is affine, and a remainder falling as `O(h)` for the
+   complete one;
+4. ``reference=0`` gives `\boldsymbol{F}_p(\boldsymbol{u}) -
+   \boldsymbol{F}_p(\boldsymbol{0})`;
 5. no closed-form solution of the panels validation cases (rings and
    cylinders) applies to a flat plate, hence:
 
@@ -28,8 +31,9 @@ first order in the displacement gradients (``quadratic=0``) or complete
      reference values of the plate_clpt_donnell model of panels, the same
      von Karman kinematics and area vector with another discretization;
 
-6. `KC0 + KCNL + KG + KCfollower` is the Jacobian of the residual `f_{int}
-   - F_p`, against finite differences.
+6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G +
+   \boldsymbol{K}_F` is the Jacobian of the residual `\boldsymbol{R} =
+   \boldsymbol{F}_{int} - \boldsymbol{F}_p`, against finite differences.
 
 Units: N, m, Pa.
 """
@@ -422,8 +426,10 @@ def skew_reference(m, d, D, p, px, py, npts=8):
 
 @pytest.mark.parametrize('case', ['uniform', 'function'])
 def test_skew_part_of_load_stiffness(case):
-    r"""`d^T K D - D^T K d = -(P(d, D) - P(D, d))` for a free plate, all
-    degrees of freedom free, since `d^T K D = -P(d, D)`"""
+    r"""`\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
+    \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d} = -(P(d, D) - P(D,
+    d))` for a free plate, all degrees of freedom free, since
+    `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} = -P(d, D)`"""
     if case == 'uniform':
         p = lambda x, y: -2.e4 + 0*x*y
         px = py = lambda x, y: 0*x*y
@@ -512,8 +518,10 @@ def test_symmetry():
 
 @pytest.mark.parametrize('quadratic', TRUNCATIONS)
 def test_tangent_is_jacobian_of_residual(quadratic):
-    r"""`K_T = KC0 + KCNL + KG + KCfollower` against the central differences
-    of `R = f_{int} - F_p`, every entry, and a Taylor test"""
+    r"""`\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+    \boldsymbol{K}_G + \boldsymbol{K}_F` against the central differences of
+    `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`, every entry,
+    and a Taylor test"""
     m = Mesh(nx=3, ny=2)
     func = lambda x, y: 100*p_function(x, y)
     rng = np.random.default_rng(7)
@@ -567,8 +575,10 @@ PANELS = {
 
 def newton_raphson(m, bu, func, load, increments=5, tol=1.e-9,
                    max_iterations=30):
-    r"""Solves `f_{int}(u) = \lambda F_p(u)` (``load`` 0 or 1, the truncation
-    of the follower pressure) or `f_{int}(u) = \lambda F_p(0)` (``load =
+    r"""Solves `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})` (``load`` 0 or 1, the truncation of the
+    follower pressure) or `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{0})` (``load =
     'dead'``) for `\lambda` up to 1, returning the solution and the relative
     residuals of each increment"""
     u = np.zeros(m.N)

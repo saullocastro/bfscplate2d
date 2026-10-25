@@ -106,9 +106,9 @@ and the displacements are
     w = \sum_{i=1}^{4} \left( H_i w_i + H_{x,i} w_{,x i} + H_{y,i} w_{,y i}
         + H_{xy,i} w_{,xy i} \right)
 
-i.e. `u = \boldsymbol{S}^u\{u_e\}`, `v = \boldsymbol{S}^v\{u_e\}` and `w =
-\boldsymbol{S}^w\{u_e\}`, with the rows ``Su``, ``Sv`` and ``Sw`` of
-:class:`.BFSCPlate2D` and the 40 element degrees of freedom `\{u_e\}`,
+i.e. `u = \boldsymbol{S}^u\boldsymbol{u}_e`, `v = \boldsymbol{S}^v\boldsymbol{u}_e` and `w =
+\boldsymbol{S}^w\boldsymbol{u}_e`, with the rows ``Su``, ``Sv`` and ``Sw`` of
+:class:`.BFSCPlate2D` and the 40 element degrees of freedom `\boldsymbol{u}_e`,
 ``ue`` in the code. Each function gives the value 1 to the nodal degree of
 freedom it multiplies and 0 to the other nodal degrees of freedom of the
 element, e.g. `\partial H_{x,i}/\partial x = 1` at node `i`. The functions
@@ -127,11 +127,11 @@ rotations, only the squares and products of the slopes `w_{,x}` and
 
 .. math::
 
-    \{\epsilon\} =
+    \boldsymbol{\epsilon} =
     \begin{Bmatrix} \epsilon_{xx} \\ \epsilon_{yy} \\ \gamma_{xy} \end{Bmatrix}
     = \begin{Bmatrix} u_{,x} + w_{,x}^2/2 \\ v_{,y} + w_{,y}^2/2 \\
       u_{,y} + v_{,x} + w_{,x} w_{,y} \end{Bmatrix}, \qquad
-    \{\kappa\} =
+    \boldsymbol{\kappa} =
     \begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy} \end{Bmatrix}
     = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy} \end{Bmatrix}
 
@@ -139,53 +139,53 @@ In terms of the element degrees of freedom
 
 .. math::
 
-    \{\epsilon\} = \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\},
+    \boldsymbol{\epsilon} = \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e,
     \qquad
-    \{\kappa\} = [B_b] \{u_e\}
+    \boldsymbol{\kappa} = \boldsymbol{B}_b \boldsymbol{u}_e
 
-with the operators of the code: `[B_m]` (``Bm``), with the rows
+with the operators of the code: `\boldsymbol{B}_m` (``Bm``), with the rows
 `\boldsymbol{S}^u_{,x}`, `\boldsymbol{S}^v_{,y}` and `\boldsymbol{S}^u_{,y} +
-\boldsymbol{S}^v_{,x}`; `[B_b]` (``Bb``), with the rows
+\boldsymbol{S}^v_{,x}`; `\boldsymbol{B}_b` (``Bb``), with the rows
 `-\boldsymbol{S}^w_{,xx}`, `-\boldsymbol{S}^w_{,yy}` and
-`-2\boldsymbol{S}^w_{,xy}`; `[G]` (``G``), with the rows
+`-2\boldsymbol{S}^w_{,xy}`; `\boldsymbol{G}` (``G``), with the rows
 `\boldsymbol{S}^w_{,x}` and `\boldsymbol{S}^w_{,y}`, which give the slopes
-`w_{,x} = \boldsymbol{S}^w_{,x}\{u_e\}` and `w_{,y} =
-\boldsymbol{S}^w_{,y}\{u_e\}` (``w_x`` and ``w_y``); and `[B_{mL}]` (``BmL``),
+`w_{,x} = \boldsymbol{S}^w_{,x}\boldsymbol{u}_e` and `w_{,y} =
+\boldsymbol{S}^w_{,y}\boldsymbol{u}_e` (``w_x`` and ``w_y``); and `\boldsymbol{B}_{NL}` (``BmL``),
 with the rows `w_{,x}\boldsymbol{S}^w_{,x}`, `w_{,y}\boldsymbol{S}^w_{,y}` and
 `w_{,x}\boldsymbol{S}^w_{,y} + w_{,y}\boldsymbol{S}^w_{,x}`. In the functions
 of the module the nonzero entries of these operators are the local variables
 ``Bm1_01``, ..., ``BmL3_40``, the digit after the name being the row, from 1,
 and the two last digits the column, from 1. Since the nonlinear strains are
-quadratic in `\{u_e\}`, `[B_{mL}]\{u_e\}` is twice the nonlinear strains,
+quadratic in `\boldsymbol{u}_e`, `\boldsymbol{B}_{NL}\boldsymbol{u}_e` is twice the nonlinear strains,
 whereas the variation of the strains is
 
 .. math::
 
-    \delta\{\epsilon\} = \left( [B_m] + [B_{mL}] \right) \delta\{u_e\}
+    \delta\boldsymbol{\epsilon} = \left( \boldsymbol{B}_m + \boldsymbol{B}_{NL} \right) \delta\boldsymbol{u}_e
 
-`[B_{mL}]` and `[G]` have nonzero entries only in the columns of `w`,
+`\boldsymbol{B}_{NL}` and `\boldsymbol{G}` have nonzero entries only in the columns of `w`,
 `w_{,x}`, `w_{,y}` and `w_{,xy}`.
 
 .. rubric:: Constitutive relation and strain energy
 
-The membrane forces `\{N\} = \{Nxx, Nyy, Nxy\}^T` and the moments `\{M\}
-= \{Mxx, Myy, Mxy\}^T` are
+The membrane forces `\boldsymbol{N} = \{Nxx, Nyy, Nxy\}^\top` and the moments `\boldsymbol{M}
+= \{Mxx, Myy, Mxy\}^\top` are
 
 .. math::
 
-    \{N\} = [A]\{\epsilon\} + [B]\{\kappa\}, \qquad
-    \{M\} = [B]\{\epsilon\} + [D]\{\kappa\}
+    \boldsymbol{N} = \boldsymbol{A}\boldsymbol{\epsilon} + \boldsymbol{B}\boldsymbol{\kappa}, \qquad
+    \boldsymbol{M} = \boldsymbol{B}\boldsymbol{\epsilon} + \boldsymbol{D}\boldsymbol{\kappa}
 
-with the symmetric blocks of ``ABD``, `[A]` of ``A11``, ``A12``,
-``A16``, ``A22``, ``A26``, ``A66``, and likewise `[B]` and `[D]`, constant
+with the symmetric blocks of ``ABD``, `\boldsymbol{A}` of ``A11``, ``A12``,
+``A16``, ``A22``, ``A26``, ``A66``, and likewise `\boldsymbol{B}` and `\boldsymbol{D}`, constant
 over the element, which assumes a linear elastic laminate whose stiffness
 does not vary over the element. The strain energy of the element is
 
 .. math::
 
-    U = \frac{1}{2} \int_A \left( \{\epsilon\}^T [A] \{\epsilon\}
-        + 2 \{\epsilon\}^T [B] \{\kappa\}
-        + \{\kappa\}^T [D] \{\kappa\} \right) dA
+    U = \frac{1}{2} \int_A \left( \boldsymbol{\epsilon}^\top \boldsymbol{A} \boldsymbol{\epsilon}
+        + 2 \boldsymbol{\epsilon}^\top \boldsymbol{B} \boldsymbol{\kappa}
+        + \boldsymbol{\kappa}^\top \boldsymbol{D} \boldsymbol{\kappa} \right) dA
 
 .. rubric:: Element matrices and internal forces
 
@@ -193,20 +193,20 @@ The internal force vector is the gradient of `U`, :func:`.update_fint`:
 
 .. math::
 
-    \{f_{int}\} = \frac{\partial U}{\partial \{u_e\}} = \int_A \left(
-        ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right) dA
+    \boldsymbol{F}_{int} = \frac{\partial U}{\partial \boldsymbol{u}_e} = \int_A \left(
+        (\boldsymbol{B}_m + \boldsymbol{B}_{NL})^\top \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M} \right) dA
 
 and its Jacobian, the tangent stiffness matrix, is split as
 
 .. math::
 
-    \frac{\partial \{f_{int}\}}{\partial \{u_e\}} = [KC0] + [KCNL] + [KG]
+    \frac{\partial \boldsymbol{F}_{int}}{\partial \boldsymbol{u}_e} = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G
 
 with the linear constitutive stiffness matrix of :func:`.update_KC0`,
-independent of `\{u_e\}`, the nonlinear constitutive stiffness matrix of
+independent of `\boldsymbol{u}_e`, the nonlinear constitutive stiffness matrix of
 :func:`.update_KCNL`, null for null slopes, and the geometric stiffness
-matrix of :func:`.update_KG`, linear in `\{u_e\}`. For small displacements
-`\{f_{int}\} \approx [KC0]\{u_e\}`, the relation of a linear static
+matrix of :func:`.update_KG`, linear in `\boldsymbol{u}_e`. For small displacements
+`\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}\boldsymbol{u}_e`, the relation of a linear static
 analysis; :func:`.update_KG` and :func:`.update_KG_cte_N` give the
 geometric stiffness matrix of a linear buckling analysis. The mass matrix
 of :func:`.update_M` follows from the kinetic energy of the same
@@ -216,18 +216,22 @@ kinematics.
 
 A pressure `p` per unit undeformed area that stays normal to the deformed
 mid-surface and acts on its deformed area has the virtual work `\int_A p \,
-\mathbf{a} \cdot \delta\mathbf{u} \, dA`, with the area vector `\mathbf{a}
-= \mathbf{X}_{,x} \times \mathbf{X}_{,y}` of the deformed position
-`\mathbf{X}` of the mid-surface [5]_ [6]_. :func:`.update_fext_follower`
-gives its force vector `\{F_p(u)\}`, with `\mathbf{a}` truncated to first
+\boldsymbol{a} \cdot \delta\boldsymbol{u} \, dA`, with the area vector `\boldsymbol{a}
+= \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}` of the deformed position
+`\boldsymbol{X}` of the mid-surface [5]_ [6]_. :func:`.update_fext_follower`
+gives its force vector `\boldsymbol{F}_p(\boldsymbol{u})`, with `\boldsymbol{a}` truncated to first
 order in the displacement gradients, the truncation consistent with the
 moderate rotations of the von Karman strains, or complete, and
-:func:`.update_KCfollower` the load stiffness matrix `[KCfollower] =
--\partial \{F_p\} / \partial \{u_e\}`, constant for the first-order area
-vector. A positive `p` pushes along `+z`, and at `u = 0` the force vector
-is the dead pressure load. The tangent stiffness matrix of the residual
-`\{f_{int}\} - \lambda \{F_p(u)\}` is `[KC0] + [KCNL] + [KG] + \lambda
-[KCfollower]`. The load stiffness matrix is unsymmetric in general, a
+:func:`.update_KCfollower` the load stiffness matrix `\boldsymbol{K}_F =
+-\partial \boldsymbol{F}_p / \partial \boldsymbol{u}_e`, constant for the first-order area
+vector. A positive `p` pushes along `+z`, and at `\boldsymbol{u} =
+\boldsymbol{0}` the force vector is the dead pressure load. The tangent
+stiffness matrix of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} -
+\lambda \boldsymbol{F}_p(\boldsymbol{u})` is `\boldsymbol{K}_{C0} +
+\boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+`\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
+`\boldsymbol{K}_{F_{ref}}` the load stiffness matrix of `p`. The load
+stiffness matrix is unsymmetric in general, a
 non-conservative load. For the first-order area vector it is symmetric, and
 the follower pressure conservative, if and only if `p` is uniform over the
 loaded region and, at each point of the boundary of the loaded region,
@@ -388,13 +392,13 @@ cdef class BFSCPlate2D(object):
     `H_{x,i}`, `H_{y,i}`, `H_{xy,i}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`, and their derivatives with respect to
     `x` and `y`, at the positions of the degrees of freedom they multiply.
-    ``Bm`` and ``Bb`` are the operators `[B_m]` and `[B_b]` of the same
+    ``Bm`` and ``Bb`` are the operators `\boldsymbol{B}_m` and `\boldsymbol{B}_b` of the same
     Notes, which give the linear membrane strains `\{u_{,x}, v_{,y},
-    u_{,y} + v_{,x}\}^T` and the curvatures `\{\kappa\} = \{-w_{,xx},
-    -w_{,yy}, -2 w_{,xy}\}^T` of the classical laminated plate theory.
-    ``ABD`` gives the membrane forces `\{N\} = [A]\{\epsilon\} +
-    [B]\{\kappa\}` and the moments `\{M\} = [B]\{\epsilon\} + [D]\{\kappa\}`
-    from the membrane strains `\{\epsilon\}` and the curvatures, and ``h``
+    u_{,y} + v_{,x}\}^\top` and the curvatures `\boldsymbol{\kappa} = \{-w_{,xx},
+    -w_{,yy}, -2 w_{,xy}\}^\top` of the classical laminated plate theory.
+    ``ABD`` gives the membrane forces `\boldsymbol{N} = \boldsymbol{A}\boldsymbol{\epsilon} +
+    \boldsymbol{B}\boldsymbol{\kappa}` and the moments `\boldsymbol{M} = \boldsymbol{B}\boldsymbol{\epsilon} + \boldsymbol{D}\boldsymbol{\kappa}`
+    from the membrane strains `\boldsymbol{\epsilon}` and the curvatures, and ``h``
     and ``rho`` the mass per unit area `\rho h` and the rotary inertia `\rho
     h^3/12` of :func:`.update_M`.
 
@@ -466,7 +470,7 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Bm`` is the operator `[B_m]` of the linear membrane strains of the
+        ``Bm`` is the operator `\boldsymbol{B}_m` of the linear membrane strains of the
         Notes of :mod:`bfscplate2d.bfscplate2d`, with the rows
 
         .. math::
@@ -550,8 +554,8 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Bb`` is the operator `[B_b]` of the curvatures `\{\kappa\} =
-        \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T` of the Notes of
+        ``Bb`` is the operator `\boldsymbol{B}_b` of the curvatures `\boldsymbol{\kappa} =
+        \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^\top` of the Notes of
         :mod:`bfscplate2d.bfscplate2d`, with the rows
 
         .. math::
@@ -919,7 +923,7 @@ cdef class BFSCPlate2D(object):
         -----
         ``Sw_x`` is `\boldsymbol{S}^w_{,x} = (2/lex) \, \partial
         \boldsymbol{S}^w / \partial \xi`, with `\boldsymbol{S}^w` of
-        :meth:`.update_Sw`, the first row of the operator `[G]` of the Notes of
+        :meth:`.update_Sw`, the first row of the operator `\boldsymbol{G}` of the Notes of
         :mod:`bfscplate2d.bfscplate2d`, which gives the slope `w_{,x}` of the
         nonlinear membrane strains.
 
@@ -964,7 +968,7 @@ cdef class BFSCPlate2D(object):
         -----
         ``Sw_y`` is `\boldsymbol{S}^w_{,y} = (2/ley) \, \partial
         \boldsymbol{S}^w / \partial \eta`, with `\boldsymbol{S}^w` of
-        :meth:`.update_Sw`, the second row of the operator `[G]` of the Notes
+        :meth:`.update_Sw`, the second row of the operator `\boldsymbol{G}` of the Notes
         of :mod:`bfscplate2d.bfscplate2d`, which gives the slope `w_{,y}` of
         the nonlinear membrane strains.
 
@@ -1046,19 +1050,19 @@ cpdef void update_KC0(BFSCPlate2D plate,
     Notes
     -----
     The element matrix is the Hessian of the strain energy `U` of the Notes of
-    :mod:`bfscplate2d.bfscplate2d` at `\{u_e\} = \{0\}`, with the operators
-    `[B_m]` and `[B_b]` of the linear membrane strains and of the curvatures:
+    :mod:`bfscplate2d.bfscplate2d` at `\boldsymbol{u}_e = \boldsymbol{0}`, with the operators
+    `\boldsymbol{B}_m` and `\boldsymbol{B}_b` of the linear membrane strains and of the curvatures:
 
     .. math::
 
-        [KC0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{C0} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_m]^T [A] [B_m] + [B_m]^T [B] [B_b] + [B_b]^T [B] [B_m]
-            + [B_b]^T [D] [B_b] \right)
+            \left( \boldsymbol{B}_m^\top \boldsymbol{A} \boldsymbol{B}_m + \boldsymbol{B}_m^\top \boldsymbol{B} \boldsymbol{B}_b + \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_m
+            + \boldsymbol{B}_b^\top \boldsymbol{D} \boldsymbol{B}_b \right)
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
     ``xi = points[i]`` and ``eta = points[j]``. The terms are the membrane
-    stiffness, the membrane-bending coupling, null when `[B] = [0]`, e.g. for a
+    stiffness, the membrane-bending coupling, null when `\boldsymbol{B} = \boldsymbol{0}`, e.g. for a
     symmetric laminate with the reference surface at mid-thickness, and the
     bending stiffness. The matrix is symmetric and independent of the
     displacements. The integration is exact with ``nint >= 4``, see the Notes
@@ -9281,47 +9285,47 @@ cpdef void update_KCNL(double [::1] u,
     Notes
     -----
     KCNL = KC0L + KCL0 + KCLL + KGLL is the part of the tangent stiffness
-    matrix `\partial \{f_{int}\} / \partial \{u_e\}` of the Notes of
+    matrix `\partial \boldsymbol{F}_{int} / \partial \boldsymbol{u}_e` of the Notes of
     :mod:`bfscplate2d.bfscplate2d` that is neither in KC0 nor in the KG of
     :func:`.update_KG`:
 
     .. math::
 
-        [KC0L] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{C0L} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_m]^T [A] [B_{mL}] + [B_b]^T [B] [B_{mL}] \right)
+            \left( \boldsymbol{B}_m^\top \boldsymbol{A} \boldsymbol{B}_{NL} + \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_{NL} \right)
 
-        [KCL0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{CL0} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_{mL}]^T [A] [B_m] + [B_{mL}]^T [B] [B_b] \right)
+            \left( \boldsymbol{B}_{NL}^\top \boldsymbol{A} \boldsymbol{B}_m + \boldsymbol{B}_{NL}^\top \boldsymbol{B} \boldsymbol{B}_b \right)
 
-        [KCLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{CLL} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [B_{mL}]^T [A] [B_{mL}]
+            \boldsymbol{B}_{NL}^\top \boldsymbol{A} \boldsymbol{B}_{NL}
 
-        [KGLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{GLL} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
+            \boldsymbol{G}^\top
             \begin{bmatrix} N_{NL,xx} & N_{NL,xy} \\ N_{NL,xy} & N_{NL,yy}
-            \end{bmatrix} [G]
+            \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{B}_{NL}` computed with the
     slopes `w_{,x}` and `w_{,y}` (``w_x`` and ``w_y``) of the element degrees
     of freedom at the point, and the membrane forces of the nonlinear strains
 
     .. math::
 
         \begin{Bmatrix} N_{NL,xx} \\ N_{NL,yy} \\ N_{NL,xy} \end{Bmatrix}
-        = [A] \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y}
+        = \boldsymbol{A} \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y}
         \end{Bmatrix}
 
     KC0L and KCL0 are linear in the slopes, KCLL and KGLL quadratic, and
-    `[KCL0] = [KC0L]^T`. KGLL is the geometric term of the membrane forces of
+    `\boldsymbol{K}_{CL0} = \boldsymbol{K}_{C0L}^\top`. KGLL is the geometric term of the membrane forces of
     the nonlinear strains, whereas the geometric term of the membrane forces of
     the linear strains is the KG of :func:`.update_KG`, such that KC0 + KCNL +
     KG is the exact Jacobian of the internal forces of :func:`.update_fint`
-    computed with the same points. Since `[B_{mL}]` and `[G]` have entries only
+    computed with the same points. Since `\boldsymbol{B}_{NL}` and `\boldsymbol{G}` have entries only
     in the columns of the out-of-plane degrees of freedom, KCNL has no entries
     between two in-plane degrees of freedom. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
@@ -14754,34 +14758,35 @@ cpdef void update_KG(double [::1] u,
     -----
     .. math::
 
-        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_G = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
-            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+            \boldsymbol{G}^\top
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[G]` of the Notes of
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{G}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`, and the membrane forces of the linear
     membrane strains and of the curvatures
 
     .. math::
 
-        \{Nxx, Nyy, Nxy\}^T = [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
+        \{Nxx, Nyy, Nxy\}^\top = \boldsymbol{A}\boldsymbol{B}_m\boldsymbol{u}_e + \boldsymbol{B}\boldsymbol{B}_b\boldsymbol{u}_e
 
-    It is the geometric term `\partial ([B_{mL}]^T \{N\}) / \partial \{u_e\} =
-    [G]^T [N] [G]` of the tangent stiffness matrix for the part of the membrane
-    forces `\{N\}` that is linear in `\{u_e\}`; the part of the nonlinear
+    It is the geometric term `\partial (\boldsymbol{B}_{NL}^\top \boldsymbol{N}) / \partial \boldsymbol{u}_e =
+    \boldsymbol{G}^\top \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy
+    \end{bmatrix} \boldsymbol{G}` of the tangent stiffness matrix for the part of the membrane
+    forces `\boldsymbol{N}` that is linear in `\boldsymbol{u}_e`; the part of the nonlinear
     strains is in the KGLL of :func:`.update_KCNL`. Since KG is linear in the
-    displacements, KG computed with the solution `\{u\}` of the linear static
-    problem `[KC0]\{u\} = \{f_{ext}\}` is proportional to the load, and the
+    displacements, KG computed with the solution `\boldsymbol{u}` of the linear static
+    problem `\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}` is proportional to the load, and the
     linear buckling problem
 
     .. math::
 
-        ([KC0] + \lambda [KG]) \{\phi\} = \{0\}
+        (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} = \boldsymbol{0}
 
     gives the load multipliers `\lambda` of the critical loads `\lambda
-    \{f_{ext}\}` and the buckling modes `\{\phi\}`. The integration is exact
+    \boldsymbol{F}_{ext}` and the buckling modes `\boldsymbol{\phi}`. The integration is exact
     with ``nint >= 5``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
@@ -16323,17 +16328,17 @@ cpdef void update_KG_cte_N(double Nxx,
 
     .. math::
 
-        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_G = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
-            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+            \boldsymbol{G}^\top
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]`` and `[G]` of the Notes of
+    ``xi = points[i]`` and ``eta = points[j]`` and `\boldsymbol{G}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`. The membrane forces are positive in
     tension, e.g. ``Nxx = -1`` in all the elements for a unit compressive force
     per unit length along `x`, for which the load multiplier `\lambda` of the
-    linear buckling problem `([KC0] + \lambda [KG]) \{\phi\} = \{0\}` is the
+    linear buckling problem `(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} = \boldsymbol{0}` is the
     critical compressive force per unit length. The membrane forces of a
     pre-buckling state computed with the stiffness of the structure, e.g.
     non-uniform because of the boundary conditions, are given instead by
@@ -17734,11 +17739,11 @@ cpdef void update_M(BFSCPlate2D plate,
 
     .. math::
 
-        [M] = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^T \boldsymbol{S}^u
-            + (\boldsymbol{S}^v)^T \boldsymbol{S}^v
-            + (\boldsymbol{S}^w)^T \boldsymbol{S}^w \right)
-            + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^T
-            \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^w_{,y})^T
+        \boldsymbol{M} = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^\top \boldsymbol{S}^u
+            + (\boldsymbol{S}^v)^\top \boldsymbol{S}^v
+            + (\boldsymbol{S}^w)^\top \boldsymbol{S}^w \right)
+            + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^\top
+            \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^w_{,y})^\top
             \boldsymbol{S}^w_{,y} \right) \right) dA
 
     The term with `h^3/12` is the rotary inertia of the normal. The terms with
@@ -20546,31 +20551,32 @@ cpdef void update_fint(double [::1] u,
 
     .. math::
 
-        \{f_{int}\} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{F}_{int} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right)
+            \left( (\boldsymbol{B}_m + \boldsymbol{B}_{NL})^\top \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M} \right)
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{B}_{NL}` computed with the
     slopes ``w_x`` and ``w_y`` at the point, and the membrane forces and
     moments of the total strains
 
     .. math::
 
-        \{Nxx, Nyy, Nxy\}^T = [A] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
-            \{u_e\} + [B][B_b]\{u_e\}
+        \{Nxx, Nyy, Nxy\}^\top = \boldsymbol{A} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right)
+            \boldsymbol{u}_e + \boldsymbol{B}\boldsymbol{B}_b\boldsymbol{u}_e
 
-        \{Mxx, Myy, Mxy\}^T = [B] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
-            \{u_e\} + [D][B_b]\{u_e\}
+        \{Mxx, Myy, Mxy\}^\top = \boldsymbol{B} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right)
+            \boldsymbol{u}_e + \boldsymbol{D}\boldsymbol{B}_b\boldsymbol{u}_e
 
-    The factor `1/2` of the strains and the full `[B_{mL}]` of their variation
-    come from the nonlinear strains being quadratic in `\{u_e\}`, see the Notes
+    The factor `1/2` of the strains and the full `\boldsymbol{B}_{NL}` of their variation
+    come from the nonlinear strains being quadratic in `\boldsymbol{u}_e`, see the Notes
     of :mod:`bfscplate2d.bfscplate2d`. KC0 + KCNL + KG of :func:`.update_KC0`,
     :func:`.update_KCNL` and :func:`.update_KG` is the exact Jacobian of these
     internal forces computed with the same points, and for small displacements
-    `\{f_{int}\} \approx [KC0]\{u_e\}`. In a nonlinear static analysis the
-    residual is the difference between the external force vector and the
-    assembled internal force vector. The integration is exact with
+    `\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}\boldsymbol{u}_e`. In a nonlinear static analysis the
+    residual is the difference between the assembled internal force vector
+    and the external force vector, `\boldsymbol{R} = \boldsymbol{F}_{int} -
+    \boldsymbol{F}_{ext}`. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
@@ -20899,7 +20905,7 @@ cpdef void update_fext_follower(double [::1] u,
     reference : int, optional
         Any value other than ``0`` includes the force of the undeformed
         state, the dead pressure load; ``0`` leaves it out, which gives the
-        part `\{F_p(u)\} - \{F_p(0)\}` that depends on the displacements.
+        part `\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0})` that depends on the displacements.
         Default ``1``.
 
     See Also
@@ -20915,23 +20921,23 @@ cpdef void update_fext_follower(double [::1] u,
 
     .. math::
 
-        \delta W_p = \int_A p \, \mathbf{a} \cdot \delta\mathbf{u} \, dx \, dy,
-        \qquad \mathbf{a} = \mathbf{X}_{,x} \times \mathbf{X}_{,y}
+        \delta W_p = \int_A p \, \boldsymbol{a} \cdot \delta\boldsymbol{u} \, dx \, dy,
+        \qquad \boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}
 
-    with `\mathbf{u} = \{u, v, w\}^T`, `\mathbf{X} = \mathbf{X}_0 +
-    \mathbf{u}` the deformed position of the mid-surface, `\mathbf{X}_{,x} =
-    \{1 + u_{,x}, v_{,x}, w_{,x}\}^T` and `\mathbf{X}_{,y} = \{u_{,y}, 1 +
-    v_{,y}, w_{,y}\}^T`. `\mathbf{a}` is the area vector, normal to the
+    with `\boldsymbol{u} = \{u, v, w\}^\top`, `\boldsymbol{X} = \boldsymbol{X}_0 +
+    \boldsymbol{u}` the deformed position of the mid-surface, `\boldsymbol{X}_{,x} =
+    \{1 + u_{,x}, v_{,x}, w_{,x}\}^\top` and `\boldsymbol{X}_{,y} = \{u_{,y}, 1 +
+    v_{,y}, w_{,y}\}^\top`. `\boldsymbol{a}` is the area vector, normal to the
     deformed mid-surface, with the length of the ratio between the deformed
     and the undeformed areas. Split by orders in the displacement gradients,
-    `\mathbf{a} = \mathbf{a}_0 + \mathbf{a}_1 + \mathbf{a}_2`, with
+    `\boldsymbol{a} = \boldsymbol{a}_0 + \boldsymbol{a}_1 + \boldsymbol{a}_2`, with
 
     .. math::
 
-        \mathbf{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
-        \mathbf{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} \\
+        \boldsymbol{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+        \boldsymbol{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} \\
             u_{,x} + v_{,y} \end{Bmatrix}, \qquad
-        \mathbf{a}_2 = \begin{Bmatrix} v_{,x} w_{,y} - w_{,x} v_{,y} \\
+        \boldsymbol{a}_2 = \begin{Bmatrix} v_{,x} w_{,y} - w_{,x} v_{,y} \\
             w_{,x} u_{,y} - u_{,x} w_{,y} \\
             u_{,x} v_{,y} - v_{,x} u_{,y} \end{Bmatrix}
 
@@ -20939,42 +20945,44 @@ cpdef void update_fext_follower(double [::1] u,
 
     .. math::
 
-        \{F_p\} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{F}_p = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight \, p_{ij}
-            \left( (\boldsymbol{S}^u)^T a_x + (\boldsymbol{S}^v)^T a_y
-            + (\boldsymbol{S}^w)^T a_z \right),
+            \left( (\boldsymbol{S}^u)^\top a_x + (\boldsymbol{S}^v)^\top a_y
+            + (\boldsymbol{S}^w)^\top a_z \right),
         \qquad
-        \mathbf{a} = r \, \mathbf{a}_0 + \mathbf{a}_1 + q \, \mathbf{a}_2
+        \boldsymbol{a} = r \, \boldsymbol{a}_0 + \boldsymbol{a}_1 + q \, \boldsymbol{a}_2
 
     with ``weight = weights[i]*weights[j]``, `p_{ij}` = ``p[i, j]``, the rows
     `\boldsymbol{S}^u`, `\boldsymbol{S}^v`, `\boldsymbol{S}^w` of the Notes of
     :mod:`bfscplate2d.bfscplate2d` and the area vector evaluated at ``xi =
     points[i]`` and ``eta = points[j]``, `r = 1` for ``reference`` not ``0``
     and `q = 1` for ``quadratic`` not ``0``, otherwise `0`. The term of
-    `\mathbf{a}_0` is the dead pressure load `\int_A p (\boldsymbol{S}^w)^T
+    `\boldsymbol{a}_0` is the dead pressure load `\int_A p (\boldsymbol{S}^w)^\top
     dA`, the force of the undeformed state.
 
     With the moderate rotations of the von Karman strains, `u_{,x} \sim
     \epsilon` and `w_{,x} \sim \epsilon^{1/2}`, such that `\delta u \sim
-    \epsilon^{1/2} \delta w`, `\mathbf{a}_0 + \mathbf{a}_1` keeps every term
-    of `p \, \mathbf{a} \cdot \delta\mathbf{u}` up to the order `\epsilon \,
-    p \, \delta w`, and `\mathbf{a}_2` adds terms of the order `\epsilon^2 p
+    \epsilon^{1/2} \delta w`, `\boldsymbol{a}_0 + \boldsymbol{a}_1` keeps every term
+    of `p \, \boldsymbol{a} \cdot \delta\boldsymbol{u}` up to the order `\epsilon \,
+    p \, \delta w`, and `\boldsymbol{a}_2` adds terms of the order `\epsilon^2 p
     \, \delta w`, of the order of the terms that the strains neglect.
     ``quadratic=0`` is therefore the consistent truncation, for which
-    `\{F_p\}` is affine in the displacements, and ``quadratic=1`` the
+    `\boldsymbol{F}_p` is affine in the displacements, and ``quadratic=1`` the
     complete area vector of the plate, for checking the sensitivity of a
     result to the truncation.
 
     A positive `p` pushes along `+z` in the undeformed state, like a
     positive load along `w`. In a nonlinear analysis with the load factor
     `\lambda` of the pressure, the residual of the equilibrium equations is
-    `\{f_{int}\} - \lambda \{F_p(u)\}`, where `\{F_p(u)\} = \{F_p(0)\} +
-    (\{F_p(u)\} - \{F_p(0)\})`: the dead part may stay in the external force
+    `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_p(\boldsymbol{u})`, where `\boldsymbol{F}_p(\boldsymbol{u}) = \boldsymbol{F}_p(\boldsymbol{0}) +
+    (\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`: the dead part may stay in the external force
     vector of the solver and the part of ``reference=0``, which vanishes at
-    `u = 0`, be subtracted from the internal forces. The Jacobian of the
-    residual is `[KC0] + [KCNL] + [KG] + \lambda [KCfollower]`, with
-    `[KCfollower]` of :func:`.update_KCfollower` for the same ``p`` and
-    ``quadratic``.
+    `\boldsymbol{u} = \boldsymbol{0}`, be subtracted from the internal
+    forces. The Jacobian of the residual is `\boldsymbol{K}_{C0} +
+    \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+    `\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
+    `\boldsymbol{K}_{F_{ref}}` the matrix of :func:`.update_KCfollower` for
+    the same ``p`` and ``quadratic``.
 
     For a pressure constant over the element, the integrands are
     polynomials of degree at most 6 in `\xi` and in `\eta` for
@@ -21304,43 +21312,45 @@ cpdef void update_KCfollower(double [::1] u,
 
     .. math::
 
-        [KCfollower] = -\frac{\partial \{F_p\}}{\partial \{u_e\}} =
+        \boldsymbol{K}_F = -\frac{\partial \boldsymbol{F}_p}{\partial \boldsymbol{u}_e} =
             -\sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight \, p_{ij}
-            \left( (\boldsymbol{S}^u)^T \frac{\partial a_x}{\partial \{u_e\}}
-            + (\boldsymbol{S}^v)^T \frac{\partial a_y}{\partial \{u_e\}}
-            + (\boldsymbol{S}^w)^T \frac{\partial a_z}{\partial \{u_e\}}
+            \left( (\boldsymbol{S}^u)^\top \frac{\partial a_x}{\partial \boldsymbol{u}_e}
+            + (\boldsymbol{S}^v)^\top \frac{\partial a_y}{\partial \boldsymbol{u}_e}
+            + (\boldsymbol{S}^w)^\top \frac{\partial a_z}{\partial \boldsymbol{u}_e}
             \right)
 
-    with `\{F_p\}` and the area vector `\mathbf{a}` of
+    with `\boldsymbol{F}_p` and the area vector `\boldsymbol{a}` of
     :func:`.update_fext_follower`, ``weight = weights[i]*weights[j]`` and
     `p_{ij}` = ``p[i, j]``, the rows evaluated at ``xi = points[i]`` and
     ``eta = points[j]``. For the first-order area vector
 
     .. math::
 
-        \frac{\partial \mathbf{a}_1}{\partial \{u_e\}} =
+        \frac{\partial \boldsymbol{a}_1}{\partial \boldsymbol{u}_e} =
         \begin{bmatrix} -\boldsymbol{S}^w_{,x} \\ -\boldsymbol{S}^w_{,y} \\
             \boldsymbol{S}^u_{,x} + \boldsymbol{S}^v_{,y} \end{bmatrix}
 
-    is constant, which gives the blocks `p (\boldsymbol{S}^u)^T
-    \boldsymbol{S}^w_{,x}`, `p (\boldsymbol{S}^v)^T \boldsymbol{S}^w_{,y}`, `-p
-    (\boldsymbol{S}^w)^T \boldsymbol{S}^u_{,x}` and `-p (\boldsymbol{S}^w)^T
+    is constant, which gives the blocks `p (\boldsymbol{S}^u)^\top
+    \boldsymbol{S}^w_{,x}`, `p (\boldsymbol{S}^v)^\top \boldsymbol{S}^w_{,y}`, `-p
+    (\boldsymbol{S}^w)^\top \boldsymbol{S}^u_{,x}` and `-p (\boldsymbol{S}^w)^\top
     \boldsymbol{S}^v_{,y}` integrated over the element, independent of the
     displacements. The complete area vector adds
-    `\partial \mathbf{a}_2 / \partial \{u_e\}`, linear in the displacement
+    `\partial \boldsymbol{a}_2 / \partial \boldsymbol{u}_e`, linear in the displacement
     gradients, to these blocks and to the blocks `[u, v]` and `[v, u]`. In
     the tangent stiffness matrix of a nonlinear analysis with the load
-    factor `\lambda` of the pressure, `[KC0] + [KCNL] + [KG] + \lambda
-    [KCfollower]` is the Jacobian of the residual `\{f_{int}\} - \lambda
-    \{F_p(u)\}`, see :func:`.update_fext_follower`. In a linear buckling
-    analysis of a follower pressure `\lambda p`, `[KCfollower]` of ``p``
-    multiplies `\lambda` together with the `[KG]` of the linear static
+    factor `\lambda` of the pressure, `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G +
+    \boldsymbol{K}_F`, with `\boldsymbol{K}_F = \lambda
+    \boldsymbol{K}_{F_{ref}}` and `\boldsymbol{K}_{F_{ref}}` the matrix of
+    ``p``, is the Jacobian of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})`, see :func:`.update_fext_follower`. In a linear buckling
+    analysis of a follower pressure `\lambda p`, `\boldsymbol{K}_{F_{ref}}` of ``p``
+    multiplies `\lambda` together with the `\boldsymbol{K}_G` of the linear static
     solution of ``p``.
 
-    For the first-order area vector `\{\delta\}^T [KCfollower] \{\Delta\} =
+    For the first-order area vector `\boldsymbol{\delta}^\top \boldsymbol{K}_F \boldsymbol{\Delta} =
     -P(\delta, \Delta)`, with the bilinear form `P(\delta, \Delta) = \int_A p
-    \, \delta\mathbf{u} \cdot \mathbf{a}_1(\Delta\mathbf{u}) \, dA` of two
+    \, \delta\boldsymbol{u} \cdot \boldsymbol{a}_1(\Delta\boldsymbol{u}) \, dA` of two
     displacement fields `\delta` and `\Delta`, and an integration by parts
     gives its skew part
 
