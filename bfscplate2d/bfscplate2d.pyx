@@ -200,12 +200,16 @@ and its Jacobian, the tangent stiffness matrix, is split as
 
 .. math::
 
-    \frac{\partial \boldsymbol{F}_{int}}{\partial \boldsymbol{u}_e} = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G
+    \frac{\partial \boldsymbol{F}_{int}}{\partial \boldsymbol{u}_e} = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G
 
 with the linear constitutive stiffness matrix of :func:`.update_KC0`,
-independent of `\boldsymbol{u}_e`, the nonlinear constitutive stiffness matrix of
-:func:`.update_KCNL`, null for null slopes, and the geometric stiffness
-matrix of :func:`.update_KG`, linear in `\boldsymbol{u}_e`. For small displacements
+independent of `\boldsymbol{u}_e`, the nonlinear constitutive stiffness
+matrix `\boldsymbol{K}_{CNL}` of the terms of `\boldsymbol{B}_{NL}` and the
+geometric stiffness matrix `\boldsymbol{K}_{GNL}` of the membrane forces of
+the nonlinear strains, whose sum is the matrix of :func:`.update_KCNL`,
+null for null slopes, and the geometric stiffness matrix
+`\boldsymbol{K}_G` of the membrane forces of the linear strains, of
+:func:`.update_KG`, linear in `\boldsymbol{u}_e`. For small displacements
 `\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}\boldsymbol{u}_e`, the relation of a linear static
 analysis; :func:`.update_KG` and :func:`.update_KG_cte_N` give the
 geometric stiffness matrix of a linear buckling analysis. The mass matrix
@@ -228,7 +232,7 @@ vector. A positive `p` pushes along `+z`, and at `\boldsymbol{u} =
 \boldsymbol{0}` the force vector is the dead pressure load. The tangent
 stiffness matrix of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} -
 \lambda \boldsymbol{F}_p(\boldsymbol{u})` is `\boldsymbol{K}_{C0} +
-\boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
 `\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
 `\boldsymbol{K}_{F_{ref}}` the load stiffness matrix of `p`. The load
 stiffness matrix is unsymmetric in general, a
@@ -9226,7 +9230,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear stiffness matrix KCNL
 
     The 40 degrees of freedom of the element are read from ``u`` and
     written to the attribute ``u`` of ``plate``, which is overwritten. The
@@ -9287,7 +9291,12 @@ cpdef void update_KCNL(double [::1] u,
     KCNL = KC0L + KCL0 + KCLL + KGLL is the part of the tangent stiffness
     matrix `\partial \boldsymbol{F}_{int} / \partial \boldsymbol{u}_e` of the Notes of
     :mod:`bfscplate2d.bfscplate2d` that is neither in KC0 nor in the KG of
-    :func:`.update_KG`:
+    :func:`.update_KG`, that is `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`:
+    the nonlinear constitutive stiffness matrix `\boldsymbol{K}_{CNL} =
+    \boldsymbol{K}_{C0L} + \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}` of the
+    terms of `\boldsymbol{B}_{NL}` and the geometric stiffness matrix
+    `\boldsymbol{K}_{GNL} = \boldsymbol{K}_{GLL}` of the membrane forces of
+    the nonlinear strains, with
 
     .. math::
 
@@ -20979,7 +20988,7 @@ cpdef void update_fext_follower(double [::1] u,
     vector of the solver and the part of ``reference=0``, which vanishes at
     `\boldsymbol{u} = \boldsymbol{0}`, be subtracted from the internal
     forces. The Jacobian of the residual is `\boldsymbol{K}_{C0} +
-    \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+    \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
     `\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
     `\boldsymbol{K}_{F_{ref}}` the matrix of :func:`.update_KCfollower` for
     the same ``p`` and ``quadratic``.
@@ -21339,7 +21348,7 @@ cpdef void update_KCfollower(double [::1] u,
     `\partial \boldsymbol{a}_2 / \partial \boldsymbol{u}_e`, linear in the displacement
     gradients, to these blocks and to the blocks `[u, v]` and `[v, u]`. In
     the tangent stiffness matrix of a nonlinear analysis with the load
-    factor `\lambda` of the pressure, `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G +
+    factor `\lambda` of the pressure, `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G +
     \boldsymbol{K}_F`, with `\boldsymbol{K}_F = \lambda
     \boldsymbol{K}_{F_{ref}}` and `\boldsymbol{K}_{F_{ref}}` the matrix of
     ``p``, is the Jacobian of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda

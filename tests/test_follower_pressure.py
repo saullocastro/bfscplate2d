@@ -31,7 +31,7 @@ first order in the displacement gradients (``quadratic=0``) or complete
      reference values of the plate_clpt_donnell model of panels, the same
      von Karman kinematics and area vector with another discretization;
 
-6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G +
+6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G +
    \boldsymbol{K}_F` is the Jacobian of the residual `\boldsymbol{R} =
    \boldsymbol{F}_{int} - \boldsymbol{F}_p`, against finite differences.
 
@@ -518,7 +518,7 @@ def test_symmetry():
 
 @pytest.mark.parametrize('quadratic', TRUNCATIONS)
 def test_tangent_is_jacobian_of_residual(quadratic):
-    r"""`\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+    r"""`\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
     \boldsymbol{K}_G + \boldsymbol{K}_F` against the central differences of
     `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`, every entry,
     and a Taylor test"""

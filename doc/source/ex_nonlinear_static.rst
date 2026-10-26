@@ -6,7 +6,7 @@ Nonlinear static analysis
 A rectangular isotropic plate, with `w` constrained at the nodes of the
 four edges, compressed along `x` below its critical load, with a transverse force at the centre large enough to reach a
 deflection of about 2.6 times the thickness. The model keeps the value
-arrays of `\boldsymbol{K}_{CNL}` and `\boldsymbol{K}_G`, which are zeroed and recomputed at each
+arrays of `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}` and `\boldsymbol{K}_G`, which are zeroed and recomputed at each
 iteration with :func:`.update_KCNL` and :func:`.update_KG`, and the
 internal forces of :func:`.update_fint`:
 
@@ -23,7 +23,7 @@ internal forces of :func:`.update_fint`:
     :pyobject: calc_fint
 
 The full Newton-Raphson method of structsolve, with the tangent stiffness
-matrix `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G` rebuilt at every iteration and the
+matrix `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G` rebuilt at every iteration and the
 external forces applied in four increments, ``newton_raphson(m, fext + ftrans,
 increments=4)``, see :doc:`ex_structsolve_nonlinear`. The test checks the
 quadratic convergence and that the membrane stretching makes the plate

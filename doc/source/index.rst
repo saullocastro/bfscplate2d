@@ -22,7 +22,7 @@ With ``bfscplate2d`` you can compute:
   `(\boldsymbol{K}_{C0} - \omega^2 \boldsymbol{M})\boldsymbol{u} = \boldsymbol{0}`, with :func:`.update_M`
 
 * The internal force vector `\boldsymbol{F}_{int}` and the tangent stiffness matrix
-  `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G`, its exact Jacobian, for geometrically
+  `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G`, its exact Jacobian, for geometrically
   nonlinear static analyses, with :func:`.update_fint` and
   :func:`.update_KCNL`
 

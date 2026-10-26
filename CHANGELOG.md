@@ -70,15 +70,22 @@ The dates of the released versions are those of their tagged commits.
   upper case, `\boldsymbol{F}_{int}`, `\boldsymbol{F}_{ext}` (were
   `\{f_{int}\}`, `\{f\}`), `\boldsymbol{F}_p`, `\boldsymbol{R}`; matrices
   bold upper case without brackets, e.g. `\boldsymbol{B}_m`,
-  `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL}`, `\boldsymbol{K}_G` (were
-  `[B_m]`, `[KC0]`, `[KCNL]`, `[KG]`); the operator of the nonlinear strains
+  `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`,
+  `\boldsymbol{K}_G` (were `[B_m]`, `[KC0]`, `[KCNL]`, `[KG]`), the matrix
+  KCNL of `update_KCNL` being the book's nonlinear constitutive stiffness
+  matrix `\boldsymbol{K}_{CNL}`, of the terms of `\boldsymbol{B}_{NL}`, plus
+  the geometric term `\boldsymbol{K}_{GNL}` (KGLL in the code) of the
+  membrane forces of the nonlinear strains; the operator of the nonlinear strains
   `\boldsymbol{B}_{NL}` (was `[B_{mL}]`, `BmL` in the code); the load
   stiffness matrix of `update_KCfollower` `\boldsymbol{K}_F` (was
   `[KCfollower]`), with `\boldsymbol{K}_F = \lambda
   \boldsymbol{K}_{F_{ref}}` for the pressure `\lambda p`; `\boldsymbol`
   (was `\mathbf`) and the transpose `^\top` (was `^T`). The residual is
   `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_{ext}` throughout,
-  also in the Notes of `update_fint`. The docstring of
+  also in the Notes of `update_fint`, and the examples with structsolve
+  require structsolve 0.9.3 or newer, which has this residual and the
+  Newton-Raphson corrections `\boldsymbol{K}_T \Delta \boldsymbol{c} =
+  -\boldsymbol{R}`. The docstring of
   `derive_bfscplate2d_follower_pressure.py`, which contains a backslash, is
   a raw string. Code identifiers, plain-text comments and README.md are
   unchanged.

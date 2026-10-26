@@ -17,7 +17,7 @@ Large deflection of a cantilever plate
 
 The Newton-Raphson method with the residual `\boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u})`
 of the pressure of the load factor ``lbd`` and the tangent stiffness matrix
-`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, or with the dead pressure
+`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, or with the dead pressure
 `\boldsymbol{F}_p(\boldsymbol{0})` for comparison:
 
 .. literalinclude:: ../../tests/test_follower_pressure.py
@@ -38,7 +38,7 @@ same result:
 Tangent stiffness matrix
 ------------------------
 
-`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` against the finite
+`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` against the finite
 differences of the residual, for both truncations:
 
 .. literalinclude:: ../../tests/test_follower_pressure.py
