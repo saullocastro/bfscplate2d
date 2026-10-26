@@ -105,9 +105,9 @@ freedom of a node, e.g. ``f[6::DOF][check] = fmid`` for a transverse force
 at the nodes selected by the boolean array ``check``. Distributed loads are
 integrated with the interpolation functions of the element, the
 consistent load vector: a pressure `P` with the rows of
-:meth:`.BFSCPlate2D.update_Nw` over the integration points of the element,
+:meth:`.BFSCPlate2D.update_Sw` over the integration points of the element,
 see :doc:`ex_linear_static`, and a force per unit length on an edge with
-:meth:`.BFSCPlate2D.update_Nu` at `\xi = \pm 1`, see
+:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`, see
 :doc:`ex_linear_buckling`. The force vector of a pressure that follows the
 deformation is given by :func:`.update_fext_follower`, see
 :doc:`follower_pressure`.

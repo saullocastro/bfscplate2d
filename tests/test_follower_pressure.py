@@ -1,18 +1,23 @@
 r"""Follower pressure: update_fext_follower and update_KCfollower
 
 A follower pressure stays normal to the deformed mid-surface and acts on its
-deformed area, with the area vector `a = X_{,x} \times X_{,y}` truncated to
+deformed area, with the area vector `\boldsymbol{a} = \boldsymbol{X}_{,x}
+\times \boldsymbol{X}_{,y}` truncated to
 first order in the displacement gradients (``quadratic=0``) or complete
 (``quadratic=1``). The checks, for both truncations:
 
 1. in the undeformed state the force vector equals the dead pressure load
-   `\int p N_w dA`, computed with the rows of :meth:`.BFSCPlate2D.update_Nw`;
-2. the force vector against an independent integration of `\int p N \cdot a
-   dA`, with cubic Hermite polynomials written here and ``np.cross``;
-3. directional Taylor test of the force vector against `-KCfollower d`:
-   exact for the first-order area vector, for which `F_p` is affine, and a
-   remainder falling as `O(h)` for the complete one;
-4. ``reference=0`` gives `F_p(u) - F_p(0)`;
+   `\int p \boldsymbol{S}^w dA`, computed with the rows of
+   :meth:`.BFSCPlate2D.update_Sw`;
+2. the force vector against an independent integration of `\int p
+   \boldsymbol{S} \cdot \boldsymbol{a} dA`, with cubic Hermite polynomials
+   written here and ``np.cross``;
+3. directional Taylor test of the force vector against `-\boldsymbol{K}_F
+   \boldsymbol{d}`: exact for the first-order area vector, for which
+   `\boldsymbol{F}_p` is affine, and a remainder falling as `O(h)` for the
+   complete one;
+4. ``reference=0`` gives `\boldsymbol{F}_p(\boldsymbol{u}) -
+   \boldsymbol{F}_p(\boldsymbol{0})`;
 5. no closed-form solution of the panels validation cases (rings and
    cylinders) applies to a flat plate, hence:
 
@@ -26,8 +31,9 @@ first order in the displacement gradients (``quadratic=0``) or complete
      reference values of the plate_clpt_donnell model of panels, the same
      von Karman kinematics and area vector with another discretization;
 
-6. `KC0 + KCNL + KG + KCfollower` is the Jacobian of the residual `f_{int}
-   - F_p`, against finite differences.
+6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G +
+   \boldsymbol{K}_F` is the Jacobian of the residual `\boldsymbol{R} =
+   \boldsymbol{F}_{int} - \boldsymbol{F}_p`, against finite differences.
 
 Units: N, m, Pa.
 """
@@ -226,16 +232,17 @@ def rows(t, s, lex, ley):
 
 
 def area_vector(R, ue, quadratic):
-    ux, uy = R['u'][1] @ ue, R['u'][2] @ ue
-    vx, vy = R['v'][1] @ ue, R['v'][2] @ ue
-    wx, wy = R['w'][1] @ ue, R['w'][2] @ ue
+    u_x, u_y = R['u'][1] @ ue, R['u'][2] @ ue
+    v_x, v_y = R['v'][1] @ ue, R['v'][2] @ ue
+    w_x, w_y = R['w'][1] @ ue, R['w'][2] @ ue
     if quadratic:
-        return np.cross([1 + ux, vx, wx], [uy, 1 + vy, wy])
-    return np.array([-wx, -wy, 1 + ux + vy])
+        return np.cross([1 + u_x, v_x, w_x], [u_y, 1 + v_y, w_y])
+    return np.array([-w_x, -w_y, 1 + u_x + v_y])
 
 
 def fext_follower_reference(m, u, func, quadratic, npts=8):
-    r"""`\int p (N_u a_x + N_v a_y + N_w a_z) dA` element by element"""
+    r"""`\int p (\boldsymbol{S}^u a_x + \boldsymbol{S}^v a_y
+    + \boldsymbol{S}^w a_z) dA` element by element"""
     pts, wts = leggauss(npts)
     out = np.zeros(m.N)
     for plate in m.elements:
@@ -296,9 +303,9 @@ def test_undeformed_state_equals_dead_load(quadratic):
         fe = np.zeros(4*DOF)
         for i, xi in enumerate(m.points):
             for j, eta in enumerate(m.points):
-                plate.update_Nw(xi, eta)
+                plate.update_Sw(xi, eta)
                 fe += (plate.lex*plate.ley/4*m.weights[i]*m.weights[j]
-                       *p[i, j]*np.asarray(plate.Nw))
+                       *p[i, j]*np.asarray(plate.Sw))
         dead[m.positions(plate)] += fe
     u0 = np.zeros(m.N)
     f = m.fext_follower(u0, p_function, quadratic)
@@ -419,8 +426,10 @@ def skew_reference(m, d, D, p, px, py, npts=8):
 
 @pytest.mark.parametrize('case', ['uniform', 'function'])
 def test_skew_part_of_load_stiffness(case):
-    r"""`d^T K D - D^T K d = -(P(d, D) - P(D, d))` for a free plate, all
-    degrees of freedom free, since `d^T K D = -P(d, D)`"""
+    r"""`\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
+    \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d} = -(P(d, D) - P(D,
+    d))` for a free plate, all degrees of freedom free, since
+    `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} = -P(d, D)`"""
     if case == 'uniform':
         p = lambda x, y: -2.e4 + 0*x*y
         px = py = lambda x, y: 0*x*y
@@ -509,8 +518,10 @@ def test_symmetry():
 
 @pytest.mark.parametrize('quadratic', TRUNCATIONS)
 def test_tangent_is_jacobian_of_residual(quadratic):
-    r"""`K_T = KC0 + KCNL + KG + KCfollower` against the central differences
-    of `R = f_{int} - F_p`, every entry, and a Taylor test"""
+    r"""`\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
+    \boldsymbol{K}_G + \boldsymbol{K}_F` against the central differences of
+    `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`, every entry,
+    and a Taylor test"""
     m = Mesh(nx=3, ny=2)
     func = lambda x, y: 100*p_function(x, y)
     rng = np.random.default_rng(7)
@@ -564,8 +575,10 @@ PANELS = {
 
 def newton_raphson(m, bu, func, load, increments=5, tol=1.e-9,
                    max_iterations=30):
-    r"""Solves `f_{int}(u) = \lambda F_p(u)` (``load`` 0 or 1, the truncation
-    of the follower pressure) or `f_{int}(u) = \lambda F_p(0)` (``load =
+    r"""Solves `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})` (``load`` 0 or 1, the truncation of the
+    follower pressure) or `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{0})` (``load =
     'dead'``) for `\lambda` up to 1, returning the solution and the relative
     residuals of each increment"""
     u = np.zeros(m.N)

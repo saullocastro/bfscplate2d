@@ -46,7 +46,11 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.5.0 (2026-10-24)
+* version 0.5.0 (2026-10-26)
+    - The shape functions renamed from `N` to `S`, as in bfsccylinder: the
+      attributes `Nu`, ..., `Nw_y` and the methods `update_Nu`, ...,
+      `update_Nw_y` of `BFSCPlate2D` are `Su`, ..., `Sw_y` and
+      `update_Su`, ..., `update_Sw_y`
     - Follower pressure: `update_fext_follower` and `update_KCfollower`, the
       force vector and the unsymmetric load stiffness matrix of a pressure
       normal to the deformed mid-surface
@@ -56,7 +60,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       solution of the analyses with `structsolve.Analysis`
     - The tests solve the nonlinear analyses with `structsolve.Analysis` and
       cross-check the buckling loads and natural frequencies with
-      `structsolve.lb` and `structsolve.freq`, requiring `structsolve>=0.9.0`
+      `structsolve.lb` and `structsolve.freq`, requiring `structsolve>=0.9.3`
     - Metadata in `pyproject.toml`; Python 3.10 to 3.14
 * version 0.4.1 (2026-10-22)
     - Build flags for speed, without OpenMP

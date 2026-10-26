@@ -109,9 +109,9 @@ def test_static_pressure(plot=False):
                 eta = points[j]
                 weight_eta = weights[j]
                 weight = weight_xi*weight_eta
-                plate.update_Nw(xi, eta)
-                Nw = np.asarray(plate.Nw)
-                fe += (lex*ley)/4*weight*Nw*P
+                plate.update_Sw(xi, eta)
+                Sw = np.asarray(plate.Sw)
+                fe += (lex*ley)/4*weight*Sw*P
         f[indices] += fe
 
     Kuu = KC0[bu, :][:, bu]

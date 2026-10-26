@@ -156,7 +156,7 @@ def build_model():
 
 
 def calc_KCNL(m, u):
-    """The nonlinear constitutive stiffness KCNL(u) of the tangent."""
+    """The nonlinear part KCNL(u) of the tangent, K_CNL + K_GNL."""
     m.KCNLv *= 0
     for plate in m.elements:
         update_KCNL(u, plate, m.points, m.weights, m.KCNLr, m.KCNLc, m.KCNLv)

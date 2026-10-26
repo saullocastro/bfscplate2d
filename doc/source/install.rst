@@ -37,7 +37,9 @@ the documentation only: bfscplate2d does not import it, and it is not
 installed with bfscplate2d, not being in the ``dependencies`` of
 ``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
 with the module ``structsolve.convergence`` and Crisfield's convergence
-criterion as default.
+criterion as default. The examples of :doc:`analyses` require structsolve
+0.9.3 or newer, whose residual is `\boldsymbol{R} = \boldsymbol{F}_{int} -
+\lambda \boldsymbol{F}_{ext}`, the convention of these pages.
 
 To build in place, for running the tests from the source tree, which also
 writes ``bfscplate2d/version.py`` with the version of ``pyproject.toml``::

@@ -2,7 +2,20 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.5.0 (2026-10-24)
+## 0.5.0 (2026-10-26)
+
+### Breaking
+
+- The shape functions renamed from `N` to `S`, as in bfsccylinder; the
+  results are unchanged. Old and new public names of `BFSCPlate2D`:
+  - attributes `Nu`, `Nu_x`, `Nu_y`, `Nv`, `Nv_x`, `Nv_y`, `Nw`, `Nw_x`,
+    `Nw_y` renamed `Su`, `Su_x`, `Su_y`, `Sv`, `Sv_x`, `Sv_y`, `Sw`, `Sw_x`,
+    `Sw_y`;
+  - methods `update_Nu`, `update_Nu_x`, `update_Nu_y`, `update_Nv`,
+    `update_Nv_x`, `update_Nv_y`, `update_Nw`, `update_Nw_x`, `update_Nw_y`
+    renamed `update_Su`, `update_Su_x`, `update_Su_y`, `update_Sv`,
+    `update_Sv_x`, `update_Sv_y`, `update_Sw`, `update_Sw_x`,
+    `update_Sw_y`.
 
 ### Python versions
 
@@ -48,10 +61,53 @@ The dates of the released versions are those of their tagged commits.
   element loop, the boundary conditions, the follower pressure and the
   convergence criterion, in `analyses.rst` and
   `ex_structsolve_nonlinear.rst`.
+- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
+  `\boldsymbol{S}^w` and their derivatives, e.g. `\boldsymbol{S}^w_{,x}`,
+  as in pyfe3d.
+- Notation of the book in the math of the docstrings, the user guide and
+  the test docstrings: vectors bold lower case without braces, e.g.
+  `\boldsymbol{u}_e` (was `\{u_e\}`), the force vectors and the residual
+  upper case, `\boldsymbol{F}_{int}`, `\boldsymbol{F}_{ext}` (were
+  `\{f_{int}\}`, `\{f\}`), `\boldsymbol{F}_p`, `\boldsymbol{R}`; matrices
+  bold upper case without brackets, e.g. `\boldsymbol{B}_m`,
+  `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`,
+  `\boldsymbol{K}_G` (were `[B_m]`, `[KC0]`, `[KCNL]`, `[KG]`), the matrix
+  KCNL of `update_KCNL` being the book's nonlinear constitutive stiffness
+  matrix `\boldsymbol{K}_{CNL}`, of the terms of `\boldsymbol{B}_{NL}`, plus
+  the geometric term `\boldsymbol{K}_{GNL}` (KGLL in the code) of the
+  membrane forces of the nonlinear strains; the operator of the nonlinear strains
+  `\boldsymbol{B}_{NL}` (was `[B_{mL}]`, `BmL` in the code); the load
+  stiffness matrix of `update_KCfollower` `\boldsymbol{K}_F` (was
+  `[KCfollower]`), with `\boldsymbol{K}_F = \lambda
+  \boldsymbol{K}_{F_{ref}}` for the pressure `\lambda p`; `\boldsymbol`
+  (was `\mathbf`) and the transpose `^\top` (was `^T`). The residual is
+  `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_{ext}` throughout,
+  also in the Notes of `update_fint`, and the examples with structsolve
+  require structsolve 0.9.3 or newer, which has this residual and the
+  Newton-Raphson corrections `\boldsymbol{K}_T \Delta \boldsymbol{c} =
+  -\boldsymbol{R}`. The docstring of
+  `derive_bfscplate2d_follower_pressure.py`, which contains a backslash, is
+  a raw string. Code identifiers, plain-text comments and README.md are
+  unchanged.
+
+### Derivations
+
+- The shape functions of the scripts of `deriving_equations/` renamed from
+  `N` to `S`, with the local variables `Su1_01`, ..., `Sw3_40` (were
+  `Nu1_01`, ..., `Nw3_40`) of `update_fext_follower` and
+  `update_KCfollower`.
+- An underscore introduces a partial derivative: the displacement
+  gradients of `update_fext_follower`, `update_KCfollower`, their
+  derivation script and the tests are `u_x`, `u_y`, `v_x`, `v_y`, `w_x`,
+  `w_y` (were `ux`, ..., `wy`).
+- `regenerate.py` looks for the operators `Su`, `Sv`, `Sw` (no longer `Nu`,
+  `Nv`, `Nw`) and the gradients `u_x`, ..., `w_y`, and does not take the
+  slopes `w_x = Matrix(...)` printed by the derivation of `update_KCNL` for
+  generated gradients.
 
 ### Tests
 
-- `structsolve>=0.9.0`, with its module `structsolve.convergence`, is a
+- `structsolve>=0.9.3`, with its module `structsolve.convergence`, is a
   requirement of the tests, listed in
   `requirements.txt` and not in `install_requires`.
 - `tests/test_static_axial_load_nonlinear.py` solves the non-linear static

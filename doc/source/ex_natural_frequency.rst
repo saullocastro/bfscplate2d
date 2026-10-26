@@ -6,7 +6,7 @@ Natural frequencies
 A rectangular isotropic plate, with `w` constrained at the nodes of the
 four edges. The mass matrix of :func:`.update_M` requires the thickness
 ``h`` and the density ``rho`` of each element. The generalized eigenvalue
-problem `[K_{C0}]\{\phi\} = \omega_n^2 [M]\{\phi\}` is solved with the
+problem `\boldsymbol{K}_{C0}\boldsymbol{\phi} = \omega_n^2 \boldsymbol{M}\boldsymbol{\phi}` is solved with the
 dense ``scipy.linalg.eigh`` and the first natural angular frequency is
 compared with the reference value of the test, within 1 %:
 

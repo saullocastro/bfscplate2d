@@ -32,21 +32,21 @@ def main():
     # node 3 (+1, +1)
     # node 4 (-1, +1)
 
-    Nu = Matrix([[
+    Su = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0, 0, 0, 0,
         Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0, 0, 0, 0,
         ]])
-    Nv = Matrix([[
+    Sv = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0,
         0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0,
         ]])
-    Nw = Matrix([[
+    Sw = Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, 0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), Hxyi(-1, -1),
         0, 0, 0, 0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), Hxyi(+1, -1),
@@ -67,15 +67,15 @@ def main():
         [D16, D26, D66]])
 
     # membrane
-    Nu_x = (2/lex)*Nu.diff(xi)
-    Nu_y = (2/ley)*Nu.diff(eta)
-    Nv_x = (2/lex)*Nv.diff(xi)
-    Nv_y = (2/ley)*Nv.diff(eta)
+    Su_x = (2/lex)*Su.diff(xi)
+    Su_y = (2/ley)*Su.diff(eta)
+    Sv_x = (2/lex)*Sv.diff(xi)
+    Sv_y = (2/ley)*Sv.diff(eta)
 
     Bm = Matrix([
-        Nu_x, # epsilon_xx
-        Nv_y, # epsilon_yy
-        Nu_y + Nv_x # gamma_xy
+        Su_x, # epsilon_xx
+        Sv_y, # epsilon_yy
+        Su_y + Sv_x # gamma_xy
         ])
 
     print()
@@ -99,16 +99,16 @@ def main():
     Bm = Matrix(Bms)
 
     # bending
-    Nphix = -(2/lex)*Nw.diff(xi)
-    Nphiy = -(2/ley)*Nw.diff(eta)
-    Nphix_x = (2/lex)*Nphix.diff(xi)
-    Nphix_y = (2/ley)*Nphix.diff(eta)
-    Nphiy_x = (2/lex)*Nphiy.diff(xi)
-    Nphiy_y = (2/ley)*Nphiy.diff(eta)
+    Sphix = -(2/lex)*Sw.diff(xi)
+    Sphiy = -(2/ley)*Sw.diff(eta)
+    Sphix_x = (2/lex)*Sphix.diff(xi)
+    Sphix_y = (2/ley)*Sphix.diff(eta)
+    Sphiy_x = (2/lex)*Sphiy.diff(xi)
+    Sphiy_y = (2/ley)*Sphiy.diff(eta)
     Bb = Matrix([
-        Nphix_x,
-        Nphiy_y,
-        Nphix_y + Nphiy_x
+        Sphix_x,
+        Sphiy_y,
+        Sphix_y + Sphiy_x
         ])
 
     print()
@@ -149,8 +149,8 @@ def main():
     Nmatrix = Matrix([[Nxx, Nxy],
                       [Nxy, Nyy]])
     G = Matrix([
-        (2/lex)*Nw.diff(xi),
-        (2/ley)*Nw.diff(eta)
+        (2/lex)*Sw.diff(xi),
+        (2/ley)*Sw.diff(eta)
         ])
     print()
     Gs = []

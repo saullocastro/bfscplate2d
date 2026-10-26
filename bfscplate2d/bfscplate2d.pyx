@@ -36,8 +36,8 @@ one-dimensional ``points`` and ``weights`` given to them, e.g. from
 :func:`bfscplate2d.quadrature.get_points_weights`. :func:`.update_M`
 computes its entries with explicit expressions, without numerical
 integration. The functions evaluate the interpolation functions themselves:
-they do not read or change the attributes ``Bm``, ``Bb``, ``Nu``, ...,
-``Nw_y`` of :class:`.BFSCPlate2D`, which are updated only by the methods of
+they do not read or change the attributes ``Bm``, ``Bb``, ``Su``, ...,
+``Sw_y`` of :class:`.BFSCPlate2D`, which are updated only by the methods of
 the element.
 
 The module also defines:
@@ -106,9 +106,9 @@ and the displacements are
     w = \sum_{i=1}^{4} \left( H_i w_i + H_{x,i} w_{,x i} + H_{y,i} w_{,y i}
         + H_{xy,i} w_{,xy i} \right)
 
-i.e. `u = \{N_u\}\{u_e\}`, `v = \{N_v\}\{u_e\}` and `w =
-\{N_w\}\{u_e\}`, with the rows ``Nu``, ``Nv`` and ``Nw`` of
-:class:`.BFSCPlate2D` and the 40 element degrees of freedom `\{u_e\}`,
+i.e. `u = \boldsymbol{S}^u\boldsymbol{u}_e`, `v = \boldsymbol{S}^v\boldsymbol{u}_e` and `w =
+\boldsymbol{S}^w\boldsymbol{u}_e`, with the rows ``Su``, ``Sv`` and ``Sw`` of
+:class:`.BFSCPlate2D` and the 40 element degrees of freedom `\boldsymbol{u}_e`,
 ``ue`` in the code. Each function gives the value 1 to the nodal degree of
 freedom it multiplies and 0 to the other nodal degrees of freedom of the
 element, e.g. `\partial H_{x,i}/\partial x = 1` at node `i`. The functions
@@ -127,11 +127,11 @@ rotations, only the squares and products of the slopes `w_{,x}` and
 
 .. math::
 
-    \{\epsilon\} =
+    \boldsymbol{\epsilon} =
     \begin{Bmatrix} \epsilon_{xx} \\ \epsilon_{yy} \\ \gamma_{xy} \end{Bmatrix}
     = \begin{Bmatrix} u_{,x} + w_{,x}^2/2 \\ v_{,y} + w_{,y}^2/2 \\
       u_{,y} + v_{,x} + w_{,x} w_{,y} \end{Bmatrix}, \qquad
-    \{\kappa\} =
+    \boldsymbol{\kappa} =
     \begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy} \end{Bmatrix}
     = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy} \end{Bmatrix}
 
@@ -139,51 +139,53 @@ In terms of the element degrees of freedom
 
 .. math::
 
-    \{\epsilon\} = \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\},
+    \boldsymbol{\epsilon} = \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e,
     \qquad
-    \{\kappa\} = [B_b] \{u_e\}
+    \boldsymbol{\kappa} = \boldsymbol{B}_b \boldsymbol{u}_e
 
-with the operators of the code: `[B_m]` (``Bm``), with the rows
-`\{N_{u,x}\}`, `\{N_{v,y}\}` and `\{N_{u,y}\} + \{N_{v,x}\}`; `[B_b]`
-(``Bb``), with the rows `-\{N_{w,xx}\}`, `-\{N_{w,yy}\}` and
-`-2\{N_{w,xy}\}`; `[G]` (``G``), with the rows `\{N_{w,x}\}` and
-`\{N_{w,y}\}`, which give the slopes `w_{,x} = \{N_{w,x}\}\{u_e\}` and
-`w_{,y} = \{N_{w,y}\}\{u_e\}` (``w_x`` and ``w_y``); and `[B_{mL}]`
-(``BmL``), with the rows `w_{,x}\{N_{w,x}\}`, `w_{,y}\{N_{w,y}\}` and
-`w_{,x}\{N_{w,y}\} + w_{,y}\{N_{w,x}\}`. In the functions of the module the
-nonzero entries of these operators are the local variables ``Bm1_01``,
-..., ``BmL3_40``, the digit after the name being the row, from 1, and the
-two last digits the column, from 1. Since the nonlinear strains are
-quadratic in `\{u_e\}`, `[B_{mL}]\{u_e\}` is twice the nonlinear strains,
+with the operators of the code: `\boldsymbol{B}_m` (``Bm``), with the rows
+`\boldsymbol{S}^u_{,x}`, `\boldsymbol{S}^v_{,y}` and `\boldsymbol{S}^u_{,y} +
+\boldsymbol{S}^v_{,x}`; `\boldsymbol{B}_b` (``Bb``), with the rows
+`-\boldsymbol{S}^w_{,xx}`, `-\boldsymbol{S}^w_{,yy}` and
+`-2\boldsymbol{S}^w_{,xy}`; `\boldsymbol{G}` (``G``), with the rows
+`\boldsymbol{S}^w_{,x}` and `\boldsymbol{S}^w_{,y}`, which give the slopes
+`w_{,x} = \boldsymbol{S}^w_{,x}\boldsymbol{u}_e` and `w_{,y} =
+\boldsymbol{S}^w_{,y}\boldsymbol{u}_e` (``w_x`` and ``w_y``); and `\boldsymbol{B}_{NL}` (``BmL``),
+with the rows `w_{,x}\boldsymbol{S}^w_{,x}`, `w_{,y}\boldsymbol{S}^w_{,y}` and
+`w_{,x}\boldsymbol{S}^w_{,y} + w_{,y}\boldsymbol{S}^w_{,x}`. In the functions
+of the module the nonzero entries of these operators are the local variables
+``Bm1_01``, ..., ``BmL3_40``, the digit after the name being the row, from 1,
+and the two last digits the column, from 1. Since the nonlinear strains are
+quadratic in `\boldsymbol{u}_e`, `\boldsymbol{B}_{NL}\boldsymbol{u}_e` is twice the nonlinear strains,
 whereas the variation of the strains is
 
 .. math::
 
-    \delta\{\epsilon\} = \left( [B_m] + [B_{mL}] \right) \delta\{u_e\}
+    \delta\boldsymbol{\epsilon} = \left( \boldsymbol{B}_m + \boldsymbol{B}_{NL} \right) \delta\boldsymbol{u}_e
 
-`[B_{mL}]` and `[G]` have nonzero entries only in the columns of `w`,
+`\boldsymbol{B}_{NL}` and `\boldsymbol{G}` have nonzero entries only in the columns of `w`,
 `w_{,x}`, `w_{,y}` and `w_{,xy}`.
 
 .. rubric:: Constitutive relation and strain energy
 
-The membrane forces `\{N\} = \{Nxx, Nyy, Nxy\}^T` and the moments `\{M\}
-= \{Mxx, Myy, Mxy\}^T` are
+The membrane forces `\boldsymbol{N} = \{Nxx, Nyy, Nxy\}^\top` and the moments `\boldsymbol{M}
+= \{Mxx, Myy, Mxy\}^\top` are
 
 .. math::
 
-    \{N\} = [A]\{\epsilon\} + [B]\{\kappa\}, \qquad
-    \{M\} = [B]\{\epsilon\} + [D]\{\kappa\}
+    \boldsymbol{N} = \boldsymbol{A}\boldsymbol{\epsilon} + \boldsymbol{B}\boldsymbol{\kappa}, \qquad
+    \boldsymbol{M} = \boldsymbol{B}\boldsymbol{\epsilon} + \boldsymbol{D}\boldsymbol{\kappa}
 
-with the symmetric blocks of ``ABD``, `[A]` of ``A11``, ``A12``,
-``A16``, ``A22``, ``A26``, ``A66``, and likewise `[B]` and `[D]`, constant
+with the symmetric blocks of ``ABD``, `\boldsymbol{A}` of ``A11``, ``A12``,
+``A16``, ``A22``, ``A26``, ``A66``, and likewise `\boldsymbol{B}` and `\boldsymbol{D}`, constant
 over the element, which assumes a linear elastic laminate whose stiffness
 does not vary over the element. The strain energy of the element is
 
 .. math::
 
-    U = \frac{1}{2} \int_A \left( \{\epsilon\}^T [A] \{\epsilon\}
-        + 2 \{\epsilon\}^T [B] \{\kappa\}
-        + \{\kappa\}^T [D] \{\kappa\} \right) dA
+    U = \frac{1}{2} \int_A \left( \boldsymbol{\epsilon}^\top \boldsymbol{A} \boldsymbol{\epsilon}
+        + 2 \boldsymbol{\epsilon}^\top \boldsymbol{B} \boldsymbol{\kappa}
+        + \boldsymbol{\kappa}^\top \boldsymbol{D} \boldsymbol{\kappa} \right) dA
 
 .. rubric:: Element matrices and internal forces
 
@@ -191,20 +193,24 @@ The internal force vector is the gradient of `U`, :func:`.update_fint`:
 
 .. math::
 
-    \{f_{int}\} = \frac{\partial U}{\partial \{u_e\}} = \int_A \left(
-        ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right) dA
+    \boldsymbol{F}_{int} = \frac{\partial U}{\partial \boldsymbol{u}_e} = \int_A \left(
+        (\boldsymbol{B}_m + \boldsymbol{B}_{NL})^\top \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M} \right) dA
 
 and its Jacobian, the tangent stiffness matrix, is split as
 
 .. math::
 
-    \frac{\partial \{f_{int}\}}{\partial \{u_e\}} = [KC0] + [KCNL] + [KG]
+    \frac{\partial \boldsymbol{F}_{int}}{\partial \boldsymbol{u}_e} = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G
 
 with the linear constitutive stiffness matrix of :func:`.update_KC0`,
-independent of `\{u_e\}`, the nonlinear constitutive stiffness matrix of
-:func:`.update_KCNL`, null for null slopes, and the geometric stiffness
-matrix of :func:`.update_KG`, linear in `\{u_e\}`. For small displacements
-`\{f_{int}\} \approx [KC0]\{u_e\}`, the relation of a linear static
+independent of `\boldsymbol{u}_e`, the nonlinear constitutive stiffness
+matrix `\boldsymbol{K}_{CNL}` of the terms of `\boldsymbol{B}_{NL}` and the
+geometric stiffness matrix `\boldsymbol{K}_{GNL}` of the membrane forces of
+the nonlinear strains, whose sum is the matrix of :func:`.update_KCNL`,
+null for null slopes, and the geometric stiffness matrix
+`\boldsymbol{K}_G` of the membrane forces of the linear strains, of
+:func:`.update_KG`, linear in `\boldsymbol{u}_e`. For small displacements
+`\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}\boldsymbol{u}_e`, the relation of a linear static
 analysis; :func:`.update_KG` and :func:`.update_KG_cte_N` give the
 geometric stiffness matrix of a linear buckling analysis. The mass matrix
 of :func:`.update_M` follows from the kinetic energy of the same
@@ -214,18 +220,22 @@ kinematics.
 
 A pressure `p` per unit undeformed area that stays normal to the deformed
 mid-surface and acts on its deformed area has the virtual work `\int_A p \,
-\mathbf{a} \cdot \delta\mathbf{u} \, dA`, with the area vector `\mathbf{a}
-= \mathbf{X}_{,x} \times \mathbf{X}_{,y}` of the deformed position
-`\mathbf{X}` of the mid-surface [5]_ [6]_. :func:`.update_fext_follower`
-gives its force vector `\{F_p(u)\}`, with `\mathbf{a}` truncated to first
+\boldsymbol{a} \cdot \delta\boldsymbol{u} \, dA`, with the area vector `\boldsymbol{a}
+= \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}` of the deformed position
+`\boldsymbol{X}` of the mid-surface [5]_ [6]_. :func:`.update_fext_follower`
+gives its force vector `\boldsymbol{F}_p(\boldsymbol{u})`, with `\boldsymbol{a}` truncated to first
 order in the displacement gradients, the truncation consistent with the
 moderate rotations of the von Karman strains, or complete, and
-:func:`.update_KCfollower` the load stiffness matrix `[KCfollower] =
--\partial \{F_p\} / \partial \{u_e\}`, constant for the first-order area
-vector. A positive `p` pushes along `+z`, and at `u = 0` the force vector
-is the dead pressure load. The tangent stiffness matrix of the residual
-`\{f_{int}\} - \lambda \{F_p(u)\}` is `[KC0] + [KCNL] + [KG] + \lambda
-[KCfollower]`. The load stiffness matrix is unsymmetric in general, a
+:func:`.update_KCfollower` the load stiffness matrix `\boldsymbol{K}_F =
+-\partial \boldsymbol{F}_p / \partial \boldsymbol{u}_e`, constant for the first-order area
+vector. A positive `p` pushes along `+z`, and at `\boldsymbol{u} =
+\boldsymbol{0}` the force vector is the dead pressure load. The tangent
+stiffness matrix of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} -
+\lambda \boldsymbol{F}_p(\boldsymbol{u})` is `\boldsymbol{K}_{C0} +
+\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+`\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
+`\boldsymbol{K}_{F_{ref}}` the load stiffness matrix of `p`. The load
+stiffness matrix is unsymmetric in general, a
 non-conservative load. For the first-order area vector it is symmetric, and
 the follower pressure conservative, if and only if `p` is uniform over the
 loaded region and, at each point of the boundary of the loaded region,
@@ -315,7 +325,7 @@ cdef class BFSCPlate2D(object):
     ``c1, c2, c3, c4`` to ``-1``, ``init_k_KC0``, ``init_k_KCNL``,
     ``init_k_KG``, ``init_k_M`` and ``init_k_KCfollower`` to ``0``, ``lex``,
     ``ley``, ``h`` and ``rho`` to ``0``, and allocates ``ABD``, ``Bm``,
-    ``Bb``, ``Nu`` to ``Nw_y`` and ``u`` filled with zeros. Before calling the functions of the module, the caller sets
+    ``Bb``, ``Su`` to ``Sw_y`` and ``u`` filled with zeros. Before calling the functions of the module, the caller sets
     ``c1, c2, c3, c4``, ``lex``, ``ley``, ``ABD`` and the ``init_k_*``
     positions of the matrices to be computed, and ``h`` and ``rho`` for
     :func:`.update_M`.
@@ -362,14 +372,14 @@ cdef class BFSCPlate2D(object):
         products of its rows with the element degrees of freedom give
         `-w_{,xx}`, `-w_{,yy}` and `-2 w_{,xy}`, with dimension of one over
         length.
-    Nu, Nv, Nw : double[::1]
-        Arrays of size ``40``, updated by :meth:`.update_Nu`,
-        :meth:`.update_Nv` and :meth:`.update_Nw`. Their products with the
+    Su, Sv, Sw : double[::1]
+        Arrays of size ``40``, updated by :meth:`.update_Su`,
+        :meth:`.update_Sv` and :meth:`.update_Sw`. Their products with the
         element degrees of freedom give `u`, `v` and `w`, dimension of
         length.
-    Nu_x, Nu_y, Nv_x, Nv_y, Nw_x, Nw_y : double[::1]
+    Su_x, Su_y, Sv_x, Sv_y, Sw_x, Sw_y : double[::1]
         Arrays of size ``40``, updated by the methods of the same name,
-        :meth:`.update_Nu_x` to :meth:`.update_Nw_y`. Their products with
+        :meth:`.update_Su_x` to :meth:`.update_Sw_y`. Their products with
         the element degrees of freedom give `u_{,x}`, `u_{,y}`, `v_{,x}`,
         `v_{,y}`, `w_{,x}` and `w_{,y}`, dimensionless.
     u : double[::1]
@@ -382,17 +392,17 @@ cdef class BFSCPlate2D(object):
 
     Notes
     -----
-    The rows ``Nu`` to ``Nw_y`` are the interpolation functions `H_i`,
+    The rows ``Su`` to ``Sw_y`` are the interpolation functions `H_i`,
     `H_{x,i}`, `H_{y,i}`, `H_{xy,i}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`, and their derivatives with respect to
     `x` and `y`, at the positions of the degrees of freedom they multiply.
-    ``Bm`` and ``Bb`` are the operators `[B_m]` and `[B_b]` of the same
+    ``Bm`` and ``Bb`` are the operators `\boldsymbol{B}_m` and `\boldsymbol{B}_b` of the same
     Notes, which give the linear membrane strains `\{u_{,x}, v_{,y},
-    u_{,y} + v_{,x}\}^T` and the curvatures `\{\kappa\} = \{-w_{,xx},
-    -w_{,yy}, -2 w_{,xy}\}^T` of the classical laminated plate theory.
-    ``ABD`` gives the membrane forces `\{N\} = [A]\{\epsilon\} +
-    [B]\{\kappa\}` and the moments `\{M\} = [B]\{\epsilon\} + [D]\{\kappa\}`
-    from the membrane strains `\{\epsilon\}` and the curvatures, and ``h``
+    u_{,y} + v_{,x}\}^\top` and the curvatures `\boldsymbol{\kappa} = \{-w_{,xx},
+    -w_{,yy}, -2 w_{,xy}\}^\top` of the classical laminated plate theory.
+    ``ABD`` gives the membrane forces `\boldsymbol{N} = \boldsymbol{A}\boldsymbol{\epsilon} +
+    \boldsymbol{B}\boldsymbol{\kappa}` and the moments `\boldsymbol{M} = \boldsymbol{B}\boldsymbol{\epsilon} + \boldsymbol{D}\boldsymbol{\kappa}`
+    from the membrane strains `\boldsymbol{\epsilon}` and the curvatures, and ``h``
     and ``rho`` the mass per unit area `\rho h` and the rotary inertia `\rho
     h^3/12` of :func:`.update_M`.
 
@@ -405,15 +415,15 @@ cdef class BFSCPlate2D(object):
     cdef public double [:, ::1] ABD
     cdef public double [:, ::1] Bm
     cdef public double [:, ::1] Bb
-    cdef public double [::1] Nu
-    cdef public double [::1] Nu_x
-    cdef public double [::1] Nu_y
-    cdef public double [::1] Nv
-    cdef public double [::1] Nv_x
-    cdef public double [::1] Nv_y
-    cdef public double [::1] Nw
-    cdef public double [::1] Nw_x
-    cdef public double [::1] Nw_y
+    cdef public double [::1] Su
+    cdef public double [::1] Su_x
+    cdef public double [::1] Su_y
+    cdef public double [::1] Sv
+    cdef public double [::1] Sv_x
+    cdef public double [::1] Sv_y
+    cdef public double [::1] Sw
+    cdef public double [::1] Sw_x
+    cdef public double [::1] Sw_y
     cdef public double [::1] u
     def __init__(BFSCPlate2D self):
         self.n1 = -1
@@ -436,15 +446,15 @@ cdef class BFSCPlate2D(object):
         self.h = 0
         self.Bm = np.zeros((3, num_nodes*DOF), dtype=DOUBLE)
         self.Bb = np.zeros((3, num_nodes*DOF), dtype=DOUBLE)
-        self.Nu = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nu_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nu_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCPlate2D self, double xi, double eta):
@@ -464,17 +474,19 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Bm`` is the operator `[B_m]` of the linear membrane strains of the
+        ``Bm`` is the operator `\boldsymbol{B}_m` of the linear membrane strains of the
         Notes of :mod:`bfscplate2d.bfscplate2d`, with the rows
 
         .. math::
 
-            \frac{2}{lex} \frac{\partial \{N_u\}}{\partial \xi}, \qquad
-            \frac{2}{ley} \frac{\partial \{N_v\}}{\partial \eta}, \qquad
-            \frac{2}{ley} \frac{\partial \{N_u\}}{\partial \eta}
-            + \frac{2}{lex} \frac{\partial \{N_v\}}{\partial \xi}
+            \frac{2}{lex} \frac{\partial \boldsymbol{S}^u}{\partial \xi},
+            \qquad
+            \frac{2}{ley} \frac{\partial \boldsymbol{S}^v}{\partial \eta},
+            \qquad
+            \frac{2}{ley} \frac{\partial \boldsymbol{S}^u}{\partial \eta}
+            + \frac{2}{lex} \frac{\partial \boldsymbol{S}^v}{\partial \xi}
 
-        i.e. ``Nu_x``, ``Nv_y`` and ``Nu_y + Nv_x``.
+        i.e. ``Su_x``, ``Sv_y`` and ``Su_y + Sv_x``.
 
         """
         cdef double lex, ley
@@ -546,16 +558,19 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Bb`` is the operator `[B_b]` of the curvatures `\{\kappa\} =
-        \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T` of the Notes of
+        ``Bb`` is the operator `\boldsymbol{B}_b` of the curvatures `\boldsymbol{\kappa} =
+        \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^\top` of the Notes of
         :mod:`bfscplate2d.bfscplate2d`, with the rows
 
         .. math::
 
-            -\frac{4}{lex^2} \frac{\partial^2 \{N_w\}}{\partial \xi^2}, \qquad
-            -\frac{4}{ley^2} \frac{\partial^2 \{N_w\}}{\partial \eta^2}, \qquad
+            -\frac{4}{lex^2}
+            \frac{\partial^2 \boldsymbol{S}^w}{\partial \xi^2}, \qquad
+            -\frac{4}{ley^2}
+            \frac{\partial^2 \boldsymbol{S}^w}{\partial \eta^2},
+            \qquad
             -\frac{8}{lex \, ley}
-            \frac{\partial^2 \{N_w\}}{\partial \xi \partial \eta}
+            \frac{\partial^2 \boldsymbol{S}^w}{\partial \xi \partial \eta}
 
         The curvatures are those of the rotations `-w_{,x}` and `-w_{,y}` of
         the normal to the reference surface.
@@ -614,12 +629,12 @@ cdef class BFSCPlate2D(object):
             self.Bb[2, 38] = -8*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
-    cpdef void update_Nu(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nu`` at a natural coordinate point
+    cpdef void update_Su(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Su`` at a natural coordinate point
 
-        The entries of ``Nu`` at the positions of the degrees of freedom `u`,
+        The entries of ``Su`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nu`` with the element degrees of freedom
+        ``ley``; the product of ``Su`` with the element degrees of freedom
         gives `u`. The other entries are not changed (zero after construction).
 
         Parameters
@@ -630,8 +645,8 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nu`` is the row `\{N_u\}` of the interpolation of `u` of the Notes
-        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        ``Su`` is the row `\boldsymbol{S}^u` of the interpolation of `u` of the
+        Notes of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
         `H_{x,i}` and `H_{y,i}` of each node `i` at the positions of its
         degrees of freedom `u`, `u_{,x}` and `u_{,y}`.
 
@@ -640,25 +655,25 @@ cdef class BFSCPlate2D(object):
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu[0] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[1] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nu[2] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[10] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[11] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nu[12] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[20] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[21] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nu[22] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[30] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[31] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nu[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[0] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[1] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Su[2] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[10] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[11] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Su[12] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[20] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[21] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Su[22] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[30] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[31] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Su[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
-    cpdef void update_Nu_x(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nu_x`` at a natural coordinate point
+    cpdef void update_Su_x(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Su_x`` at a natural coordinate point
 
-        The entries of ``Nu_x`` at the positions of the degrees of freedom `u`,
+        The entries of ``Su_x`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nu_x`` with the element degrees of freedom
+        ``ley``; the product of ``Su_x`` with the element degrees of freedom
         gives `u_{,x}`. The other entries are not changed (zero after
         construction).
 
@@ -670,33 +685,34 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nu_x`` is `\{N_{u,x}\} = (2/lex) \, \partial \{N_u\} / \partial \xi`,
-        with `\{N_u\}` of :meth:`.update_Nu`.
+        ``Su_x`` is `\boldsymbol{S}^u_{,x} = (2/lex) \, \partial
+        \boldsymbol{S}^u / \partial \xi`, with `\boldsymbol{S}^u` of
+        :meth:`.update_Su`.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu_x[0] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[1] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[2] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[10] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[11] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[12] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[20] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[21] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[22] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[30] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[31] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[0] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[1] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[2] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[10] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[11] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[12] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[20] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[21] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[22] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[30] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[31] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nu_y(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nu_y`` at a natural coordinate point
+    cpdef void update_Su_y(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Su_y`` at a natural coordinate point
 
-        The entries of ``Nu_y`` at the positions of the degrees of freedom `u`,
+        The entries of ``Su_y`` at the positions of the degrees of freedom `u`,
         `u_{,x}`, `u_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nu_y`` with the element degrees of freedom
+        ``ley``; the product of ``Su_y`` with the element degrees of freedom
         gives `u_{,y}`. The other entries are not changed (zero after
         construction).
 
@@ -708,33 +724,34 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nu_y`` is `\{N_{u,y}\} = (2/ley) \, \partial \{N_u\} / \partial
-        \eta`, with `\{N_u\}` of :meth:`.update_Nu`.
+        ``Su_y`` is `\boldsymbol{S}^u_{,y} = (2/ley) \, \partial
+        \boldsymbol{S}^u / \partial \eta`, with `\boldsymbol{S}^u` of
+        :meth:`.update_Su`.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu_y[0] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[1] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nu_y[2] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[10] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[11] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nu_y[12] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[20] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[21] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nu_y[22] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[30] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[31] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nu_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[0] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[1] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Su_y[2] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[10] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[11] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Su_y[12] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[20] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[21] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Su_y[22] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[30] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[31] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Su_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-    cpdef void update_Nv(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nv`` at a natural coordinate point
+    cpdef void update_Sv(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sv`` at a natural coordinate point
 
-        The entries of ``Nv`` at the positions of the degrees of freedom `v`,
+        The entries of ``Sv`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nv`` with the element degrees of freedom
+        ``ley``; the product of ``Sv`` with the element degrees of freedom
         gives `v`. The other entries are not changed (zero after construction).
 
         Parameters
@@ -745,8 +762,8 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nv`` is the row `\{N_v\}` of the interpolation of `v` of the Notes
-        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        ``Sv`` is the row `\boldsymbol{S}^v` of the interpolation of `v` of the
+        Notes of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
         `H_{x,i}` and `H_{y,i}` of each node `i` at the positions of its
         degrees of freedom `v`, `v_{,x}` and `v_{,y}`.
 
@@ -755,25 +772,25 @@ cdef class BFSCPlate2D(object):
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv[3] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[4] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nv[5] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[13] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[14] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nv[15] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[23] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[24] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nv[25] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[33] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[34] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[3] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[4] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sv[5] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[13] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[14] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sv[15] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[23] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[24] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sv[25] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[33] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[34] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
-    cpdef void update_Nv_x(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nv_x`` at a natural coordinate point
+    cpdef void update_Sv_x(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sv_x`` at a natural coordinate point
 
-        The entries of ``Nv_x`` at the positions of the degrees of freedom `v`,
+        The entries of ``Sv_x`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nv_x`` with the element degrees of freedom
+        ``ley``; the product of ``Sv_x`` with the element degrees of freedom
         gives `v_{,x}`. The other entries are not changed (zero after
         construction).
 
@@ -785,33 +802,34 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nv_x`` is `\{N_{v,x}\} = (2/lex) \, \partial \{N_v\} / \partial \xi`,
-        with `\{N_v\}` of :meth:`.update_Nv`.
+        ``Sv_x`` is `\boldsymbol{S}^v_{,x} = (2/lex) \, \partial
+        \boldsymbol{S}^v / \partial \xi`, with `\boldsymbol{S}^v` of
+        :meth:`.update_Sv`.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv_x[3] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[4] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[5] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[13] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[14] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[15] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[23] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[24] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[25] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[33] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[34] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[3] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[4] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[5] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[13] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[14] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[15] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[23] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[24] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[25] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[33] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[34] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nv_y(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nv_y`` at a natural coordinate point
+    cpdef void update_Sv_y(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sv_y`` at a natural coordinate point
 
-        The entries of ``Nv_y`` at the positions of the degrees of freedom `v`,
+        The entries of ``Sv_y`` at the positions of the degrees of freedom `v`,
         `v_{,x}`, `v_{,y}` of the four nodes are computed from ``lex`` and
-        ``ley``; the product of ``Nv_y`` with the element degrees of freedom
+        ``ley``; the product of ``Sv_y`` with the element degrees of freedom
         gives `v_{,y}`. The other entries are not changed (zero after
         construction).
 
@@ -823,33 +841,34 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nv_y`` is `\{N_{v,y}\} = (2/ley) \, \partial \{N_v\} / \partial
-        \eta`, with `\{N_v\}` of :meth:`.update_Nv`.
+        ``Sv_y`` is `\boldsymbol{S}^v_{,y} = (2/ley) \, \partial
+        \boldsymbol{S}^v / \partial \eta`, with `\boldsymbol{S}^v` of
+        :meth:`.update_Sv`.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv_y[3] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[4] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nv_y[5] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[13] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[14] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nv_y[15] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[23] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[24] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nv_y[25] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[33] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[34] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[3] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[4] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sv_y[5] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[13] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[14] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sv_y[15] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[23] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[24] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sv_y[25] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[33] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[34] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-    cpdef void update_Nw(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nw`` at a natural coordinate point
+    cpdef void update_Sw(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sw`` at a natural coordinate point
 
-        The entries of ``Nw`` at the positions of the degrees of freedom `w`,
+        The entries of ``Sw`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
-        ``lex`` and ``ley``; the product of ``Nw`` with the element degrees of
+        ``lex`` and ``ley``; the product of ``Sw`` with the element degrees of
         freedom gives `w`. The other entries are not changed (zero after
         construction).
 
@@ -861,8 +880,8 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nw`` is the row `\{N_w\}` of the interpolation of `w` of the Notes
-        of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
+        ``Sw`` is the row `\boldsymbol{S}^w` of the interpolation of `w` of the
+        Notes of :mod:`bfscplate2d.bfscplate2d`, with the functions `H_i`,
         `H_{x,i}`, `H_{y,i}` and `H_{xy,i}` of each node `i` at the positions
         of its degrees of freedom `w`, `w_{,x}`, `w_{,y}` and `w_{,xy}`, the
         interpolation of the BFS element.
@@ -872,29 +891,29 @@ cdef class BFSCPlate2D(object):
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw[6] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[7] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[8] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[9] = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[16] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[17] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[18] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[19] = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[26] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[27] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[28] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[29] = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[36] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[37] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[38] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[6] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[7] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[8] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[9] = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[16] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[17] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[18] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[19] = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[26] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[27] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[28] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[29] = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[36] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[37] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[38] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
-    cpdef void update_Nw_x(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nw_x`` at a natural coordinate point
+    cpdef void update_Sw_x(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sw_x`` at a natural coordinate point
 
-        The entries of ``Nw_x`` at the positions of the degrees of freedom `w`,
+        The entries of ``Sw_x`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
-        ``lex`` and ``ley``; the product of ``Nw_x`` with the element degrees
+        ``lex`` and ``ley``; the product of ``Sw_x`` with the element degrees
         of freedom gives `w_{,x}`. The other entries are not changed (zero
         after construction).
 
@@ -906,39 +925,40 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nw_x`` is `\{N_{w,x}\} = (2/lex) \, \partial \{N_w\} / \partial
-        \xi`, with `\{N_w\}` of :meth:`.update_Nw`, the first row of the
-        operator `[G]` of the Notes of :mod:`bfscplate2d.bfscplate2d`, which
-        gives the slope `w_{,x}` of the nonlinear membrane strains.
+        ``Sw_x`` is `\boldsymbol{S}^w_{,x} = (2/lex) \, \partial
+        \boldsymbol{S}^w / \partial \xi`, with `\boldsymbol{S}^w` of
+        :meth:`.update_Sw`, the first row of the operator `\boldsymbol{G}` of the Notes of
+        :mod:`bfscplate2d.bfscplate2d`, which gives the slope `w_{,x}` of the
+        nonlinear membrane strains.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw_x[6] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[7] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[8] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[9] = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[16] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[17] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[18] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[26] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[27] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[28] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[29] = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[36] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[37] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[38] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[6] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[7] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[8] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[9] = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[16] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[17] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[18] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[26] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[27] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[28] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[29] = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[36] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[37] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[38] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nw_y(BFSCPlate2D self, double xi, double eta):
-        r"""Update the row ``Nw_y`` at a natural coordinate point
+    cpdef void update_Sw_y(BFSCPlate2D self, double xi, double eta):
+        r"""Update the row ``Sw_y`` at a natural coordinate point
 
-        The entries of ``Nw_y`` at the positions of the degrees of freedom `w`,
+        The entries of ``Sw_y`` at the positions of the degrees of freedom `w`,
         `w_{,x}`, `w_{,y}`, `w_{,xy}` of the four nodes are computed from
-        ``lex`` and ``ley``; the product of ``Nw_y`` with the element degrees
+        ``lex`` and ``ley``; the product of ``Sw_y`` with the element degrees
         of freedom gives `w_{,y}`. The other entries are not changed (zero
         after construction).
 
@@ -950,32 +970,33 @@ cdef class BFSCPlate2D(object):
 
         Notes
         -----
-        ``Nw_y`` is `\{N_{w,y}\} = (2/ley) \, \partial \{N_w\} / \partial
-        \eta`, with `\{N_w\}` of :meth:`.update_Nw`, the second row of the
-        operator `[G]` of the Notes of :mod:`bfscplate2d.bfscplate2d`, which
-        gives the slope `w_{,y}` of the nonlinear membrane strains.
+        ``Sw_y`` is `\boldsymbol{S}^w_{,y} = (2/ley) \, \partial
+        \boldsymbol{S}^w / \partial \eta`, with `\boldsymbol{S}^w` of
+        :meth:`.update_Sw`, the second row of the operator `\boldsymbol{G}` of the Notes
+        of :mod:`bfscplate2d.bfscplate2d`, which gives the slope `w_{,y}` of
+        the nonlinear membrane strains.
 
         """
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw_y[6] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[7] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[8] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[9] = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[16] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[17] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[18] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[26] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[27] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[28] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[29] = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[36] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[37] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[38] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[39] = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[6] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[7] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[8] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[9] = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[16] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[17] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[18] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[26] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[27] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[28] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[29] = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[36] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[37] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[38] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[39] = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
 
 
 cpdef void update_KC0(BFSCPlate2D plate,
@@ -1033,19 +1054,19 @@ cpdef void update_KC0(BFSCPlate2D plate,
     Notes
     -----
     The element matrix is the Hessian of the strain energy `U` of the Notes of
-    :mod:`bfscplate2d.bfscplate2d` at `\{u_e\} = \{0\}`, with the operators
-    `[B_m]` and `[B_b]` of the linear membrane strains and of the curvatures:
+    :mod:`bfscplate2d.bfscplate2d` at `\boldsymbol{u}_e = \boldsymbol{0}`, with the operators
+    `\boldsymbol{B}_m` and `\boldsymbol{B}_b` of the linear membrane strains and of the curvatures:
 
     .. math::
 
-        [KC0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{C0} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_m]^T [A] [B_m] + [B_m]^T [B] [B_b] + [B_b]^T [B] [B_m]
-            + [B_b]^T [D] [B_b] \right)
+            \left( \boldsymbol{B}_m^\top \boldsymbol{A} \boldsymbol{B}_m + \boldsymbol{B}_m^\top \boldsymbol{B} \boldsymbol{B}_b + \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_m
+            + \boldsymbol{B}_b^\top \boldsymbol{D} \boldsymbol{B}_b \right)
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
     ``xi = points[i]`` and ``eta = points[j]``. The terms are the membrane
-    stiffness, the membrane-bending coupling, null when `[B] = [0]`, e.g. for a
+    stiffness, the membrane-bending coupling, null when `\boldsymbol{B} = \boldsymbol{0}`, e.g. for a
     symmetric laminate with the reference surface at mid-thickness, and the
     bending stiffness. The matrix is symmetric and independent of the
     displacements. The integration is exact with ``nint >= 4``, see the Notes
@@ -9209,7 +9230,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear stiffness matrix KCNL
 
     The 40 degrees of freedom of the element are read from ``u`` and
     written to the attribute ``u`` of ``plate``, which is overwritten. The
@@ -9268,47 +9289,52 @@ cpdef void update_KCNL(double [::1] u,
     Notes
     -----
     KCNL = KC0L + KCL0 + KCLL + KGLL is the part of the tangent stiffness
-    matrix `\partial \{f_{int}\} / \partial \{u_e\}` of the Notes of
+    matrix `\partial \boldsymbol{F}_{int} / \partial \boldsymbol{u}_e` of the Notes of
     :mod:`bfscplate2d.bfscplate2d` that is neither in KC0 nor in the KG of
-    :func:`.update_KG`:
+    :func:`.update_KG`, that is `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`:
+    the nonlinear constitutive stiffness matrix `\boldsymbol{K}_{CNL} =
+    \boldsymbol{K}_{C0L} + \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}` of the
+    terms of `\boldsymbol{B}_{NL}` and the geometric stiffness matrix
+    `\boldsymbol{K}_{GNL} = \boldsymbol{K}_{GLL}` of the membrane forces of
+    the nonlinear strains, with
 
     .. math::
 
-        [KC0L] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{C0L} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_m]^T [A] [B_{mL}] + [B_b]^T [B] [B_{mL}] \right)
+            \left( \boldsymbol{B}_m^\top \boldsymbol{A} \boldsymbol{B}_{NL} + \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_{NL} \right)
 
-        [KCL0] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{CL0} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( [B_{mL}]^T [A] [B_m] + [B_{mL}]^T [B] [B_b] \right)
+            \left( \boldsymbol{B}_{NL}^\top \boldsymbol{A} \boldsymbol{B}_m + \boldsymbol{B}_{NL}^\top \boldsymbol{B} \boldsymbol{B}_b \right)
 
-        [KCLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{CLL} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [B_{mL}]^T [A] [B_{mL}]
+            \boldsymbol{B}_{NL}^\top \boldsymbol{A} \boldsymbol{B}_{NL}
 
-        [KGLL] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_{GLL} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
+            \boldsymbol{G}^\top
             \begin{bmatrix} N_{NL,xx} & N_{NL,xy} \\ N_{NL,xy} & N_{NL,yy}
-            \end{bmatrix} [G]
+            \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{B}_{NL}` computed with the
     slopes `w_{,x}` and `w_{,y}` (``w_x`` and ``w_y``) of the element degrees
     of freedom at the point, and the membrane forces of the nonlinear strains
 
     .. math::
 
         \begin{Bmatrix} N_{NL,xx} \\ N_{NL,yy} \\ N_{NL,xy} \end{Bmatrix}
-        = [A] \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y}
+        = \boldsymbol{A} \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y}
         \end{Bmatrix}
 
     KC0L and KCL0 are linear in the slopes, KCLL and KGLL quadratic, and
-    `[KCL0] = [KC0L]^T`. KGLL is the geometric term of the membrane forces of
+    `\boldsymbol{K}_{CL0} = \boldsymbol{K}_{C0L}^\top`. KGLL is the geometric term of the membrane forces of
     the nonlinear strains, whereas the geometric term of the membrane forces of
     the linear strains is the KG of :func:`.update_KG`, such that KC0 + KCNL +
     KG is the exact Jacobian of the internal forces of :func:`.update_fint`
-    computed with the same points. Since `[B_{mL}]` and `[G]` have entries only
+    computed with the same points. Since `\boldsymbol{B}_{NL}` and `\boldsymbol{G}` have entries only
     in the columns of the out-of-plane degrees of freedom, KCNL has no entries
     between two in-plane degrees of freedom. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
@@ -14741,34 +14767,35 @@ cpdef void update_KG(double [::1] u,
     -----
     .. math::
 
-        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_G = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
-            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+            \boldsymbol{G}^\top
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[G]` of the Notes of
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{G}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`, and the membrane forces of the linear
     membrane strains and of the curvatures
 
     .. math::
 
-        \{Nxx, Nyy, Nxy\}^T = [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
+        \{Nxx, Nyy, Nxy\}^\top = \boldsymbol{A}\boldsymbol{B}_m\boldsymbol{u}_e + \boldsymbol{B}\boldsymbol{B}_b\boldsymbol{u}_e
 
-    It is the geometric term `\partial ([B_{mL}]^T \{N\}) / \partial \{u_e\} =
-    [G]^T [N] [G]` of the tangent stiffness matrix for the part of the membrane
-    forces `\{N\}` that is linear in `\{u_e\}`; the part of the nonlinear
+    It is the geometric term `\partial (\boldsymbol{B}_{NL}^\top \boldsymbol{N}) / \partial \boldsymbol{u}_e =
+    \boldsymbol{G}^\top \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy
+    \end{bmatrix} \boldsymbol{G}` of the tangent stiffness matrix for the part of the membrane
+    forces `\boldsymbol{N}` that is linear in `\boldsymbol{u}_e`; the part of the nonlinear
     strains is in the KGLL of :func:`.update_KCNL`. Since KG is linear in the
-    displacements, KG computed with the solution `\{u\}` of the linear static
-    problem `[KC0]\{u\} = \{f_{ext}\}` is proportional to the load, and the
+    displacements, KG computed with the solution `\boldsymbol{u}` of the linear static
+    problem `\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}` is proportional to the load, and the
     linear buckling problem
 
     .. math::
 
-        ([KC0] + \lambda [KG]) \{\phi\} = \{0\}
+        (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} = \boldsymbol{0}
 
     gives the load multipliers `\lambda` of the critical loads `\lambda
-    \{f_{ext}\}` and the buckling modes `\{\phi\}`. The integration is exact
+    \boldsymbol{F}_{ext}` and the buckling modes `\boldsymbol{\phi}`. The integration is exact
     with ``nint >= 5``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
@@ -16310,17 +16337,17 @@ cpdef void update_KG_cte_N(double Nxx,
 
     .. math::
 
-        [KG] = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{K}_G = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            [G]^T
-            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} [G]
+            \boldsymbol{G}^\top
+            \begin{bmatrix} Nxx & Nxy \\ Nxy & Nyy \end{bmatrix} \boldsymbol{G}
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]`` and `[G]` of the Notes of
+    ``xi = points[i]`` and ``eta = points[j]`` and `\boldsymbol{G}` of the Notes of
     :mod:`bfscplate2d.bfscplate2d`. The membrane forces are positive in
     tension, e.g. ``Nxx = -1`` in all the elements for a unit compressive force
     per unit length along `x`, for which the load multiplier `\lambda` of the
-    linear buckling problem `([KC0] + \lambda [KG]) \{\phi\} = \{0\}` is the
+    linear buckling problem `(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} = \boldsymbol{0}` is the
     critical compressive force per unit length. The membrane forces of a
     pre-buckling state computed with the stiffness of the structure, e.g.
     non-uniform because of the boundary conditions, are given instead by
@@ -17721,9 +17748,12 @@ cpdef void update_M(BFSCPlate2D plate,
 
     .. math::
 
-        [M] = \int_A \rho \left( h \left( \{N_u\}^T \{N_u\} + \{N_v\}^T \{N_v\}
-            + \{N_w\}^T \{N_w\} \right) + \frac{h^3}{12} \left( \{N_{w,x}\}^T
-            \{N_{w,x}\} + \{N_{w,y}\}^T \{N_{w,y}\} \right) \right) dA
+        \boldsymbol{M} = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^\top \boldsymbol{S}^u
+            + (\boldsymbol{S}^v)^\top \boldsymbol{S}^v
+            + (\boldsymbol{S}^w)^\top \boldsymbol{S}^w \right)
+            + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^\top
+            \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^w_{,y})^\top
+            \boldsymbol{S}^w_{,y} \right) \right) dA
 
     The term with `h^3/12` is the rotary inertia of the normal. The terms with
     `\int \rho \, z \, dz`, which couple `u` and `v` with the slopes of `w`,
@@ -20530,31 +20560,32 @@ cpdef void update_fint(double [::1] u,
 
     .. math::
 
-        \{f_{int}\} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{F}_{int} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight
-            \left( ([B_m] + [B_{mL}])^T \{N\} + [B_b]^T \{M\} \right)
+            \left( (\boldsymbol{B}_m + \boldsymbol{B}_{NL})^\top \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M} \right)
 
     with ``weight = weights[i]*weights[j]`` and the operators evaluated at
-    ``xi = points[i]`` and ``eta = points[j]``, `[B_{mL}]` computed with the
+    ``xi = points[i]`` and ``eta = points[j]``, `\boldsymbol{B}_{NL}` computed with the
     slopes ``w_x`` and ``w_y`` at the point, and the membrane forces and
     moments of the total strains
 
     .. math::
 
-        \{Nxx, Nyy, Nxy\}^T = [A] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
-            \{u_e\} + [B][B_b]\{u_e\}
+        \{Nxx, Nyy, Nxy\}^\top = \boldsymbol{A} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right)
+            \boldsymbol{u}_e + \boldsymbol{B}\boldsymbol{B}_b\boldsymbol{u}_e
 
-        \{Mxx, Myy, Mxy\}^T = [B] \left( [B_m] + \frac{1}{2} [B_{mL}] \right)
-            \{u_e\} + [D][B_b]\{u_e\}
+        \{Mxx, Myy, Mxy\}^\top = \boldsymbol{B} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right)
+            \boldsymbol{u}_e + \boldsymbol{D}\boldsymbol{B}_b\boldsymbol{u}_e
 
-    The factor `1/2` of the strains and the full `[B_{mL}]` of their variation
-    come from the nonlinear strains being quadratic in `\{u_e\}`, see the Notes
+    The factor `1/2` of the strains and the full `\boldsymbol{B}_{NL}` of their variation
+    come from the nonlinear strains being quadratic in `\boldsymbol{u}_e`, see the Notes
     of :mod:`bfscplate2d.bfscplate2d`. KC0 + KCNL + KG of :func:`.update_KC0`,
     :func:`.update_KCNL` and :func:`.update_KG` is the exact Jacobian of these
     internal forces computed with the same points, and for small displacements
-    `\{f_{int}\} \approx [KC0]\{u_e\}`. In a nonlinear static analysis the
-    residual is the difference between the external force vector and the
-    assembled internal force vector. The integration is exact with
+    `\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}\boldsymbol{u}_e`. In a nonlinear static analysis the
+    residual is the difference between the assembled internal force vector
+    and the external force vector, `\boldsymbol{R} = \boldsymbol{F}_{int} -
+    \boldsymbol{F}_{ext}`. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
     """
@@ -20883,7 +20914,7 @@ cpdef void update_fext_follower(double [::1] u,
     reference : int, optional
         Any value other than ``0`` includes the force of the undeformed
         state, the dead pressure load; ``0`` leaves it out, which gives the
-        part `\{F_p(u)\} - \{F_p(0)\}` that depends on the displacements.
+        part `\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0})` that depends on the displacements.
         Default ``1``.
 
     See Also
@@ -20899,23 +20930,23 @@ cpdef void update_fext_follower(double [::1] u,
 
     .. math::
 
-        \delta W_p = \int_A p \, \mathbf{a} \cdot \delta\mathbf{u} \, dx \, dy,
-        \qquad \mathbf{a} = \mathbf{X}_{,x} \times \mathbf{X}_{,y}
+        \delta W_p = \int_A p \, \boldsymbol{a} \cdot \delta\boldsymbol{u} \, dx \, dy,
+        \qquad \boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}
 
-    with `\mathbf{u} = \{u, v, w\}^T`, `\mathbf{X} = \mathbf{X}_0 +
-    \mathbf{u}` the deformed position of the mid-surface, `\mathbf{X}_{,x} =
-    \{1 + u_{,x}, v_{,x}, w_{,x}\}^T` and `\mathbf{X}_{,y} = \{u_{,y}, 1 +
-    v_{,y}, w_{,y}\}^T`. `\mathbf{a}` is the area vector, normal to the
+    with `\boldsymbol{u} = \{u, v, w\}^\top`, `\boldsymbol{X} = \boldsymbol{X}_0 +
+    \boldsymbol{u}` the deformed position of the mid-surface, `\boldsymbol{X}_{,x} =
+    \{1 + u_{,x}, v_{,x}, w_{,x}\}^\top` and `\boldsymbol{X}_{,y} = \{u_{,y}, 1 +
+    v_{,y}, w_{,y}\}^\top`. `\boldsymbol{a}` is the area vector, normal to the
     deformed mid-surface, with the length of the ratio between the deformed
     and the undeformed areas. Split by orders in the displacement gradients,
-    `\mathbf{a} = \mathbf{a}_0 + \mathbf{a}_1 + \mathbf{a}_2`, with
+    `\boldsymbol{a} = \boldsymbol{a}_0 + \boldsymbol{a}_1 + \boldsymbol{a}_2`, with
 
     .. math::
 
-        \mathbf{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
-        \mathbf{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} \\
+        \boldsymbol{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+        \boldsymbol{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} \\
             u_{,x} + v_{,y} \end{Bmatrix}, \qquad
-        \mathbf{a}_2 = \begin{Bmatrix} v_{,x} w_{,y} - w_{,x} v_{,y} \\
+        \boldsymbol{a}_2 = \begin{Bmatrix} v_{,x} w_{,y} - w_{,x} v_{,y} \\
             w_{,x} u_{,y} - u_{,x} w_{,y} \\
             u_{,x} v_{,y} - v_{,x} u_{,y} \end{Bmatrix}
 
@@ -20923,41 +20954,44 @@ cpdef void update_fext_follower(double [::1] u,
 
     .. math::
 
-        \{F_p\} = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
+        \boldsymbol{F}_p = \sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight \, p_{ij}
-            \left( \{N_u\}^T a_x + \{N_v\}^T a_y + \{N_w\}^T a_z \right),
+            \left( (\boldsymbol{S}^u)^\top a_x + (\boldsymbol{S}^v)^\top a_y
+            + (\boldsymbol{S}^w)^\top a_z \right),
         \qquad
-        \mathbf{a} = r \, \mathbf{a}_0 + \mathbf{a}_1 + q \, \mathbf{a}_2
+        \boldsymbol{a} = r \, \boldsymbol{a}_0 + \boldsymbol{a}_1 + q \, \boldsymbol{a}_2
 
-    with ``weight = weights[i]*weights[j]``, `p_{ij}` = ``p[i, j]``, the
-    rows `\{N_u\}`, `\{N_v\}`, `\{N_w\}` of the Notes of
+    with ``weight = weights[i]*weights[j]``, `p_{ij}` = ``p[i, j]``, the rows
+    `\boldsymbol{S}^u`, `\boldsymbol{S}^v`, `\boldsymbol{S}^w` of the Notes of
     :mod:`bfscplate2d.bfscplate2d` and the area vector evaluated at ``xi =
-    points[i]`` and ``eta = points[j]``, `r = 1` for ``reference`` not
-    ``0`` and `q = 1` for ``quadratic`` not ``0``, otherwise `0`. The term
-    of `\mathbf{a}_0` is the dead pressure load `\int_A p \{N_w\}^T dA`, the
-    force of the undeformed state.
+    points[i]`` and ``eta = points[j]``, `r = 1` for ``reference`` not ``0``
+    and `q = 1` for ``quadratic`` not ``0``, otherwise `0`. The term of
+    `\boldsymbol{a}_0` is the dead pressure load `\int_A p (\boldsymbol{S}^w)^\top
+    dA`, the force of the undeformed state.
 
     With the moderate rotations of the von Karman strains, `u_{,x} \sim
     \epsilon` and `w_{,x} \sim \epsilon^{1/2}`, such that `\delta u \sim
-    \epsilon^{1/2} \delta w`, `\mathbf{a}_0 + \mathbf{a}_1` keeps every term
-    of `p \, \mathbf{a} \cdot \delta\mathbf{u}` up to the order `\epsilon \,
-    p \, \delta w`, and `\mathbf{a}_2` adds terms of the order `\epsilon^2 p
+    \epsilon^{1/2} \delta w`, `\boldsymbol{a}_0 + \boldsymbol{a}_1` keeps every term
+    of `p \, \boldsymbol{a} \cdot \delta\boldsymbol{u}` up to the order `\epsilon \,
+    p \, \delta w`, and `\boldsymbol{a}_2` adds terms of the order `\epsilon^2 p
     \, \delta w`, of the order of the terms that the strains neglect.
     ``quadratic=0`` is therefore the consistent truncation, for which
-    `\{F_p\}` is affine in the displacements, and ``quadratic=1`` the
+    `\boldsymbol{F}_p` is affine in the displacements, and ``quadratic=1`` the
     complete area vector of the plate, for checking the sensitivity of a
     result to the truncation.
 
     A positive `p` pushes along `+z` in the undeformed state, like a
     positive load along `w`. In a nonlinear analysis with the load factor
     `\lambda` of the pressure, the residual of the equilibrium equations is
-    `\{f_{int}\} - \lambda \{F_p(u)\}`, where `\{F_p(u)\} = \{F_p(0)\} +
-    (\{F_p(u)\} - \{F_p(0)\})`: the dead part may stay in the external force
+    `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_p(\boldsymbol{u})`, where `\boldsymbol{F}_p(\boldsymbol{u}) = \boldsymbol{F}_p(\boldsymbol{0}) +
+    (\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`: the dead part may stay in the external force
     vector of the solver and the part of ``reference=0``, which vanishes at
-    `u = 0`, be subtracted from the internal forces. The Jacobian of the
-    residual is `[KC0] + [KCNL] + [KG] + \lambda [KCfollower]`, with
-    `[KCfollower]` of :func:`.update_KCfollower` for the same ``p`` and
-    ``quadratic``.
+    `\boldsymbol{u} = \boldsymbol{0}`, be subtracted from the internal
+    forces. The Jacobian of the residual is `\boldsymbol{K}_{C0} +
+    \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with
+    `\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}` and
+    `\boldsymbol{K}_{F_{ref}}` the matrix of :func:`.update_KCfollower` for
+    the same ``p`` and ``quadratic``.
 
     For a pressure constant over the element, the integrands are
     polynomials of degree at most 6 in `\xi` and in `\eta` for
@@ -20977,11 +21011,11 @@ cpdef void update_fext_follower(double [::1] u,
     cdef double *ue
     cdef int c1, c2, c3, c4, nint, i, j
     cdef double lex, ley, qf, ref, pressure
-    cdef double ux, uy, vx, vy, wx, wy, ax, ay, az
+    cdef double u_x, u_y, v_x, v_y, w_x, w_y, ax, ay, az
     cdef double xi, eta, weight_xi, weight_eta, weight
-    cdef double Nu1_01, Nu1_02, Nu1_03, Nu1_11, Nu1_12, Nu1_13, Nu1_21, Nu1_22, Nu1_23, Nu1_31, Nu1_32, Nu1_33, Nu2_01, Nu2_02, Nu2_03, Nu2_11, Nu2_12, Nu2_13, Nu2_21, Nu2_22, Nu2_23, Nu2_31, Nu2_32, Nu2_33, Nu3_01, Nu3_02, Nu3_03, Nu3_11, Nu3_12, Nu3_13, Nu3_21, Nu3_22, Nu3_23, Nu3_31, Nu3_32, Nu3_33
-    cdef double Nv1_04, Nv1_05, Nv1_06, Nv1_14, Nv1_15, Nv1_16, Nv1_24, Nv1_25, Nv1_26, Nv1_34, Nv1_35, Nv1_36, Nv2_04, Nv2_05, Nv2_06, Nv2_14, Nv2_15, Nv2_16, Nv2_24, Nv2_25, Nv2_26, Nv2_34, Nv2_35, Nv2_36, Nv3_04, Nv3_05, Nv3_06, Nv3_14, Nv3_15, Nv3_16, Nv3_24, Nv3_25, Nv3_26, Nv3_34, Nv3_35, Nv3_36
-    cdef double Nw1_07, Nw1_08, Nw1_09, Nw1_10, Nw1_17, Nw1_18, Nw1_19, Nw1_20, Nw1_27, Nw1_28, Nw1_29, Nw1_30, Nw1_37, Nw1_38, Nw1_39, Nw1_40, Nw2_07, Nw2_08, Nw2_09, Nw2_10, Nw2_17, Nw2_18, Nw2_19, Nw2_20, Nw2_27, Nw2_28, Nw2_29, Nw2_30, Nw2_37, Nw2_38, Nw2_39, Nw2_40, Nw3_07, Nw3_08, Nw3_09, Nw3_10, Nw3_17, Nw3_18, Nw3_19, Nw3_20, Nw3_27, Nw3_28, Nw3_29, Nw3_30, Nw3_37, Nw3_38, Nw3_39, Nw3_40
+    cdef double Su1_01, Su1_02, Su1_03, Su1_11, Su1_12, Su1_13, Su1_21, Su1_22, Su1_23, Su1_31, Su1_32, Su1_33, Su2_01, Su2_02, Su2_03, Su2_11, Su2_12, Su2_13, Su2_21, Su2_22, Su2_23, Su2_31, Su2_32, Su2_33, Su3_01, Su3_02, Su3_03, Su3_11, Su3_12, Su3_13, Su3_21, Su3_22, Su3_23, Su3_31, Su3_32, Su3_33
+    cdef double Sv1_04, Sv1_05, Sv1_06, Sv1_14, Sv1_15, Sv1_16, Sv1_24, Sv1_25, Sv1_26, Sv1_34, Sv1_35, Sv1_36, Sv2_04, Sv2_05, Sv2_06, Sv2_14, Sv2_15, Sv2_16, Sv2_24, Sv2_25, Sv2_26, Sv2_34, Sv2_35, Sv2_36, Sv3_04, Sv3_05, Sv3_06, Sv3_14, Sv3_15, Sv3_16, Sv3_24, Sv3_25, Sv3_26, Sv3_34, Sv3_35, Sv3_36
+    cdef double Sw1_07, Sw1_08, Sw1_09, Sw1_10, Sw1_17, Sw1_18, Sw1_19, Sw1_20, Sw1_27, Sw1_28, Sw1_29, Sw1_30, Sw1_37, Sw1_38, Sw1_39, Sw1_40, Sw2_07, Sw2_08, Sw2_09, Sw2_10, Sw2_17, Sw2_18, Sw2_19, Sw2_20, Sw2_27, Sw2_28, Sw2_29, Sw2_30, Sw2_37, Sw2_38, Sw2_39, Sw2_40, Sw3_07, Sw3_08, Sw3_09, Sw3_10, Sw3_17, Sw3_18, Sw3_19, Sw3_20, Sw3_27, Sw3_28, Sw3_29, Sw3_30, Sw3_37, Sw3_38, Sw3_39, Sw3_40
 
     with nogil:
         lex = plate.lex
@@ -21017,180 +21051,180 @@ cpdef void update_fext_follower(double [::1] u,
                 weight = weight_xi*weight_eta
                 pressure = p[i, j]
 
-                Nu1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nu1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nu1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nu1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nu1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nu3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nu3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nu3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nu3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-                Nv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-                Nw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
 
-                ux = Nu2_01*ue[0] + Nu2_02*ue[1] + Nu2_03*ue[2] + Nu2_11*ue[10] + Nu2_12*ue[11] + Nu2_13*ue[12] + Nu2_21*ue[20] + Nu2_22*ue[21] + Nu2_23*ue[22] + Nu2_31*ue[30] + Nu2_32*ue[31] + Nu2_33*ue[32]
-                uy = Nu3_01*ue[0] + Nu3_02*ue[1] + Nu3_03*ue[2] + Nu3_11*ue[10] + Nu3_12*ue[11] + Nu3_13*ue[12] + Nu3_21*ue[20] + Nu3_22*ue[21] + Nu3_23*ue[22] + Nu3_31*ue[30] + Nu3_32*ue[31] + Nu3_33*ue[32]
-                vx = Nv2_04*ue[3] + Nv2_05*ue[4] + Nv2_06*ue[5] + Nv2_14*ue[13] + Nv2_15*ue[14] + Nv2_16*ue[15] + Nv2_24*ue[23] + Nv2_25*ue[24] + Nv2_26*ue[25] + Nv2_34*ue[33] + Nv2_35*ue[34] + Nv2_36*ue[35]
-                vy = Nv3_04*ue[3] + Nv3_05*ue[4] + Nv3_06*ue[5] + Nv3_14*ue[13] + Nv3_15*ue[14] + Nv3_16*ue[15] + Nv3_24*ue[23] + Nv3_25*ue[24] + Nv3_26*ue[25] + Nv3_34*ue[33] + Nv3_35*ue[34] + Nv3_36*ue[35]
-                wx = Nw2_07*ue[6] + Nw2_08*ue[7] + Nw2_09*ue[8] + Nw2_10*ue[9] + Nw2_17*ue[16] + Nw2_18*ue[17] + Nw2_19*ue[18] + Nw2_20*ue[19] + Nw2_27*ue[26] + Nw2_28*ue[27] + Nw2_29*ue[28] + Nw2_30*ue[29] + Nw2_37*ue[36] + Nw2_38*ue[37] + Nw2_39*ue[38] + Nw2_40*ue[39]
-                wy = Nw3_07*ue[6] + Nw3_08*ue[7] + Nw3_09*ue[8] + Nw3_10*ue[9] + Nw3_17*ue[16] + Nw3_18*ue[17] + Nw3_19*ue[18] + Nw3_20*ue[19] + Nw3_27*ue[26] + Nw3_28*ue[27] + Nw3_29*ue[28] + Nw3_30*ue[29] + Nw3_37*ue[36] + Nw3_38*ue[37] + Nw3_39*ue[38] + Nw3_40*ue[39]
+                u_x = Su2_01*ue[0] + Su2_02*ue[1] + Su2_03*ue[2] + Su2_11*ue[10] + Su2_12*ue[11] + Su2_13*ue[12] + Su2_21*ue[20] + Su2_22*ue[21] + Su2_23*ue[22] + Su2_31*ue[30] + Su2_32*ue[31] + Su2_33*ue[32]
+                u_y = Su3_01*ue[0] + Su3_02*ue[1] + Su3_03*ue[2] + Su3_11*ue[10] + Su3_12*ue[11] + Su3_13*ue[12] + Su3_21*ue[20] + Su3_22*ue[21] + Su3_23*ue[22] + Su3_31*ue[30] + Su3_32*ue[31] + Su3_33*ue[32]
+                v_x = Sv2_04*ue[3] + Sv2_05*ue[4] + Sv2_06*ue[5] + Sv2_14*ue[13] + Sv2_15*ue[14] + Sv2_16*ue[15] + Sv2_24*ue[23] + Sv2_25*ue[24] + Sv2_26*ue[25] + Sv2_34*ue[33] + Sv2_35*ue[34] + Sv2_36*ue[35]
+                v_y = Sv3_04*ue[3] + Sv3_05*ue[4] + Sv3_06*ue[5] + Sv3_14*ue[13] + Sv3_15*ue[14] + Sv3_16*ue[15] + Sv3_24*ue[23] + Sv3_25*ue[24] + Sv3_26*ue[25] + Sv3_34*ue[33] + Sv3_35*ue[34] + Sv3_36*ue[35]
+                w_x = Sw2_07*ue[6] + Sw2_08*ue[7] + Sw2_09*ue[8] + Sw2_10*ue[9] + Sw2_17*ue[16] + Sw2_18*ue[17] + Sw2_19*ue[18] + Sw2_20*ue[19] + Sw2_27*ue[26] + Sw2_28*ue[27] + Sw2_29*ue[28] + Sw2_30*ue[29] + Sw2_37*ue[36] + Sw2_38*ue[37] + Sw2_39*ue[38] + Sw2_40*ue[39]
+                w_y = Sw3_07*ue[6] + Sw3_08*ue[7] + Sw3_09*ue[8] + Sw3_10*ue[9] + Sw3_17*ue[16] + Sw3_18*ue[17] + Sw3_19*ue[18] + Sw3_20*ue[19] + Sw3_27*ue[26] + Sw3_28*ue[27] + Sw3_29*ue[28] + Sw3_30*ue[29] + Sw3_37*ue[36] + Sw3_38*ue[37] + Sw3_39*ue[38] + Sw3_40*ue[39]
 
-                ax = qf*(vx*wy - vy*wx) - wx
-                ay = qf*(-ux*wy + uy*wx) - wy
-                az = qf*(ux*vy - uy*vx) + ref + ux + vy
+                ax = qf*(v_x*w_y - v_y*w_x) - w_x
+                ay = qf*(-u_x*w_y + u_y*w_x) - w_y
+                az = qf*(u_x*v_y - u_y*v_x) + ref + u_x + v_y
 
-                fext[0 + c1] += 0.25*Nu1_01*ax*lex*ley*pressure*weight
-                fext[1 + c1] += 0.25*Nu1_02*ax*lex*ley*pressure*weight
-                fext[2 + c1] += 0.25*Nu1_03*ax*lex*ley*pressure*weight
-                fext[3 + c1] += 0.25*Nv1_04*ay*lex*ley*pressure*weight
-                fext[4 + c1] += 0.25*Nv1_05*ay*lex*ley*pressure*weight
-                fext[5 + c1] += 0.25*Nv1_06*ay*lex*ley*pressure*weight
-                fext[6 + c1] += 0.25*Nw1_07*az*lex*ley*pressure*weight
-                fext[7 + c1] += 0.25*Nw1_08*az*lex*ley*pressure*weight
-                fext[8 + c1] += 0.25*Nw1_09*az*lex*ley*pressure*weight
-                fext[9 + c1] += 0.25*Nw1_10*az*lex*ley*pressure*weight
-                fext[0 + c2] += 0.25*Nu1_11*ax*lex*ley*pressure*weight
-                fext[1 + c2] += 0.25*Nu1_12*ax*lex*ley*pressure*weight
-                fext[2 + c2] += 0.25*Nu1_13*ax*lex*ley*pressure*weight
-                fext[3 + c2] += 0.25*Nv1_14*ay*lex*ley*pressure*weight
-                fext[4 + c2] += 0.25*Nv1_15*ay*lex*ley*pressure*weight
-                fext[5 + c2] += 0.25*Nv1_16*ay*lex*ley*pressure*weight
-                fext[6 + c2] += 0.25*Nw1_17*az*lex*ley*pressure*weight
-                fext[7 + c2] += 0.25*Nw1_18*az*lex*ley*pressure*weight
-                fext[8 + c2] += 0.25*Nw1_19*az*lex*ley*pressure*weight
-                fext[9 + c2] += 0.25*Nw1_20*az*lex*ley*pressure*weight
-                fext[0 + c3] += 0.25*Nu1_21*ax*lex*ley*pressure*weight
-                fext[1 + c3] += 0.25*Nu1_22*ax*lex*ley*pressure*weight
-                fext[2 + c3] += 0.25*Nu1_23*ax*lex*ley*pressure*weight
-                fext[3 + c3] += 0.25*Nv1_24*ay*lex*ley*pressure*weight
-                fext[4 + c3] += 0.25*Nv1_25*ay*lex*ley*pressure*weight
-                fext[5 + c3] += 0.25*Nv1_26*ay*lex*ley*pressure*weight
-                fext[6 + c3] += 0.25*Nw1_27*az*lex*ley*pressure*weight
-                fext[7 + c3] += 0.25*Nw1_28*az*lex*ley*pressure*weight
-                fext[8 + c3] += 0.25*Nw1_29*az*lex*ley*pressure*weight
-                fext[9 + c3] += 0.25*Nw1_30*az*lex*ley*pressure*weight
-                fext[0 + c4] += 0.25*Nu1_31*ax*lex*ley*pressure*weight
-                fext[1 + c4] += 0.25*Nu1_32*ax*lex*ley*pressure*weight
-                fext[2 + c4] += 0.25*Nu1_33*ax*lex*ley*pressure*weight
-                fext[3 + c4] += 0.25*Nv1_34*ay*lex*ley*pressure*weight
-                fext[4 + c4] += 0.25*Nv1_35*ay*lex*ley*pressure*weight
-                fext[5 + c4] += 0.25*Nv1_36*ay*lex*ley*pressure*weight
-                fext[6 + c4] += 0.25*Nw1_37*az*lex*ley*pressure*weight
-                fext[7 + c4] += 0.25*Nw1_38*az*lex*ley*pressure*weight
-                fext[8 + c4] += 0.25*Nw1_39*az*lex*ley*pressure*weight
-                fext[9 + c4] += 0.25*Nw1_40*az*lex*ley*pressure*weight
+                fext[0 + c1] += 0.25*Su1_01*ax*lex*ley*pressure*weight
+                fext[1 + c1] += 0.25*Su1_02*ax*lex*ley*pressure*weight
+                fext[2 + c1] += 0.25*Su1_03*ax*lex*ley*pressure*weight
+                fext[3 + c1] += 0.25*Sv1_04*ay*lex*ley*pressure*weight
+                fext[4 + c1] += 0.25*Sv1_05*ay*lex*ley*pressure*weight
+                fext[5 + c1] += 0.25*Sv1_06*ay*lex*ley*pressure*weight
+                fext[6 + c1] += 0.25*Sw1_07*az*lex*ley*pressure*weight
+                fext[7 + c1] += 0.25*Sw1_08*az*lex*ley*pressure*weight
+                fext[8 + c1] += 0.25*Sw1_09*az*lex*ley*pressure*weight
+                fext[9 + c1] += 0.25*Sw1_10*az*lex*ley*pressure*weight
+                fext[0 + c2] += 0.25*Su1_11*ax*lex*ley*pressure*weight
+                fext[1 + c2] += 0.25*Su1_12*ax*lex*ley*pressure*weight
+                fext[2 + c2] += 0.25*Su1_13*ax*lex*ley*pressure*weight
+                fext[3 + c2] += 0.25*Sv1_14*ay*lex*ley*pressure*weight
+                fext[4 + c2] += 0.25*Sv1_15*ay*lex*ley*pressure*weight
+                fext[5 + c2] += 0.25*Sv1_16*ay*lex*ley*pressure*weight
+                fext[6 + c2] += 0.25*Sw1_17*az*lex*ley*pressure*weight
+                fext[7 + c2] += 0.25*Sw1_18*az*lex*ley*pressure*weight
+                fext[8 + c2] += 0.25*Sw1_19*az*lex*ley*pressure*weight
+                fext[9 + c2] += 0.25*Sw1_20*az*lex*ley*pressure*weight
+                fext[0 + c3] += 0.25*Su1_21*ax*lex*ley*pressure*weight
+                fext[1 + c3] += 0.25*Su1_22*ax*lex*ley*pressure*weight
+                fext[2 + c3] += 0.25*Su1_23*ax*lex*ley*pressure*weight
+                fext[3 + c3] += 0.25*Sv1_24*ay*lex*ley*pressure*weight
+                fext[4 + c3] += 0.25*Sv1_25*ay*lex*ley*pressure*weight
+                fext[5 + c3] += 0.25*Sv1_26*ay*lex*ley*pressure*weight
+                fext[6 + c3] += 0.25*Sw1_27*az*lex*ley*pressure*weight
+                fext[7 + c3] += 0.25*Sw1_28*az*lex*ley*pressure*weight
+                fext[8 + c3] += 0.25*Sw1_29*az*lex*ley*pressure*weight
+                fext[9 + c3] += 0.25*Sw1_30*az*lex*ley*pressure*weight
+                fext[0 + c4] += 0.25*Su1_31*ax*lex*ley*pressure*weight
+                fext[1 + c4] += 0.25*Su1_32*ax*lex*ley*pressure*weight
+                fext[2 + c4] += 0.25*Su1_33*ax*lex*ley*pressure*weight
+                fext[3 + c4] += 0.25*Sv1_34*ay*lex*ley*pressure*weight
+                fext[4 + c4] += 0.25*Sv1_35*ay*lex*ley*pressure*weight
+                fext[5 + c4] += 0.25*Sv1_36*ay*lex*ley*pressure*weight
+                fext[6 + c4] += 0.25*Sw1_37*az*lex*ley*pressure*weight
+                fext[7 + c4] += 0.25*Sw1_38*az*lex*ley*pressure*weight
+                fext[8 + c4] += 0.25*Sw1_39*az*lex*ley*pressure*weight
+                fext[9 + c4] += 0.25*Sw1_40*az*lex*ley*pressure*weight
 
 
 cpdef void update_KCfollower(double [::1] u,
@@ -21287,41 +21321,45 @@ cpdef void update_KCfollower(double [::1] u,
 
     .. math::
 
-        [KCfollower] = -\frac{\partial \{F_p\}}{\partial \{u_e\}} =
+        \boldsymbol{K}_F = -\frac{\partial \boldsymbol{F}_p}{\partial \boldsymbol{u}_e} =
             -\sum_{i=1}^{nint} \sum_{j=1}^{nint}
             \frac{lex \, ley}{4} \, weight \, p_{ij}
-            \left( \{N_u\}^T \frac{\partial a_x}{\partial \{u_e\}}
-            + \{N_v\}^T \frac{\partial a_y}{\partial \{u_e\}}
-            + \{N_w\}^T \frac{\partial a_z}{\partial \{u_e\}} \right)
+            \left( (\boldsymbol{S}^u)^\top \frac{\partial a_x}{\partial \boldsymbol{u}_e}
+            + (\boldsymbol{S}^v)^\top \frac{\partial a_y}{\partial \boldsymbol{u}_e}
+            + (\boldsymbol{S}^w)^\top \frac{\partial a_z}{\partial \boldsymbol{u}_e}
+            \right)
 
-    with `\{F_p\}` and the area vector `\mathbf{a}` of
+    with `\boldsymbol{F}_p` and the area vector `\boldsymbol{a}` of
     :func:`.update_fext_follower`, ``weight = weights[i]*weights[j]`` and
     `p_{ij}` = ``p[i, j]``, the rows evaluated at ``xi = points[i]`` and
     ``eta = points[j]``. For the first-order area vector
 
     .. math::
 
-        \frac{\partial \mathbf{a}_1}{\partial \{u_e\}} =
-        \begin{bmatrix} -\{N_{w,x}\} \\ -\{N_{w,y}\} \\
-            \{N_{u,x}\} + \{N_{v,y}\} \end{bmatrix}
+        \frac{\partial \boldsymbol{a}_1}{\partial \boldsymbol{u}_e} =
+        \begin{bmatrix} -\boldsymbol{S}^w_{,x} \\ -\boldsymbol{S}^w_{,y} \\
+            \boldsymbol{S}^u_{,x} + \boldsymbol{S}^v_{,y} \end{bmatrix}
 
-    is constant, which gives the blocks `p \{N_u\}^T \{N_{w,x}\}`, `p
-    \{N_v\}^T \{N_{w,y}\}`, `-p \{N_w\}^T \{N_{u,x}\}` and `-p \{N_w\}^T
-    \{N_{v,y}\}` integrated over the element, independent of the
+    is constant, which gives the blocks `p (\boldsymbol{S}^u)^\top
+    \boldsymbol{S}^w_{,x}`, `p (\boldsymbol{S}^v)^\top \boldsymbol{S}^w_{,y}`, `-p
+    (\boldsymbol{S}^w)^\top \boldsymbol{S}^u_{,x}` and `-p (\boldsymbol{S}^w)^\top
+    \boldsymbol{S}^v_{,y}` integrated over the element, independent of the
     displacements. The complete area vector adds
-    `\partial \mathbf{a}_2 / \partial \{u_e\}`, linear in the displacement
+    `\partial \boldsymbol{a}_2 / \partial \boldsymbol{u}_e`, linear in the displacement
     gradients, to these blocks and to the blocks `[u, v]` and `[v, u]`. In
     the tangent stiffness matrix of a nonlinear analysis with the load
-    factor `\lambda` of the pressure, `[KC0] + [KCNL] + [KG] + \lambda
-    [KCfollower]` is the Jacobian of the residual `\{f_{int}\} - \lambda
-    \{F_p(u)\}`, see :func:`.update_fext_follower`. In a linear buckling
-    analysis of a follower pressure `\lambda p`, `[KCfollower]` of ``p``
-    multiplies `\lambda` together with the `[KG]` of the linear static
+    factor `\lambda` of the pressure, `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G +
+    \boldsymbol{K}_F`, with `\boldsymbol{K}_F = \lambda
+    \boldsymbol{K}_{F_{ref}}` and `\boldsymbol{K}_{F_{ref}}` the matrix of
+    ``p``, is the Jacobian of the residual `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})`, see :func:`.update_fext_follower`. In a linear buckling
+    analysis of a follower pressure `\lambda p`, `\boldsymbol{K}_{F_{ref}}` of ``p``
+    multiplies `\lambda` together with the `\boldsymbol{K}_G` of the linear static
     solution of ``p``.
 
-    For the first-order area vector `\{\delta\}^T [KCfollower] \{\Delta\} =
+    For the first-order area vector `\boldsymbol{\delta}^\top \boldsymbol{K}_F \boldsymbol{\Delta} =
     -P(\delta, \Delta)`, with the bilinear form `P(\delta, \Delta) = \int_A p
-    \, \delta\mathbf{u} \cdot \mathbf{a}_1(\Delta\mathbf{u}) \, dA` of two
+    \, \delta\boldsymbol{u} \cdot \boldsymbol{a}_1(\Delta\boldsymbol{u}) \, dA` of two
     displacement fields `\delta` and `\Delta`, and an integration by parts
     gives its skew part
 
@@ -21376,11 +21414,11 @@ cpdef void update_KCfollower(double [::1] u,
     cdef double *ue
     cdef int c1, c2, c3, c4, nint, i, j, k
     cdef double lex, ley, qf, pressure
-    cdef double ux, uy, vx, vy, wx, wy
+    cdef double u_x, u_y, v_x, v_y, w_x, w_y
     cdef double xi, eta, weight_xi, weight_eta, weight
-    cdef double Nu1_01, Nu1_02, Nu1_03, Nu1_11, Nu1_12, Nu1_13, Nu1_21, Nu1_22, Nu1_23, Nu1_31, Nu1_32, Nu1_33, Nu2_01, Nu2_02, Nu2_03, Nu2_11, Nu2_12, Nu2_13, Nu2_21, Nu2_22, Nu2_23, Nu2_31, Nu2_32, Nu2_33, Nu3_01, Nu3_02, Nu3_03, Nu3_11, Nu3_12, Nu3_13, Nu3_21, Nu3_22, Nu3_23, Nu3_31, Nu3_32, Nu3_33
-    cdef double Nv1_04, Nv1_05, Nv1_06, Nv1_14, Nv1_15, Nv1_16, Nv1_24, Nv1_25, Nv1_26, Nv1_34, Nv1_35, Nv1_36, Nv2_04, Nv2_05, Nv2_06, Nv2_14, Nv2_15, Nv2_16, Nv2_24, Nv2_25, Nv2_26, Nv2_34, Nv2_35, Nv2_36, Nv3_04, Nv3_05, Nv3_06, Nv3_14, Nv3_15, Nv3_16, Nv3_24, Nv3_25, Nv3_26, Nv3_34, Nv3_35, Nv3_36
-    cdef double Nw1_07, Nw1_08, Nw1_09, Nw1_10, Nw1_17, Nw1_18, Nw1_19, Nw1_20, Nw1_27, Nw1_28, Nw1_29, Nw1_30, Nw1_37, Nw1_38, Nw1_39, Nw1_40, Nw2_07, Nw2_08, Nw2_09, Nw2_10, Nw2_17, Nw2_18, Nw2_19, Nw2_20, Nw2_27, Nw2_28, Nw2_29, Nw2_30, Nw2_37, Nw2_38, Nw2_39, Nw2_40, Nw3_07, Nw3_08, Nw3_09, Nw3_10, Nw3_17, Nw3_18, Nw3_19, Nw3_20, Nw3_27, Nw3_28, Nw3_29, Nw3_30, Nw3_37, Nw3_38, Nw3_39, Nw3_40
+    cdef double Su1_01, Su1_02, Su1_03, Su1_11, Su1_12, Su1_13, Su1_21, Su1_22, Su1_23, Su1_31, Su1_32, Su1_33, Su2_01, Su2_02, Su2_03, Su2_11, Su2_12, Su2_13, Su2_21, Su2_22, Su2_23, Su2_31, Su2_32, Su2_33, Su3_01, Su3_02, Su3_03, Su3_11, Su3_12, Su3_13, Su3_21, Su3_22, Su3_23, Su3_31, Su3_32, Su3_33
+    cdef double Sv1_04, Sv1_05, Sv1_06, Sv1_14, Sv1_15, Sv1_16, Sv1_24, Sv1_25, Sv1_26, Sv1_34, Sv1_35, Sv1_36, Sv2_04, Sv2_05, Sv2_06, Sv2_14, Sv2_15, Sv2_16, Sv2_24, Sv2_25, Sv2_26, Sv2_34, Sv2_35, Sv2_36, Sv3_04, Sv3_05, Sv3_06, Sv3_14, Sv3_15, Sv3_16, Sv3_24, Sv3_25, Sv3_26, Sv3_34, Sv3_35, Sv3_36
+    cdef double Sw1_07, Sw1_08, Sw1_09, Sw1_10, Sw1_17, Sw1_18, Sw1_19, Sw1_20, Sw1_27, Sw1_28, Sw1_29, Sw1_30, Sw1_37, Sw1_38, Sw1_39, Sw1_40, Sw2_07, Sw2_08, Sw2_09, Sw2_10, Sw2_17, Sw2_18, Sw2_19, Sw2_20, Sw2_27, Sw2_28, Sw2_29, Sw2_30, Sw2_37, Sw2_38, Sw2_39, Sw2_40, Sw3_07, Sw3_08, Sw3_09, Sw3_10, Sw3_17, Sw3_18, Sw3_19, Sw3_20, Sw3_27, Sw3_28, Sw3_29, Sw3_30, Sw3_37, Sw3_38, Sw3_39, Sw3_40
 
     with nogil:
         lex = plate.lex
@@ -24576,7 +24614,7 @@ cpdef void update_KCfollower(double [::1] u,
         KCfollowerc[k] = 5+c4
 
         # the displacement gradients enter only the complete area vector
-        ux = uy = vx = vy = wx = wy = 0.
+        u_x = u_y = v_x = v_y = w_x = w_y = 0.
 
         for i in range(nint):
             xi = points[i]
@@ -24587,2246 +24625,2246 @@ cpdef void update_KCfollower(double [::1] u,
                 weight = weight_xi*weight_eta
                 pressure = p[i, j]
 
-                Nu1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nu1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nu1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nu1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nu1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nu1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nu2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nu2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nu2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nu2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nu3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nu3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nu3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nu3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nu3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nu3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nu3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-                Nv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-                Nw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-                Nw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-                Nw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-                Nw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-                Nw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-                Nw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-                Nw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-                Nw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-                Nw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-                Nw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-                Nw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-                Nw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-                Nw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
 
                 if quadratic != 0:
-                    ux = Nu2_01*ue[0] + Nu2_02*ue[1] + Nu2_03*ue[2] + Nu2_11*ue[10] + Nu2_12*ue[11] + Nu2_13*ue[12] + Nu2_21*ue[20] + Nu2_22*ue[21] + Nu2_23*ue[22] + Nu2_31*ue[30] + Nu2_32*ue[31] + Nu2_33*ue[32]
-                    uy = Nu3_01*ue[0] + Nu3_02*ue[1] + Nu3_03*ue[2] + Nu3_11*ue[10] + Nu3_12*ue[11] + Nu3_13*ue[12] + Nu3_21*ue[20] + Nu3_22*ue[21] + Nu3_23*ue[22] + Nu3_31*ue[30] + Nu3_32*ue[31] + Nu3_33*ue[32]
-                    vx = Nv2_04*ue[3] + Nv2_05*ue[4] + Nv2_06*ue[5] + Nv2_14*ue[13] + Nv2_15*ue[14] + Nv2_16*ue[15] + Nv2_24*ue[23] + Nv2_25*ue[24] + Nv2_26*ue[25] + Nv2_34*ue[33] + Nv2_35*ue[34] + Nv2_36*ue[35]
-                    vy = Nv3_04*ue[3] + Nv3_05*ue[4] + Nv3_06*ue[5] + Nv3_14*ue[13] + Nv3_15*ue[14] + Nv3_16*ue[15] + Nv3_24*ue[23] + Nv3_25*ue[24] + Nv3_26*ue[25] + Nv3_34*ue[33] + Nv3_35*ue[34] + Nv3_36*ue[35]
-                    wx = Nw2_07*ue[6] + Nw2_08*ue[7] + Nw2_09*ue[8] + Nw2_10*ue[9] + Nw2_17*ue[16] + Nw2_18*ue[17] + Nw2_19*ue[18] + Nw2_20*ue[19] + Nw2_27*ue[26] + Nw2_28*ue[27] + Nw2_29*ue[28] + Nw2_30*ue[29] + Nw2_37*ue[36] + Nw2_38*ue[37] + Nw2_39*ue[38] + Nw2_40*ue[39]
-                    wy = Nw3_07*ue[6] + Nw3_08*ue[7] + Nw3_09*ue[8] + Nw3_10*ue[9] + Nw3_17*ue[16] + Nw3_18*ue[17] + Nw3_19*ue[18] + Nw3_20*ue[19] + Nw3_27*ue[26] + Nw3_28*ue[27] + Nw3_29*ue[28] + Nw3_30*ue[29] + Nw3_37*ue[36] + Nw3_38*ue[37] + Nw3_39*ue[38] + Nw3_40*ue[39]
+                    u_x = Su2_01*ue[0] + Su2_02*ue[1] + Su2_03*ue[2] + Su2_11*ue[10] + Su2_12*ue[11] + Su2_13*ue[12] + Su2_21*ue[20] + Su2_22*ue[21] + Su2_23*ue[22] + Su2_31*ue[30] + Su2_32*ue[31] + Su2_33*ue[32]
+                    u_y = Su3_01*ue[0] + Su3_02*ue[1] + Su3_03*ue[2] + Su3_11*ue[10] + Su3_12*ue[11] + Su3_13*ue[12] + Su3_21*ue[20] + Su3_22*ue[21] + Su3_23*ue[22] + Su3_31*ue[30] + Su3_32*ue[31] + Su3_33*ue[32]
+                    v_x = Sv2_04*ue[3] + Sv2_05*ue[4] + Sv2_06*ue[5] + Sv2_14*ue[13] + Sv2_15*ue[14] + Sv2_16*ue[15] + Sv2_24*ue[23] + Sv2_25*ue[24] + Sv2_26*ue[25] + Sv2_34*ue[33] + Sv2_35*ue[34] + Sv2_36*ue[35]
+                    v_y = Sv3_04*ue[3] + Sv3_05*ue[4] + Sv3_06*ue[5] + Sv3_14*ue[13] + Sv3_15*ue[14] + Sv3_16*ue[15] + Sv3_24*ue[23] + Sv3_25*ue[24] + Sv3_26*ue[25] + Sv3_34*ue[33] + Sv3_35*ue[34] + Sv3_36*ue[35]
+                    w_x = Sw2_07*ue[6] + Sw2_08*ue[7] + Sw2_09*ue[8] + Sw2_10*ue[9] + Sw2_17*ue[16] + Sw2_18*ue[17] + Sw2_19*ue[18] + Sw2_20*ue[19] + Sw2_27*ue[26] + Sw2_28*ue[27] + Sw2_29*ue[28] + Sw2_30*ue[29] + Sw2_37*ue[36] + Sw2_38*ue[37] + Sw2_39*ue[38] + Sw2_40*ue[39]
+                    w_y = Sw3_07*ue[6] + Sw3_08*ue[7] + Sw3_09*ue[8] + Sw3_10*ue[9] + Sw3_17*ue[16] + Sw3_18*ue[17] + Sw3_19*ue[18] + Sw3_20*ue[19] + Sw3_27*ue[26] + Sw3_28*ue[27] + Sw3_29*ue[28] + Sw3_30*ue[29] + Sw3_37*ue[36] + Sw3_38*ue[37] + Sw3_39*ue[38] + Sw3_40*ue[39]
 
                 k = plate.init_k_KCfollower
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_01*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_02*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_03*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_04*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_05*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_06*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_07*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_08*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_09*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_10*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_11*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_12*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_13*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_14*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_15*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_16*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_17*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_18*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_19*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_20*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_21*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_22*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_23*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_24*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_25*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_26*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_27*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_28*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_29*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_30*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_31*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_32*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_04*qf*wy - Nv3_04*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_05*qf*wy - Nv3_05*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_06*qf*wy - Nv3_06*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_07*(-qf*vy - 1) + Nw3_07*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_07*(-qf*v_y - 1) + Sw3_07*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_08*(-qf*vy - 1) + Nw3_08*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_08*(-qf*v_y - 1) + Sw3_08*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_09*(-qf*vy - 1) + Nw3_09*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_09*(-qf*v_y - 1) + Sw3_09*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_10*(-qf*vy - 1) + Nw3_10*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_10*(-qf*v_y - 1) + Sw3_10*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_14*qf*wy - Nv3_14*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_15*qf*wy - Nv3_15*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_16*qf*wy - Nv3_16*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_17*(-qf*vy - 1) + Nw3_17*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_17*(-qf*v_y - 1) + Sw3_17*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_18*(-qf*vy - 1) + Nw3_18*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_18*(-qf*v_y - 1) + Sw3_18*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_19*(-qf*vy - 1) + Nw3_19*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_19*(-qf*v_y - 1) + Sw3_19*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_20*(-qf*vy - 1) + Nw3_20*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_20*(-qf*v_y - 1) + Sw3_20*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_24*qf*wy - Nv3_24*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_25*qf*wy - Nv3_25*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_26*qf*wy - Nv3_26*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_27*(-qf*vy - 1) + Nw3_27*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_27*(-qf*v_y - 1) + Sw3_27*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_28*(-qf*vy - 1) + Nw3_28*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_28*(-qf*v_y - 1) + Sw3_28*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_29*(-qf*vy - 1) + Nw3_29*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_29*(-qf*v_y - 1) + Sw3_29*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_30*(-qf*vy - 1) + Nw3_30*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_30*(-qf*v_y - 1) + Sw3_30*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_34*qf*wy - Nv3_34*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_35*qf*wy - Nv3_35*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nv2_36*qf*wy - Nv3_36*qf*wx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_37*(-qf*vy - 1) + Nw3_37*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_37*(-qf*v_y - 1) + Sw3_37*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_38*(-qf*vy - 1) + Nw3_38*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_38*(-qf*v_y - 1) + Sw3_38*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_39*(-qf*vy - 1) + Nw3_39*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_39*(-qf*v_y - 1) + Sw3_39*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nu1_33*lex*ley*pressure*weight*(Nw2_40*(-qf*vy - 1) + Nw3_40*qf*vx)
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pressure*weight*(Sw2_40*(-qf*v_y - 1) + Sw3_40*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_34*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_35*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_01*qf*wy + Nu3_01*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_02*qf*wy + Nu3_02*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_03*qf*wy + Nu3_03*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_07*qf*uy + Nw3_07*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_08*qf*uy + Nw3_08*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_09*qf*uy + Nw3_09*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_10*qf*uy + Nw3_10*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_11*qf*wy + Nu3_11*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_12*qf*wy + Nu3_12*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_13*qf*wy + Nu3_13*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_17*qf*uy + Nw3_17*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_18*qf*uy + Nw3_18*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_19*qf*uy + Nw3_19*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_20*qf*uy + Nw3_20*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_21*qf*wy + Nu3_21*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_22*qf*wy + Nu3_22*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_23*qf*wy + Nu3_23*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_27*qf*uy + Nw3_27*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_28*qf*uy + Nw3_28*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_29*qf*uy + Nw3_29*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_30*qf*uy + Nw3_30*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_31*qf*wy + Nu3_31*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_32*qf*wy + Nu3_32*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(-Nu2_33*qf*wy + Nu3_33*qf*wx)
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_37*qf*uy + Nw3_37*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_38*qf*uy + Nw3_38*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_39*qf*uy + Nw3_39*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nv1_36*lex*ley*pressure*weight*(Nw2_40*qf*uy + Nw3_40*(-qf*ux - 1))
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pressure*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_37*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_38*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_39*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_01*(qf*vy + 1) - Nu3_01*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_01*(qf*v_y + 1) - Su3_01*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_02*(qf*vy + 1) - Nu3_02*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_02*(qf*v_y + 1) - Su3_02*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_03*(qf*vy + 1) - Nu3_03*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_03*(qf*v_y + 1) - Su3_03*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_04*qf*uy + Nv3_04*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_05*qf*uy + Nv3_05*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_06*qf*uy + Nv3_06*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_11*(qf*vy + 1) - Nu3_11*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_11*(qf*v_y + 1) - Su3_11*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_12*(qf*vy + 1) - Nu3_12*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_12*(qf*v_y + 1) - Su3_12*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_13*(qf*vy + 1) - Nu3_13*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_13*(qf*v_y + 1) - Su3_13*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_14*qf*uy + Nv3_14*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_15*qf*uy + Nv3_15*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_16*qf*uy + Nv3_16*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_21*(qf*vy + 1) - Nu3_21*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_21*(qf*v_y + 1) - Su3_21*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_22*(qf*vy + 1) - Nu3_22*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_22*(qf*v_y + 1) - Su3_22*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_23*(qf*vy + 1) - Nu3_23*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_23*(qf*v_y + 1) - Su3_23*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_24*qf*uy + Nv3_24*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_25*qf*uy + Nv3_25*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_26*qf*uy + Nv3_26*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_31*(qf*vy + 1) - Nu3_31*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_31*(qf*v_y + 1) - Su3_31*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_32*(qf*vy + 1) - Nu3_32*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_32*(qf*v_y + 1) - Su3_32*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(Nu2_33*(qf*vy + 1) - Nu3_33*qf*vx)
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(Su2_33*(qf*v_y + 1) - Su3_33*qf*v_x)
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_34*qf*uy + Nv3_34*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_35*qf*uy + Nv3_35*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
                 k += 1
-                KCfollowerv[k] += -0.25*Nw1_40*lex*ley*pressure*weight*(-Nv2_36*qf*uy + Nv3_36*(qf*ux + 1))
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pressure*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))

@@ -109,8 +109,8 @@ for each element, see :class:`.BFSCPlate2D` for their definitions:
   each matrix, see :doc:`assembling`.
 
 ``n1``, ``n2``, ``n3`` and ``n4`` are identification numbers for the user,
-not read by the functions. The methods :meth:`.BFSCPlate2D.update_Nu` to
-:meth:`.BFSCPlate2D.update_Nw_y`, :meth:`.BFSCPlate2D.update_Bm` and
+not read by the functions. The methods :meth:`.BFSCPlate2D.update_Su` to
+:meth:`.BFSCPlate2D.update_Sw_y`, :meth:`.BFSCPlate2D.update_Bm` and
 :meth:`.BFSCPlate2D.update_Bb` evaluate the interpolation functions and the
 strain operators at a point `(\xi, \eta)`, e.g. to integrate a load or to
 recover the strains; the ``update_*`` functions of the module do not use

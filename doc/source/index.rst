@@ -10,19 +10,19 @@ model, written in sparse arrays; the model, its boundary conditions and the
 solution of its equations are written by the user, with NumPy and SciPy.
 With ``bfscplate2d`` you can compute:
 
-* The linear constitutive stiffness matrix `[K_{C0}]`, for linear static
-  analyses, `[K_{C0}]\{u\} = \{f\}`, with :func:`.update_KC0`
+* The linear constitutive stiffness matrix `\boldsymbol{K}_{C0}`, for linear static
+  analyses, `\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}`, with :func:`.update_KC0`
 
-* The geometric stiffness matrix `[K_G]`, for linear buckling analyses,
-  `([K_{C0}] + \lambda [K_G])\{u\} = \{0\}`, of the membrane forces of a
+* The geometric stiffness matrix `\boldsymbol{K}_G`, for linear buckling analyses,
+  `(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{u} = \boldsymbol{0}`, of the membrane forces of a
   static solution, :func:`.update_KG`, or of constant membrane forces,
   :func:`.update_KG_cte_N`
 
-* The mass matrix `[M]`, for natural frequency analyses,
-  `([K_{C0}] - \omega^2 [M])\{u\} = \{0\}`, with :func:`.update_M`
+* The mass matrix `\boldsymbol{M}`, for natural frequency analyses,
+  `(\boldsymbol{K}_{C0} - \omega^2 \boldsymbol{M})\boldsymbol{u} = \boldsymbol{0}`, with :func:`.update_M`
 
-* The internal force vector `\{f_{int}\}` and the tangent stiffness matrix
-  `[K_{C0}] + [K_{CNL}] + [K_G]`, its exact Jacobian, for geometrically
+* The internal force vector `\boldsymbol{F}_{int}` and the tangent stiffness matrix
+  `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G`, its exact Jacobian, for geometrically
   nonlinear static analyses, with :func:`.update_fint` and
   :func:`.update_KCNL`
 

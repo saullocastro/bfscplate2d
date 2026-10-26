@@ -28,7 +28,7 @@ iteration:
     :pyobject: assert_quadratic_convergence
 
 With a small transverse force the solution in one increment reproduces the
-linearised one, `([K_{C0}] + [K_G])^{-1}\{f\}`, with `[K_G]` of the axial
+linearised one, `(\boldsymbol{K}_{C0} + \boldsymbol{K}_G)^{-1}\boldsymbol{F}_{ext}`, with `\boldsymbol{K}_G` of the axial
 load:
 
 .. literalinclude:: ../../tests/test_static_axial_load_nonlinear.py

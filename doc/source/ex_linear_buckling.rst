@@ -9,7 +9,7 @@ Geometric stiffness matrix of a static solution
 A square isotropic plate, with `w` constrained at the nodes of the four
 edges and in-plane point supports at the middle of the edges, under a
 uniaxial compression applied as a consistent edge load with the rows of
-:meth:`.BFSCPlate2D.update_Nu` at `\xi = \pm 1`. The geometric stiffness
+:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The geometric stiffness
 matrix of :func:`.update_KG` is computed with the linear static solution,
 and the critical force per unit length is compared, within 5 %, with `k_c
 \pi^2 D/b^2`, with the buckling coefficient `k_c = 4`:
