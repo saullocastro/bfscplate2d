@@ -60,7 +60,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       solution of the analyses with `structsolve.Analysis`
     - The tests solve the nonlinear analyses with `structsolve.Analysis` and
       cross-check the buckling loads and natural frequencies with
-      `structsolve.lb` and `structsolve.freq`, requiring `structsolve>=0.9.0`
+      `structsolve.lb` and `structsolve.freq`, requiring `structsolve>=0.9.3`
     - Metadata in `pyproject.toml`; Python 3.10 to 3.14
 * version 0.4.1 (2026-10-22)
     - Build flags for speed, without OpenMP
