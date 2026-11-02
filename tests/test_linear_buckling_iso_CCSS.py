@@ -9,7 +9,7 @@ with the rows of :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The
 geometric stiffness matrix of :func:`bfscplate2d.bfscplate2d.update_KG` is
 computed with the linear static solution, and the buckling coefficient of
 the first critical load is checked against the value ``6.6`` read from
-Bruhn, Fig. C5.2, case C, within 5 %.
+Bruhn (1973), Fig. C5.2, case C, within 5 %.
 
 Units: N, m, Pa.
 
@@ -42,8 +42,8 @@ loaded edges, of Bruhn, Fig. C5.2 [1]_, for the square plate.
 
 References
 ----------
-.. [1] Bruhn, E. F., Analysis and Design of Flight Vehicle Structures.
-   TODO(author): full reference (publisher, edition, year).
+.. [1] Bruhn, E. F., Analysis and Design of Flight Vehicle Structures,
+   Jacobs Publishing, Indianapolis, 1973.
 
 """
 import sys
