@@ -8,8 +8,8 @@ constrained at the nodes of the four edges, `u` at `x = 0` and `v` at
 :func:`bfscplate2d.bfscplate2d.update_M`, and the first four natural
 angular frequencies are computed with the dense ``scipy.linalg.eigh``. The
 first one is checked against the closed-form natural angular frequency of
-the mode `m = n = 1` of the simply supported plate, within 1 %, and the
-four against those of ``structsolve.freq``, within ``1e-6``.
+the mode `m = n = 1` of the simply supported plate (Leissa, 1969), within
+1 %, and the four against those of ``structsolve.freq``, within ``1e-6``.
 
 Units: N, m, kg, Pa, rad/s.
 
@@ -24,7 +24,7 @@ The generalized eigenvalue problem is
 
 For the simply supported plate the mode `w = \sin(m \pi x/a) \sin(n \pi
 y/b)` satisfies the equation of motion `D \nabla^4 w = \rho h \omega^2 w`
-of the classical plate theory, with the rotary inertia neglected, for
+of the classical plate theory, with the rotary inertia neglected [1]_, for
 
 .. math::
 
@@ -36,6 +36,10 @@ The expression of the test, written with the bending stiffness of a
 plate of thickness `2 h` and the mass per unit area `2 \rho h`, is the same
 value, `\omega_{11} = 248.535` rad/s. ``structsolve.freq`` returns the
 eigenvalues `-\omega_n^2`.
+
+References
+----------
+.. [1] Leissa, A. W., Vibration of Plates, NASA SP-160, 1969.
 
 """
 import sys
