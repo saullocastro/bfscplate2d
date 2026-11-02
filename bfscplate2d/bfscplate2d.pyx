@@ -406,6 +406,26 @@ cdef class BFSCPlate2D(object):
     and ``rho`` the mass per unit area `\rho h` and the rotary inertia `\rho
     h^3/12` of :func:`.update_M`.
 
+    Examples
+    --------
+    One element of 0.5 by 0.25 of an isotropic plate, with the degrees of
+    freedom of the nodes 1 to 4 one after the other:
+
+    >>> from composites import isotropic_plate
+    >>> from bfscplate2d import BFSCPlate2D, DOF
+    >>> plate = BFSCPlate2D()
+    >>> plate.n1, plate.n2, plate.n3, plate.n4 = 1, 2, 3, 4
+    >>> plate.c1, plate.c2, plate.c3, plate.c4 = 0, DOF, 2*DOF, 3*DOF
+    >>> plate.lex, plate.ley = 0.5, 0.25
+    >>> plate.ABD = isotropic_plate(thickness=0.001, E=70e9, nu=0.3).ABD
+
+    The rows of `w` at the centre of the element, whose entries of the
+    nodal values of `w` sum to one:
+
+    >>> plate.update_Sw(0., 0.)
+    >>> print(round(sum(plate.Sw[6::DOF]), 12))
+    1.0
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4
@@ -1071,6 +1091,24 @@ cpdef void update_KC0(BFSCPlate2D plate,
     bending stiffness. The matrix is symmetric and independent of the
     displacements. The integration is exact with ``nint >= 4``, see the Notes
     of :mod:`bfscplate2d.bfscplate2d`.
+
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D`, the matrix of
+    the element alone:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from bfscplate2d import update_KC0, KC0_SPARSE_SIZE, INT, DOUBLE
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=4)
+    >>> KC0r = np.zeros(KC0_SPARSE_SIZE, dtype=INT)
+    >>> KC0c = np.zeros(KC0_SPARSE_SIZE, dtype=INT)
+    >>> KC0v = np.zeros(KC0_SPARSE_SIZE, dtype=DOUBLE)
+    >>> update_KC0(plate, points, weights, KC0r, KC0c, KC0v)
+    >>> KC0 = coo_matrix((KC0v, (KC0r, KC0c)), shape=(40, 40)).toarray()
+    >>> print(KC0.shape, np.allclose(KC0, KC0.T))
+    (40, 40) True
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -9339,6 +9377,28 @@ cpdef void update_KCNL(double [::1] u,
     between two in-plane degrees of freedom. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D`, the matrix is
+    null in the undeformed state and not null for the nodal slopes `w_{,x}
+    = 0.01`:
+
+    >>> import numpy as np
+    >>> from bfscplate2d import update_KCNL, KCNL_SPARSE_SIZE, INT, DOUBLE
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=7)
+    >>> KCNLr = np.zeros(KCNL_SPARSE_SIZE, dtype=INT)
+    >>> KCNLc = np.zeros(KCNL_SPARSE_SIZE, dtype=INT)
+    >>> KCNLv = np.zeros(KCNL_SPARSE_SIZE, dtype=DOUBLE)
+    >>> u = np.zeros(40)
+    >>> update_KCNL(u, plate, points, weights, KCNLr, KCNLc, KCNLv)
+    >>> print(np.abs(KCNLv).max())
+    0.0
+    >>> u[7::DOF] = 0.01
+    >>> update_KCNL(u, plate, points, weights, KCNLr, KCNLc, KCNLv)
+    >>> print(np.abs(KCNLv).max() > 0)
+    True
+
     """
     cdef double *ue
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -14798,6 +14858,27 @@ cpdef void update_KG(double [::1] u,
     \boldsymbol{F}_{ext}` and the buckling modes `\boldsymbol{\phi}`. The integration is exact
     with ``nint >= 5``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D`, the matrix of
+    a uniform stretching along `x`, `u_{,x} = 0.001`:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from bfscplate2d import update_KG, KG_SPARSE_SIZE, INT, DOUBLE
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=5)
+    >>> KGr = np.zeros(KG_SPARSE_SIZE, dtype=INT)
+    >>> KGc = np.zeros(KG_SPARSE_SIZE, dtype=INT)
+    >>> KGv = np.zeros(KG_SPARSE_SIZE, dtype=DOUBLE)
+    >>> u = np.zeros(40)
+    >>> u[DOF + 0] = u[2*DOF + 0] = 0.001*plate.lex
+    >>> u[1::DOF] = 0.001
+    >>> update_KG(u, plate, points, weights, KGr, KGc, KGv)
+    >>> KG = coo_matrix((KGv, (KGr, KGc)), shape=(40, 40)).toarray()
+    >>> print(np.allclose(KG, KG.T), bool((np.diag(KG)[6::DOF] > 0).all()))
+    True True
+
     """
     cdef double *ue
     cdef int c1, c2, c3, c4, i, j, k, nint
@@ -17762,6 +17843,24 @@ cpdef void update_M(BFSCPlate2D plate,
     included for a reference surface elsewhere, e.g. an offset one. The
     integrands are polynomials, integrated in closed form.
 
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D`, given a
+    thickness and a density; the entries between the nodal values of `w`
+    sum to the mass of the element:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from bfscplate2d import update_M, M_SPARSE_SIZE, INT, DOUBLE
+    >>> plate.h, plate.rho = 0.001, 2700.
+    >>> Mr = np.zeros(M_SPARSE_SIZE, dtype=INT)
+    >>> Mc = np.zeros(M_SPARSE_SIZE, dtype=INT)
+    >>> Mv = np.zeros(M_SPARSE_SIZE, dtype=DOUBLE)
+    >>> update_M(plate, Mr, Mc, Mv)
+    >>> M = coo_matrix((Mv, (Mr, Mc)), shape=(40, 40)).toarray()
+    >>> print(round(M[6::DOF, 6::DOF].sum(), 12), plate.rho*plate.h*plate.lex*plate.ley)
+    0.3375 0.3375
+
     """
     cdef int c1, c2, c3, c4, k
     cdef double lex, ley, h, rho
@@ -20588,6 +20687,24 @@ cpdef void update_fint(double [::1] u,
     \boldsymbol{F}_{ext}`. The integration is exact with
     ``nint >= 7``, see the Notes of :mod:`bfscplate2d.bfscplate2d`.
 
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D` and ``KC0`` of
+    those of :func:`.update_KC0`: for in-plane displacements only the
+    internal forces are those of the linear stiffness matrix:
+
+    >>> import numpy as np
+    >>> from bfscplate2d import update_fint
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=7)
+    >>> u = np.zeros(40)
+    >>> u[DOF + 0] = u[2*DOF + 0] = 0.001*plate.lex
+    >>> u[1::DOF] = 0.001
+    >>> fint = np.zeros(40)
+    >>> update_fint(u, plate, points, weights, fint)
+    >>> print(np.allclose(fint, KC0 @ u))
+    True
+
     """
     cdef double *ue
     cdef int c1, c2, c3, c4, nint, i, j
@@ -21006,6 +21123,22 @@ cpdef void update_fext_follower(double [::1] u,
     .. [2] Schweizerhof, K., and Ramm, E., Displacement dependent pressure
        loads in nonlinear finite element analyses, Computers & Structures,
        18(6), 1099-1114, 1984, doi:10.1016/0045-7949(84)90154-8.
+
+    Examples
+    --------
+    With ``plate`` of the Examples of :class:`.BFSCPlate2D`, a uniform
+    pressure of ``1000`` in the undeformed state, whose forces along `w`
+    sum to the pressure times the area of the element:
+
+    >>> import numpy as np
+    >>> from bfscplate2d import update_fext_follower
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=4)
+    >>> p = np.full((4, 4), 1000.)
+    >>> fext = np.zeros(40)
+    >>> update_fext_follower(np.zeros(40), plate, points, weights, p, fext)
+    >>> print(round(fext[6::DOF].sum(), 9))
+    125.0
 
     """
     cdef double *ue
