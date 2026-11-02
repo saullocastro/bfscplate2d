@@ -1,4 +1,4 @@
-"""Nonlinear static analysis of an axially compressed plate
+r"""Nonlinear static analysis of an axially compressed plate
 
 The plate is simply supported, compressed along x and given a small
 transverse load at the centre, so that it deflects out of plane instead of
@@ -8,13 +8,10 @@ Two regimes are checked:
 
 ``test_static``
     a transverse load small enough that the response is still the linearised
-    one, so it can be compared against ``(KC0 + KG(P))**-1 f``, the exact
-    answer of the eigenvalue-free buckling amplification problem. That pins
-    the result to physics rather than to a recorded number. The old
-    reference value for this case was 6.56e-5, an amplification of 10.4 over
-    the transverse-load-only response, where ``1/(1 - P/Pcr) = 2.49`` is the
-    theoretical ceiling; it was an artefact of an internal force vector that
-    counted its geometric term twice.
+    one, so it can be compared against the solution of the linear static
+    problem with the stiffness reduced by the geometric stiffness of the
+    axial load, the exact answer of the buckling amplification problem.
+    That pins the result to physics rather than to a recorded number.
 
 ``test_large_deflection``
     a transverse load large enough to reach w/h of about 2.6, where the
@@ -26,6 +23,25 @@ structsolve.Analysis, whose callables are those of ``Callables``, and also
 assert that Newton-Raphson converges quadratically, which only happens when
 KC0 + KCNL(u) + KG(u) is the exact derivative of fint. See
 test_tangent_consistency.py, which checks that property directly.
+
+Notes
+-----
+The linearised answer of ``test_static`` is
+
+.. math::
+
+    \boldsymbol{u} = \left( \boldsymbol{K}_{C0} + \boldsymbol{K}_G(P)
+    \right)^{-1} \boldsymbol{F}_{ext}
+
+with `\boldsymbol{K}_G(P)` of the static solution of the axial load `P`
+alone. Its amplification over the response to the transverse load alone is
+below the single-mode ceiling `1/(1 - P/P_{cr})`, `P_{cr}` the first
+buckling load, since a point load excites many modes. The old reference
+value for this case was 6.56e-5, an amplification of 10.4 over the
+transverse-load-only response, where `1/(1 - P/P_{cr}) = 2.49` is the
+ceiling; it was an artefact of an internal force vector that counted its
+geometric term twice.
+
 """
 import sys
 
@@ -361,7 +377,7 @@ def test_static(plot=False):
     assert isclose(w.max(), w_lin, rtol=1e-3)
 
     # a point load excites many modes, so the amplification stays below the
-    # single-mode ceiling 1/(1 - P/Pcr); it must still exceed one
+    # single-mode ceiling; it must still exceed one
     amplification = w.max()/w_bend
     assert 1. < amplification < 1./(1. - load/load_cr)
 

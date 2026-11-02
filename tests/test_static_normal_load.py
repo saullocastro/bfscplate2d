@@ -1,3 +1,16 @@
+r"""Linear static analysis of a cantilever plate under an edge load
+
+A square isotropic plate of ``a = b = 0.5``, thickness ``h = 0.001``, on a
+mesh of 7 by 5 nodes, with `u`, `v`, `w` and `w_{,x}` constrained at the
+nodes of the edge `x = 0` and the other edges free, under a transverse
+force of ``0.1`` at each node of the edge `x = a`. The stiffness matrix is
+assembled with :func:`bfscplate2d.bfscplate2d.update_KC0`. The maximum
+deflection is checked against the reference value ``0.00717`` of the test,
+with a relative tolerance of ``1e-3``. TODO(author): origin of the
+reference value ``0.00717``.
+
+Units: N, m, Pa.
+"""
 import sys
 sys.path.append('..')
 

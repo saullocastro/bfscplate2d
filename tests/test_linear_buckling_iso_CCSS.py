@@ -1,3 +1,51 @@
+r"""Linear buckling of a square plate with clamped loaded edges
+
+A square isotropic plate of ``a = b = 3``, thickness ``h = 0.001``, on a
+mesh of 5 by 5 nodes, with `w` constrained at the nodes of the four edges,
+`w_{,x}` at the loaded edges `x = 0` and `x = a`, `u` at the middle nodes of
+the edges `y = 0` and `y = b` and `v` at the middle nodes of the edges `x =
+0` and `x = a`, compressed along `x` by a consistent edge load integrated
+with the rows of :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The
+geometric stiffness matrix of :func:`bfscplate2d.bfscplate2d.update_KG` is
+computed with the linear static solution, and the buckling coefficient of
+the first critical load is checked against the value ``6.6`` read from
+Bruhn, Fig. C5.2, case C, within 5 %.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The load multipliers `\lambda` and the buckling modes `\boldsymbol{\phi}`
+solve the linear buckling problem
+
+.. math::
+
+    (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}
+
+restricted to the unconstrained degrees of freedom. ``eigsh`` is called
+with ``A = KG`` and ``M = KC0``, i.e. it solves the equivalent problem
+`\boldsymbol{K}_G \boldsymbol{\phi} = \mu \boldsymbol{K}_{C0}
+\boldsymbol{\phi}` with `\mu = -1/\lambda`, in the shift-invert mode
+``cayley``, and the load multipliers are recovered as `\lambda = -1/\mu`.
+
+The buckling coefficient is
+
+.. math::
+
+    k_c = \frac{N_{xx,cr} \, b^2}{\pi^2 D}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+with `N_{xx,cr}` the first load multiplier of the unit force per unit
+length. The reference value `k_c = 6.6` is read from case C, with clamped
+loaded edges, of Bruhn, Fig. C5.2 [1]_, for the square plate.
+
+References
+----------
+.. [1] Bruhn, E. F., Analysis and Design of Flight Vehicle Structures.
+   TODO(author): full reference (publisher, edition, year).
+
+"""
 import sys
 sys.path.append('..')
 
@@ -190,9 +238,7 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
     KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
     KGuu = KG[bu, :][:, bu]
 
-    # solving modified generalized eigenvalue problem
-    # Original: (KC0 + lambda*KG)*v = 0
-    # Modified: (-1/lambda)*KC0*v = KG*v  #NOTE here we find (-1/lambda)
+    # solving the generalized eigenvalue problem for -1/lambda
     num_eigenvalues = 5
     eigvals, eigvecsu = eigsh(A=KGuu, k=num_eigenvalues, which='SM', M=Kuu,
             tol=1e-6, sigma=1., mode='cayley')

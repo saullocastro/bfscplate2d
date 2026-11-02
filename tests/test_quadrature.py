@@ -1,3 +1,24 @@
+r"""Gauss-Legendre points and weights of get_points_weights
+
+For every ``nint`` from 2 to 10, the quadrature of the cubic polynomial
+`\xi^3 + \xi^2` from ``-1`` to ``1`` with the points and weights of
+:func:`bfscplate2d.quadrature.get_points_weights` is checked against its
+exact integral.
+
+Notes
+-----
+The exact integral is
+
+.. math::
+
+    \int_{-1}^{1} \left( \xi^3 + \xi^2 \right) d\xi = \frac{2}{3}
+
+and the Gauss-Legendre rule with ``nint`` points integrates exactly the
+polynomials of degree up to `2 \, nint - 1`, i.e. at least 3 for
+``nint >= 2``, such that the quadrature must reproduce `2/3` to round-off
+for every ``nint`` tested.
+
+"""
 import sys
 sys.path.append('..')
 

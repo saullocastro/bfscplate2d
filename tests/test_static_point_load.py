@@ -1,3 +1,15 @@
+r"""Linear static analysis of a plate under a central point load
+
+A rectangular isotropic plate of ``a = 3`` by ``b = 7``, thickness
+``h = 0.005``, on a mesh of 29 by 29 nodes, with `w` constrained at the
+nodes of the four edges and `u` and `v` at every node, under a unit
+transverse force at the central node. The stiffness matrix is assembled
+with :func:`bfscplate2d.bfscplate2d.update_KC0`. The test checks that the
+force vector sums to the applied force and that the analysis runs; it
+prints the extreme values of `w` and has no reference value.
+
+Units: N, m, Pa.
+"""
 import sys
 sys.path.append('..')
 

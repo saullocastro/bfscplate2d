@@ -1,3 +1,35 @@
+r"""Linear buckling of a laminated plate with constant membrane forces
+
+A laminate ``[0, 45, -45, 90, 90, -45, 45, 0]`` of plies of ``0.001`` with
+``E11 = 142.5e9``, ``E22 = 8.7e9``, ``nu12 = 0.28`` and ``G12 = G13 = G23 =
+5.1e9``, plate of ``a = 7`` by ``b = 3`` on a mesh of 7 by 5 nodes, with
+`w` constrained at the nodes of the four edges, `u` at `x = 0` and `v` at
+`y = 0`, with the geometric stiffness matrix of
+:func:`bfscplate2d.bfscplate2d.update_KG_cte_N` for the constant membrane
+forces ``Nxx = -1``, ``Nyy = Nxy = 0``, without a static analysis. The
+first five load multipliers, the critical forces per unit length, are
+checked against the reference values of the test, with a relative
+tolerance of ``1e-5``.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The load multipliers `\lambda` and the buckling modes `\boldsymbol{\phi}`
+solve the linear buckling problem
+
+.. math::
+
+    (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}
+
+restricted to the unconstrained degrees of freedom. ``eigsh`` is called
+with ``A = KG`` and ``M = KC0``, i.e. it solves the equivalent problem
+`\boldsymbol{K}_G \boldsymbol{\phi} = \mu \boldsymbol{K}_{C0}
+\boldsymbol{\phi}` with `\mu = -1/\lambda`, in the shift-invert mode
+``cayley``, and the load multipliers are recovered as `\lambda = -1/\mu`.
+
+"""
 import sys
 sys.path.append('..')
 
@@ -131,9 +163,7 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
     KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
     KGuu = KG[bu, :][:, bu]
 
-    # solving modified generalized eigenvalue problem
-    # Original: (KC0 + lambda*KG)*v = 0
-    # Modified: (-1/lambda)*KC0*v = KG*v  #NOTE here we find (-1/lambda)
+    # solving the generalized eigenvalue problem for -1/lambda
     num_eigenvalues = 5
     eigvals, eigvecsu = eigsh(A=KGuu, k=num_eigenvalues, which='SM', M=Kuu,
             tol=1e-6, sigma=1., mode='cayley')

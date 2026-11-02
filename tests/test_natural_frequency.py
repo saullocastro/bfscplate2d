@@ -1,3 +1,43 @@
+r"""Natural frequencies of a simply supported plate
+
+A rectangular isotropic plate of ``a = 0.6`` by ``b = 0.2``, thickness
+``h = 0.001``, density ``rho = 7.8e3``, on a mesh of 9 by 7 nodes, with `w`
+constrained at the nodes of the four edges, `u` at `x = 0` and `v` at
+`y = 0`. The stiffness and mass matrices are assembled with
+:func:`bfscplate2d.bfscplate2d.update_KC0` and
+:func:`bfscplate2d.bfscplate2d.update_M`, and the first four natural
+angular frequencies are computed with the dense ``scipy.linalg.eigh``. The
+first one is checked against the closed-form natural angular frequency of
+the mode `m = n = 1` of the simply supported plate, within 1 %, and the
+four against those of ``structsolve.freq``, within ``1e-6``.
+
+Units: N, m, kg, Pa, rad/s.
+
+Notes
+-----
+The generalized eigenvalue problem is
+
+.. math::
+
+    \boldsymbol{K}_{C0} \boldsymbol{\phi} = \omega_n^2 \boldsymbol{M}
+    \boldsymbol{\phi}
+
+For the simply supported plate the mode `w = \sin(m \pi x/a) \sin(n \pi
+y/b)` satisfies the equation of motion `D \nabla^4 w = \rho h \omega^2 w`
+of the classical plate theory, with the rotary inertia neglected, for
+
+.. math::
+
+    \omega_{mn} = \pi^2 \left( \frac{m^2}{a^2} + \frac{n^2}{b^2} \right)
+        \sqrt{\frac{D}{\rho h}}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+The expression of the test, written with the bending stiffness of a
+plate of thickness `2 h` and the mass per unit area `2 \rho h`, is the same
+value, `\omega_{11} = 248.535` rad/s. ``structsolve.freq`` returns the
+eigenvalues `-\omega_n^2`.
+
+"""
 import sys
 sys.path.append('..')
 

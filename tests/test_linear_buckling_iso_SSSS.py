@@ -1,3 +1,54 @@
+r"""Linear buckling of a simply supported square plate
+
+A square isotropic plate of ``a = b = 3``, thickness ``h = 0.001``, on a
+mesh of 5 by 5 nodes, with `w` constrained at the nodes of the four edges,
+`u` at the middle nodes of the edges `y = 0` and `y = b` and `v` at the
+middle nodes of the edges `x = 0` and `x = a`, compressed along `x` by a
+consistent edge load integrated with the rows of
+:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The geometric stiffness
+matrix of :func:`bfscplate2d.bfscplate2d.update_KG` is computed with the
+linear static solution, and the first critical force per unit length is
+checked against the closed-form value of the simply supported plate with
+the buckling coefficient `k_c = 4` (Timoshenko and Gere, 1961), within
+5 %, and the first five load multipliers against those of
+``structsolve.lb``, within ``1e-6``.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The load multipliers `\lambda` and the buckling modes `\boldsymbol{\phi}`
+solve the linear buckling problem
+
+.. math::
+
+    (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}
+
+restricted to the unconstrained degrees of freedom. ``eigsh`` is called
+with ``A = KG`` and ``M = KC0``, i.e. it solves the equivalent problem
+`\boldsymbol{K}_G \boldsymbol{\phi} = \mu \boldsymbol{K}_{C0}
+\boldsymbol{\phi}` with `\mu = -1/\lambda`, in the shift-invert mode
+``cayley``, and the load multipliers are recovered as `\lambda = -1/\mu`.
+
+The critical force per unit length of the simply supported plate under a
+uniform compression `N_{xx}` [1]_ is
+
+.. math::
+
+    N_{xx,cr} = k_c \frac{\pi^2 D}{b^2}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}, \qquad
+    k_c = \left( \frac{m b}{a} + \frac{a}{m b} \right)^2
+
+with `m` the number of half-waves along `x`, minimum `k_c = 4` for `m =
+a/b = 1`, i.e. `N_{xx,cr} = 80.34` for the plate of the test.
+
+References
+----------
+.. [1] Timoshenko, S. P., and Gere, J. M., Theory of Elastic Stability,
+   2nd ed., McGraw-Hill, New York, 1961.
+
+"""
 import sys
 sys.path.append('..')
 
@@ -15,7 +66,7 @@ from bfscplate2d.quadrature import get_points_weights
 
 
 def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
-    """See Bruhn Fig. C5.2, case C with clamped loaded edges
+    """Simply supported square plate, against `k_c = 4`
     """
     # number of nodes
     nx = 5 # along x
@@ -189,9 +240,7 @@ def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
     KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
     KGuu = KG[bu, :][:, bu]
 
-    # solving modified generalized eigenvalue problem
-    # Original: (KC0 + lambda*KG)*v = 0
-    # Modified: (-1/lambda)*KC0*v = KG*v  #NOTE here we find (-1/lambda)
+    # solving the generalized eigenvalue problem for -1/lambda
     num_eigenvalues = 5
     eigvals, eigvecsu = eigsh(A=KGuu, k=num_eigenvalues, which='SM', M=Kuu,
             tol=1e-6, sigma=1., mode='cayley')

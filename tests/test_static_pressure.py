@@ -1,3 +1,49 @@
+r"""Linear static analysis of a plate under a uniform pressure
+
+A rectangular isotropic plate of ``a = 3`` by ``b = 7``, thickness
+``h = 0.005``, with `w` constrained at the nodes of the four edges and `u`
+and `v` at the central node, under the pressure ``P = 10``, on a mesh of
+5 by 7 nodes. The stiffness matrix is assembled with
+:func:`bfscplate2d.bfscplate2d.update_KC0` and the consistent force vector
+of the pressure is integrated element by element with the rows of
+:meth:`.BFSCPlate2D.update_Sw`. The maximum deflection is checked against
+the reference value ``3.9407e-3`` of the test, with a relative tolerance of
+``1e-3``.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The consistent force vector of the pressure `P` is
+
+.. math::
+
+    \boldsymbol{F}_{ext} = \int_A P \, (\boldsymbol{S}^w)^\top dA
+
+computed element by element with ``nint = 4`` points along `\xi` and
+`\eta`, exact for the bicubic rows `\boldsymbol{S}^w`. Constraining `w` at
+the nodes of the edges, and not the slopes, gives the simply supported
+plate. The reference value is within 0.1 % of the Navier double-series
+solution of the simply supported rectangular plate under a uniform
+pressure [1]_,
+
+.. math::
+
+    w_{max} = \frac{16 P}{\pi^6 D} \sum_{m = 1, 3, ...}
+        \sum_{n = 1, 3, ...}
+        \frac{\sin(m \pi/2) \sin(n \pi/2)}
+        {m n \left( m^2/a^2 + n^2/b^2 \right)^2}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+which gives `w_{max} = 3.9372 \times 10^{-3}` with the terms up to
+`m = n = 199`.
+
+References
+----------
+.. [1] Timoshenko, S., and Woinowsky-Krieger, S., Theory of Plates and
+   Shells, 2nd ed., McGraw-Hill, New York, 1959.
+
+"""
 import sys
 sys.path.append('..')
 

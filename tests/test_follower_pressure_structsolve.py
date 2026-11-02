@@ -6,20 +6,35 @@ structsolve instead of the iterations written in that test. The callables
 of ``FollowerCallables`` receive the load factor ``inc``, which structsolve
 passes to the callables that declare it:
 
-- ``calc_fext`` gives the dead part `\lambda \boldsymbol{F}_p(\boldsymbol{0})` of the pressure;
-- ``calc_fint`` subtracts the part that depends on the displacements,
-  `\lambda (\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`, of ``update_fext_follower`` with
-  ``reference=0``, such that the residual of structsolve (0.9.3 or newer)
-  is that of the follower pressure, `\boldsymbol{R} =
-  \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda
-  \boldsymbol{F}_p(\boldsymbol{u})`;
-- ``calc_kC`` adds the load stiffness matrix of the pressure `\lambda p`,
-  unsymmetric for the free edges of the cantilever.
+- ``calc_fext`` gives the dead part of the pressure, the force vector of
+  the undeformed state times the load factor;
+- ``calc_fint`` subtracts the part that depends on the displacements, of
+  ``update_fext_follower`` with ``reference=0``, such that the residual of
+  structsolve (0.9.3 or newer) is that of the follower pressure;
+- ``calc_kC`` adds the load stiffness matrix of the pressure times the
+  load factor, unsymmetric for the free edges of the cantilever.
 
 The tip displacements are checked against the reference values of the
 plate_clpt_donnell model of panels, as in ``test_follower_pressure.py``.
 
 Units: N, m, Pa.
+
+Notes
+-----
+With the load factor `\lambda`, ``calc_fext`` gives `\lambda
+\boldsymbol{F}_p(\boldsymbol{0})`, ``calc_fint`` adds `-\lambda
+(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))` to
+the internal forces and ``calc_kC`` adds the load stiffness matrix of
+`\lambda p`, such that the residual of structsolve is
+
+.. math::
+
+    \boldsymbol{R} = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})
+
+and its Jacobian `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`.
+
 """
 import sys
 sys.path.append('..')
