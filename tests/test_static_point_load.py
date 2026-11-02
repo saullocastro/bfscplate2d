@@ -160,7 +160,7 @@ def test_static_point_load(plot=False):
         plt.colorbar()
         plt.show()
 
-    # Timoshenko and Woinowsky-Krieger (1959), Eq. (147), b/a = 7/3
+    # reference deflection of the Notes, b/a = 7/3
     D = E*h**3/(12*(1 - nu**2))
     w_ref = 0.016785*fmid*a**2/D
     assert isclose(w.max(), u[6::DOF][check][0])

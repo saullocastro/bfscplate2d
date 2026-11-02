@@ -204,7 +204,7 @@ def test_static(plot=False):
         plt.colorbar()
         plt.show()
 
-    # Timoshenko and Woinowsky-Krieger (1959), Art. 46, a/b = 1, nu = 0.3
+    # reference deflection of the Notes, a/b = 1, nu = 0.3
     D = E*h**3/(12*(1 - nu**2))
     w_ref = 0.0112359*q*b**4/D
     check = np.isclose(ncoords[:, 0], a) & np.isclose(ncoords[:, 1], b/2)
