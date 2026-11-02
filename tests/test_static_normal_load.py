@@ -1,15 +1,64 @@
-r"""Linear static analysis of a cantilever plate under an edge load
+r"""Linear static analysis of a plate with a built-in and a free edge
 
 A square isotropic plate of ``a = b = 0.5``, thickness ``h = 0.001``, on a
-mesh of 7 by 5 nodes, with `u`, `v`, `w` and `w_{,x}` constrained at the
-nodes of the edge `x = 0` and the other edges free, under a transverse
-force of ``0.1`` at each node of the edge `x = a`. The stiffness matrix is
-assembled with :func:`bfscplate2d.bfscplate2d.update_KC0`. The maximum
-deflection is checked against the reference value ``0.00717`` of the test,
-with a relative tolerance of ``1e-3``. TODO(author): origin of the
-reference value ``0.00717``.
+mesh of 7 by 5 nodes, built in at `x = 0`, free at `x = a` and simply
+supported at `y = 0` and `y = b`, under the uniform pressure ``q = 1``. The
+stiffness matrix is assembled with :func:`bfscplate2d.bfscplate2d.update_KC0`
+and the consistent force vector of the pressure is integrated element by
+element with the rows of :meth:`.BFSCPlate2D.update_Sw`. The built-in edge
+has `u`, `v`, `w`, `w_{,x}`, `w_{,y}` and `w_{,xy}` constrained at its
+nodes, the simply supported edges `w` and `w_{,x}`. The maximum deflection,
+at the middle of the free edge, is checked against the Lévy solution of
+Timoshenko and Woinowsky-Krieger (1959), Art. 46, Table 39, with a relative
+tolerance of ``1e-3``.
 
 Units: N, m, Pa.
+
+Notes
+-----
+The reference value is the deflection of the uniformly loaded rectangular
+plate with two opposite edges simply supported, the third edge free and the
+fourth built in, of Art. 46 of [1]_. In the coordinates of the test, with
+`b` the span between the simply supported edges, `\beta_m = m \pi a/b` and
+`\bar{x} = m \pi x/b`, the Lévy series of Eqs. (d) to (f) of [1]_ is
+
+.. math::
+
+    w = \frac{q b^4}{D} \sum_{m = 1, 3, ...} \left( \frac{4}{\pi^5 m^5}
+        + A_m \cosh \bar{x} + B_m \bar{x} \sinh \bar{x}
+        + C_m \sinh \bar{x} + D_m \bar{x} \cosh \bar{x} \right)
+        \sin \frac{m \pi y}{b}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+with the constants of Eqs. (g) and (h) of [1]_, which satisfy `w =
+w_{,x} = 0` at `x = 0` and the zero bending moment and Kirchhoff shear
+force at `x = a`. At the middle of the free edge, `x = a`, `y = b/2`, for
+`a/b = 1` and `\nu = 0.3`, the series gives
+
+.. math::
+
+    w_{max} = 0.0112359 \frac{q b^4}{D}
+
+converged to 7 digits with the terms up to `m = 31`. Table 39 of [1]_
+lists `0.0113 q b^4/D`, the first term of the series, `0.011295`, rounded;
+the converged value, 0.6 % lower, is the reference.
+
+Along an edge the element interpolates `w` from the nodal `w` and the
+nodal derivative along the edge, and the normal slope from the nodal
+normal slope and `w_{,xy}`: `w = 0` along a whole edge needs both nodal
+values constrained, and the zero normal slope of the built-in edge
+`w_{,x} = 0` and `w_{,xy} = 0`. With these constraints the
+deflection converges with the mesh to the series: relative errors of
+-0.07 %, -0.01 % and +0.014 % with 3 by 3, 5 by 5 and the 7 by 5 nodes of
+the test, and below `10^{-6}` with 25 by 25 nodes, which justifies the
+tolerance. Constraining only the nodal values of `w` on the simply
+supported edges gives +0.6 % with 5 by 5 nodes.
+
+References
+----------
+.. [1] Timoshenko, S., and Woinowsky-Krieger, S., Theory of Plates and
+   Shells, 2nd ed., McGraw-Hill, New York, 1959.
+
 """
 import sys
 sys.path.append('..')
@@ -86,22 +135,37 @@ def test_static(plot=False):
     KC0 = coo_matrix((Kv, (Kr, Kc)), shape=(N, N)).tocsc()
 
     # applying boundary conditions
-    # simply supported
-
-    check = np.isclose(ncoords[:, 0], 0.)
-    print('boundary conditions', check.sum())
+    # built in at x = 0, simply supported at y = 0 and y = b, free at x = a
+    clamped = np.isclose(ncoords[:, 0], 0.)
+    supported = np.isclose(ncoords[:, 1], 0.) | np.isclose(ncoords[:, 1], b)
+    print('boundary conditions', clamped.sum(), supported.sum())
     bk = np.zeros(KC0.shape[0], dtype=bool)
-    bk[0::DOF] = check
-    bk[3::DOF] = check
-    bk[6::DOF] = check
-    bk[7::DOF] = check
+    bk[0::DOF] = clamped
+    bk[3::DOF] = clamped
+    bk[6::DOF] = clamped | supported
+    bk[7::DOF] = clamped | supported
+    bk[8::DOF] = clamped
+    bk[9::DOF] = clamped
 
     bu = ~bk
     print('boundary conditions bu',  bu.sum())
 
+    # consistent force vector of the uniform pressure
+    q = 1. # Pa
     f = np.zeros(KC0.shape[0], dtype=float)
-    check = np.isclose(ncoords[:, 0], a)
-    f[6::DOF] = check*0.1
+    for plate in plates:
+        indices = []
+        for ci in [plate.c1, plate.c2, plate.c3, plate.c4]:
+            for i in range(DOF):
+                indices.append(ci + i)
+        fe = np.zeros(4*DOF, dtype=float)
+        for i in range(len(points)):
+            for j in range(len(points)):
+                weight = weights[i]*weights[j]
+                plate.update_Sw(points[i], points[j])
+                Sw = np.asarray(plate.Sw)
+                fe += (plate.lex*plate.ley)/4*weight*Sw*q
+        f[indices] += fe
 
     Kuu = KC0[bu, :][:, bu]
     fu = f[bu]
@@ -140,7 +204,12 @@ def test_static(plot=False):
         plt.colorbar()
         plt.show()
 
-    assert np.isclose(w.max(), 0.00717, rtol=1e-3)
+    # Timoshenko and Woinowsky-Krieger (1959), Art. 46, a/b = 1, nu = 0.3
+    D = E*h**3/(12*(1 - nu**2))
+    w_ref = 0.0112359*q*b**4/D
+    check = np.isclose(ncoords[:, 0], a) & np.isclose(ncoords[:, 1], b/2)
+    assert np.isclose(u[6::DOF][check][0], w.max())
+    assert np.isclose(w.max(), w_ref, rtol=1e-3)
 
 if __name__ == '__main__':
     test_static(plot=True)
