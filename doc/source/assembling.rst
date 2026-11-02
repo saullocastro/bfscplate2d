@@ -1,41 +1,45 @@
-Assembling a model
-==================
+Assembly, loads and boundary conditions
+=======================================
 
 .. currentmodule:: bfscplate2d.bfscplate2d
 
-``bfscplate2d`` computes the contributions of one element; the mesh, the
-global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository, e.g.
-``tests/test_static_pressure.py``.
+``bfscplate2d`` computes the contributions of one element. The mesh, the
+global matrices and vectors, the loads and the boundary conditions belong to
+the model, written by the user with NumPy and SciPy. This chapter states the
+conventions that connect the element of :doc:`element` to a model.
 
 
-Mesh
-----
+Global degrees of freedom
+-------------------------
 
-A rectangular plate of sides `a` and `b` is divided into ``nx - 1`` by
-``ny - 1`` elements of equal sides ``lex = a/(nx - 1)`` and ``ley = b/(ny -
-1)``. The tests number the nodes with `x` varying slowest, ``nids_mesh =
-nids.reshape(nx, ny)``, and take the four nodes of each element from the
-corners of this array, in the order of :doc:`element`::
+A model with ``num_nodes`` nodes has ``N = DOF*num_nodes`` degrees of
+freedom. The attributes ``c1`` to ``c4`` of each element give the position
+of the first degree of freedom of its nodes in the global vectors; the usual
+choice is ``c = DOF*i`` for the node of index ``i``, with which the slice
+``u[6::DOF]`` of a global vector gives `w` at all the nodes, ``u[0::DOF]``
+gives `u`, ``u[7::DOF]`` gives `w_{,x}`, and so on, in the order of the
+table of :doc:`element`.
 
-    n1s = nids_mesh[:-1, :-1].flatten()
-    n2s = nids_mesh[1:, :-1].flatten()
-    n3s = nids_mesh[1:, 1:].flatten()
-    n4s = nids_mesh[:-1, 1:].flatten()
-
-with ``nid_pos`` mapping each node identification number to its index,
-such that ``c1 = DOF*nid_pos[n1]``, and so on, and the model has ``N =
-DOF*nx*ny`` degrees of freedom.
+A rectangular plate of sides `a` and `b` is divided into rectangles of
+sides ``lex`` and ``ley``; with ``nx`` by ``ny`` nodes on a regular grid,
+``lex = a/(nx - 1)`` and ``ley = b/(ny - 1)``. Each element takes its four
+nodes counterclockwise from the corner of smallest `x` and `y`, the order
+of :doc:`element`; a node shared by several elements has the same ``c`` in
+all of them, which makes the assembled fields continuous.
 
 
-Element loop and sparse arrays
-------------------------------
+Sparse arrays
+-------------
 
-Each function ``update_K*`` and :func:`.update_M` writes the entries of one
-element in three 1-D arrays, the row indices, the column indices and the
-values, at the positions ``init_k`` to ``init_k + SPARSE_SIZE - 1``, with
-``init_k`` the attribute of the element for that matrix and ``SPARSE_SIZE``
-the number of entries of one element:
+Each element matrix is written as triplets, the row index, the column index
+and the value of each entry, in three 1-D arrays, the coordinate format of
+``scipy.sparse.coo_matrix``. The functions write the entries of one element
+at the positions ``init_k`` to ``init_k + SPARSE_SIZE - 1``, with ``init_k``
+the attribute of the element for that matrix and ``SPARSE_SIZE`` the number
+of entries per element. The sizes follow from the pairs of degrees of
+freedom that each matrix couples, with 24 in-plane degrees of freedom (`u`
+to `v_{,y}` of the four nodes) and 16 out-of-plane ones (`w` to `w_{,xy}`)
+per element:
 
 .. list-table::
     :header-rows: 1
@@ -43,105 +47,132 @@ the number of entries of one element:
     * - Function
       - Position attribute
       - Entries per element
+      - Pairs written
     * - :func:`.update_KC0`
       - ``init_k_KC0``
-      - ``KC0_SPARSE_SIZE``
+      - ``KC0_SPARSE_SIZE = 1600``
+      - all, `40^2`
     * - :func:`.update_KCNL`
       - ``init_k_KCNL``
-      - ``KCNL_SPARSE_SIZE``
+      - ``KCNL_SPARSE_SIZE = 1024``
+      - in-plane with out-of-plane in both orders and out-of-plane with
+        out-of-plane, `2 \cdot 24 \cdot 16 + 16^2`
     * - :func:`.update_KG`, :func:`.update_KG_cte_N`
       - ``init_k_KG``
-      - ``KG_SPARSE_SIZE``
+      - ``KG_SPARSE_SIZE = 256``
+      - out-of-plane with out-of-plane, `16^2`
     * - :func:`.update_M`
       - ``init_k_M``
-      - ``M_SPARSE_SIZE``
+      - ``M_SPARSE_SIZE = 544``
+      - among `u`, `u_{,x}`, `u_{,y}`, among `v`, `v_{,x}`, `v_{,y}` and
+        among the out-of-plane ones, `2 \cdot 12^2 + 16^2`
     * - :func:`.update_KCfollower`
       - ``init_k_KCfollower``
-      - ``KCfollower_SPARSE_SIZE``
+      - ``KCfollower_SPARSE_SIZE = 1056``
+      - the blocks `[u, v]`, `[v, u]` (`12^2` each) and `[u, w]`, `[v, w]`,
+        `[w, u]`, `[w, v]` (`12 \cdot 16` each)
 
 For ``num_elements`` elements the arrays have ``SPARSE_SIZE*num_elements``
 entries, of type ``INT`` for the indices and ``DOUBLE`` for the values, and
-the element of index ``k`` gets ``init_k = k*SPARSE_SIZE``, e.g. by
-increasing a counter by ``SPARSE_SIZE`` in the element loop::
-
-    KC0r = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
-    KC0c = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
-    KC0v = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=DOUBLE)
-    init_k_KC0 = 0
-    for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        plate = BFSCPlate2D()
-        plate.c1 = DOF*nid_pos[n1]
-        ...
-        plate.init_k_KC0 = init_k_KC0
-        update_KC0(plate, points, weights, KC0r, KC0c, KC0v)
-        init_k_KC0 += KC0_SPARSE_SIZE
+the element of index ``k`` gets ``init_k = k*SPARSE_SIZE``. The global
+matrix is the sum of the element matrices,
+`\boldsymbol{K} = \sum_e \boldsymbol{L}_e^\top \boldsymbol{K}_e
+\boldsymbol{L}_e`, with `\boldsymbol{L}_e` the Boolean matrix that extracts
+`\boldsymbol{u}_e` from the global vector; ``coo_matrix`` performs this sum
+by adding the values at repeated positions::
 
     KC0 = coo_matrix((KC0v, (KC0r, KC0c)), shape=(N, N)).tocsc()
 
-``scipy.sparse.coo_matrix`` sums the values at repeated positions, the
-entries of the nodes shared by several elements. ``INT``, ``DOUBLE``,
-``DOF`` and the sizes are given by the ``bfscplate2d`` namespace. The
-element writes all the pairs of degrees of freedom of each matrix, not only
-an upper triangle; the matrices that are symmetric come out symmetric
-after the sum.
+The functions write all the pairs, not only a triangle, such that the
+symmetric matrices come out symmetric after the sum and the unsymmetric
+load stiffness matrix of :doc:`follower_pressure` is complete. The indices
+are overwritten, but the values are **added** to the existing ones: value
+arrays reused for a new configuration, e.g. those of KCNL and KG at each
+iteration of a nonlinear analysis, are zeroed first; the indices do not
+change for a fixed mesh. ``INT``, ``DOUBLE``, ``DOF`` and the sizes are
+given by the ``bfscplate2d`` namespace.
 
-The functions overwrite the indices but **add** the values to the existing
-ones. Arrays reused for a new configuration, e.g. KCNL and KG at each
-iteration of a nonlinear analysis, are zeroed first, ``KCNLv *= 0``; the
-indices do not change for a fixed mesh.
-
-The vectors are assembled without position attributes:
-:func:`.update_fint` and :func:`.update_fext_follower` add the vector of
-one element directly to a global vector of size ``N``, at the positions of
-its nodes, and the functions that depend on the displacements read them
-from a global vector ``u`` of size ``N``.
+The vectors have no position attributes: :func:`.update_fint` and
+:func:`.update_fext_follower` add the vector of one element to a global
+vector of size ``N`` at the positions of its nodes, and every function that
+depends on the displacements reads them from a global vector ``u`` of size
+``N``.
 
 
 Loads
 -----
 
-A concentrated load is a value of the global force vector at a degree of
-freedom of a node, e.g. ``f[6::DOF][check] = fmid`` for a transverse force
-at the nodes selected by the boolean array ``check``. Distributed loads are
-integrated with the interpolation functions of the element, the
-consistent load vector: a pressure `P` with the rows of
-:meth:`.BFSCPlate2D.update_Sw` over the integration points of the element,
-as in ``tests/test_static_pressure.py``, and a force per unit length on an edge with
-:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`, as in
-``tests/test_linear_buckling_iso_SSSS.py``. The force vector of a pressure that follows the
-deformation is given by :func:`.update_fext_follower`, see
-:doc:`follower_pressure`.
+The external force vector is the virtual work of the loads,
+`\delta W = \delta\boldsymbol{u}^\top \boldsymbol{F}_{ext}`. A concentrated
+force or moment is a value at one degree of freedom of a node, e.g. a
+transverse force at the position ``c + 6``; the conjugate of `w_{,x}` is a
+moment, that of `w_{,xy}` a generalised force of dimension force times
+length squared. Distributed loads give the
+consistent load vectors, integrated with the rows of :doc:`element` and the
+quadrature of :doc:`element_matrices`:
+
+- a dead pressure `P`, `\boldsymbol{F}_{ext} = \int_A P
+  (\boldsymbol{S}^w)^\top dA`, with :meth:`.BFSCPlate2D.update_Sw` at the
+  integration points; this is also :func:`.update_fext_follower` at
+  `\boldsymbol{u} = \boldsymbol{0}`;
+- an in-plane force per unit length `\bar{N}_{xx}` on an edge `x` =
+  constant, `\int \bar{N}_{xx} (\boldsymbol{S}^u)^\top dy`, with
+  :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`;
+- a follower pressure, :func:`.update_fext_follower`, see
+  :doc:`follower_pressure`.
+
+The consistent load of a uniform edge load on an edge `x` = constant has,
+besides the forces at `u`, entries at `u_{,y}` of the two nodes at the ends
+of the edge (those of the interior nodes cancel between neighbouring
+elements). Nodal forces at `u` alone, e.g. with half the force at the
+corner nodes, are not equivalent, and the membrane forces of the resulting
+static solution are not exactly uniform, see :doc:`analyses`.
 
 
 Boundary conditions
 -------------------
 
-The tests constrain degrees of freedom by partitioning the global system: a
-boolean array ``bk`` marks the constrained degrees of freedom, selected with
-the slices of :doc:`element` and the coordinates of the nodes, and ``bu =
-~bk`` the unknown ones::
+A constrained degree of freedom is set to zero by partitioning the global
+system into the unknown degrees of freedom ``bu`` and the constrained ones
+``bk = ~bu``, two Boolean arrays of size ``N``:
 
-    bk = np.zeros(N, dtype=bool)
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check            # w = 0 at the nodes of the four edges
-    bk[0::DOF] = isclose(x, 0)    # u = 0 at x = 0
-    bk[3::DOF] = isclose(y, 0)    # v = 0 at y = 0
-    bu = ~bk
+.. math::
+    :label: as-partition
 
-    Kuu = KC0[bu, :][:, bu]
-    u = np.zeros(N)
-    u[bu] = spsolve(Kuu, f[bu])
+    \boldsymbol{K}_{uu} \boldsymbol{u}_u = \boldsymbol{F}_u
 
-The solution of the reduced system is expanded to the size of the model,
-with zeros at the constrained degrees of freedom, before it is given to the
-functions that depend on the displacements, e.g. :func:`.update_KG`.
+with the matrices restricted to ``bu`` by ``bu`` and the vectors to ``bu``,
+e.g. ``KC0[bu, :][:, bu]``. The solution is expanded to the size of the
+model, with zeros at the constrained degrees of freedom, ``u[bu] = uu``,
+before it is given to the functions that depend on the displacements.
 
-Since `w` along an edge is interpolated from `w` and its derivative along
-the edge at the nodes, see :doc:`element`, `w` vanishes along the whole
-edge `x` = constant when `w` and `w_{,y}` are constrained at its nodes,
-positions ``6`` and ``8``, and along an edge `y` = constant with `w` and
-`w_{,x}`, positions ``6`` and ``7``. A clamped edge `x` = constant also
-constrains the normal slope `w_{,x}` and its derivative along the edge
-`w_{,xy}`, positions ``7`` and ``9``. The function ``boundary_flags`` of
-``tests/test_follower_pressure.py`` builds ``bk`` in this way, for the
-value and the derivative along the edge of each constrained displacement.
+Since a degree of freedom is a nodal value, the condition it imposes along
+an edge follows from Eq. :eq:`el-edge`:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Condition along an edge
+      - Edge `x` = constant (positions)
+      - Edge `y` = constant (positions)
+    * - `w = 0`
+      - `w`, `w_{,y}` (6, 8)
+      - `w`, `w_{,x}` (6, 7)
+    * - normal slope zero, with `w = 0` a clamped edge
+      - `w_{,x}`, `w_{,xy}` (7, 9)
+      - `w_{,y}`, `w_{,xy}` (8, 9)
+    * - `u = 0`
+      - `u`, `u_{,y}` (0, 2)
+      - `u`, `u_{,x}` (0, 1)
+    * - `v = 0`
+      - `v`, `v_{,y}` (3, 5)
+      - `v`, `v_{,x}` (3, 4)
+
+each value with its derivative along the edge. Constraining the value alone,
+e.g. `w` at the nodes of a simply supported edge, makes it vanish at the
+nodes only: between them it follows the free derivative along the edge,
+and the condition is reached as the mesh is refined. The rigid-body motions
+must be constrained, in-plane and out-of-plane, for ``KC0[bu, :][:, bu]`` to
+be nonsingular. Prescribed nonzero displacements are a partition with
+``u[bk]`` given and the right-hand side `\boldsymbol{F}_u -
+\boldsymbol{K}_{uk}\boldsymbol{u}_k`.

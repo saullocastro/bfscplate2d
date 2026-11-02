@@ -37,16 +37,19 @@ Code repository
 https://github.com/saullocastro/bfscplate2d
 
 
-User guide
-----------
+Theory
+------
 
 .. toctree::
     :maxdepth: 1
 
+    plate_theory.rst
     element.rst
+    element_matrices.rst
+    follower_pressure.rst
     assembling.rst
     analyses.rst
-    follower_pressure.rst
+    references.rst
 
 
 .. toctree::
