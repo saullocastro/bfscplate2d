@@ -29,7 +29,7 @@ j]`` at ``xi = points[i]`` and ``eta = points[j]``, per unit area of the
 undeformed plate and as a function of the undeformed coordinates. The
 method ``Mesh.pressure`` of ``tests/test_follower_pressure.py`` evaluates a
 function of `x` and `y` at these points from the position of node 1 of the
-element, see :doc:`ex_follower_pressure`. The pressure is multiplied by the
+element. The pressure is multiplied by the
 load factor before it is given to the functions.
 
 
@@ -71,7 +71,7 @@ the nonlinear static analysis of :doc:`analyses` and its Jacobian are
 
 with `\boldsymbol{F}_p` and `\boldsymbol{K}_{F_{ref}}` of the same ``p`` and ``quadratic``.
 Since the functions receive the pressure already multiplied by `\lambda`,
-the test of :doc:`ex_follower_pressure` gives them ``lbd*func(x, y)``,
+``tests/test_follower_pressure.py`` gives them ``lbd*func(x, y)``,
 recomputes `\boldsymbol{F}_p(\boldsymbol{u})` at every iteration and adds the load stiffness
 matrix of the current pressure to the tangent. A solver whose external
 force vector is fixed, `\lambda \boldsymbol{F}_{ext}`, takes the dead part `\boldsymbol{F}_{ext} =

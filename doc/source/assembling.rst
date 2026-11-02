@@ -5,8 +5,8 @@ Assembling a model
 
 ``bfscplate2d`` computes the contributions of one element; the mesh, the
 global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository, see
-:doc:`ex_linear_static`.
+user with NumPy and SciPy, as in the tests of the repository, e.g.
+``tests/test_static_pressure.py``.
 
 
 Mesh
@@ -106,9 +106,9 @@ at the nodes selected by the boolean array ``check``. Distributed loads are
 integrated with the interpolation functions of the element, the
 consistent load vector: a pressure `P` with the rows of
 :meth:`.BFSCPlate2D.update_Sw` over the integration points of the element,
-see :doc:`ex_linear_static`, and a force per unit length on an edge with
-:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`, see
-:doc:`ex_linear_buckling`. The force vector of a pressure that follows the
+as in ``tests/test_static_pressure.py``, and a force per unit length on an edge with
+:meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`, as in
+``tests/test_linear_buckling_iso_SSSS.py``. The force vector of a pressure that follows the
 deformation is given by :func:`.update_fext_follower`, see
 :doc:`follower_pressure`.
 
@@ -144,5 +144,4 @@ positions ``6`` and ``8``, and along an edge `y` = constant with `w` and
 constrains the normal slope `w_{,x}` and its derivative along the edge
 `w_{,xy}`, positions ``7`` and ``9``. The function ``boundary_flags`` of
 ``tests/test_follower_pressure.py`` builds ``bk`` in this way, for the
-value and the derivative along the edge of each constrained displacement,
-see :doc:`ex_follower_pressure`.
+value and the derivative along the edge of each constrained displacement.

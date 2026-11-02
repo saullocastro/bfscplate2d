@@ -49,18 +49,16 @@ User guide
     follower_pressure.rst
 
 
-Usage examples
---------------
-
 .. toctree::
     :maxdepth: 1
+    :caption: Worked examples
 
-    ex_linear_static.rst
-    ex_linear_buckling.rst
-    ex_natural_frequency.rst
-    ex_nonlinear_static.rst
-    ex_structsolve_nonlinear.rst
-    ex_follower_pressure.rst
+    notebooks/ex_linear_static
+    notebooks/ex_linear_buckling
+    notebooks/ex_natural_frequency
+    notebooks/ex_nonlinear_static
+    notebooks/ex_structsolve_nonlinear
+    notebooks/ex_follower_pressure
 
 
 bfscplate2d API

@@ -19,7 +19,7 @@ Linear static analysis
 with `\boldsymbol{K}_{C0}` of :func:`.update_KC0`, which needs ``lex``, ``ley`` and
 ``ABD`` of each element, and the force vector `\boldsymbol{F}_{ext}` of :doc:`assembling`.
 The tests solve it with ``scipy.sparse.linalg.spsolve``, see
-:doc:`ex_linear_static`.
+``tests/test_static_pressure.py``.
 
 
 Linear buckling analysis
@@ -50,7 +50,7 @@ conditions are applied, and `\lambda = -1/\mu`::
                               M=Kuu, tol=1e-6, sigma=1., mode='cayley')
     eigvals = -1./eigvals
 
-see :doc:`ex_linear_buckling`.
+see ``tests/test_linear_buckling_iso_SSSS.py``.
 
 
 Natural frequencies
@@ -63,7 +63,7 @@ Natural frequencies
 with the mass matrix `\boldsymbol{M}` of :func:`.update_M`, which needs ``lex``,
 ``ley``, ``h`` and ``rho`` of each element and no integration points, and
 `\omega_n` the natural angular frequencies, in radians per unit time. The
-test of :doc:`ex_natural_frequency` solves the problem with the dense
+test ``tests/test_natural_frequency.py`` solves the problem with the dense
 ``scipy.linalg.eigh`` and takes `\omega_n` as the square roots of its
 eigenvalues.
 
@@ -94,8 +94,8 @@ nonlinear terms, and for small displacements `\boldsymbol{F}_{int} \approx \bold
 
 The value arrays of `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}` and `\boldsymbol{K}_G` are zeroed before each
 assembly, since the functions add to them, see :doc:`assembling`. The test
-of :doc:`ex_nonlinear_static` solves the iterations with structsolve, see
-`Solving with structsolve`_ and :doc:`ex_structsolve_nonlinear`. A follower
+``tests/test_static_axial_load_nonlinear.py`` solves the iterations with
+structsolve, see `Solving with structsolve`_. A follower
 pressure adds its force vector to the residual and its load stiffness
 matrix to `\boldsymbol{K}_T`, see :doc:`follower_pressure`.
 
@@ -117,7 +117,7 @@ problems above are solved by ``structsolve.lb(Kuu, KGuu)`` and
 
 The nonlinear static analysis is solved by ``structsolve.Analysis``, with
 four callables that loop over the elements, call the functions of the
-element and assemble, see :doc:`ex_structsolve_nonlinear`:
+element and assemble, as in ``tests/test_static_axial_load_nonlinear.py``:
 
 - ``calc_fext(inc=1., silent=False)``, the external forces `\boldsymbol{F}_{ext}` times
   the load factor ``inc``;
@@ -170,8 +170,7 @@ structsolve passes to the callables that declare it. The external forces
 are the dead part `\boldsymbol{F}_p(\boldsymbol{0})` of ``p``, ``calc_fint`` subtracts the part
 that depends on the displacements, ``reference=0``, and ``calc_kC`` adds the
 load stiffness matrix of `\lambda p`, as in
-``tests/test_follower_pressure_structsolve.py``, see
-:doc:`ex_structsolve_nonlinear`:
+``tests/test_follower_pressure_structsolve.py``:
 
 .. literalinclude:: ../../tests/test_follower_pressure_structsolve.py
     :pyobject: FollowerCallables
