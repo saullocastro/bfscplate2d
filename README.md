@@ -44,7 +44,7 @@ The documentation is available on: https://saullocastro.github.io/bfscplate2d.
 History
 =======
 
-The details of each version are in the changelog of the repository.
+See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
 * version 0.5.0 (2026-10-26)
     - The shape functions renamed from `N` to `S`, as in bfsccylinder: the
