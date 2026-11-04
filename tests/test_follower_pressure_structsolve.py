@@ -10,7 +10,7 @@ passes to the callables that declare it:
   the undeformed state times the load factor;
 - ``calc_fint`` subtracts the part that depends on the displacements, of
   ``update_fext_follower`` with ``reference=0``, such that the residual of
-  structsolve (0.9.3 or newer) is that of the follower pressure;
+  structsolve is that of the follower pressure;
 - ``calc_kC`` adds the load stiffness matrix of the pressure times the
   load factor, unsymmetric for the free edges of the cantilever.
 

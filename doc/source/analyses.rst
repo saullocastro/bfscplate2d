@@ -230,7 +230,7 @@ element and assemble:
 
 such that ``calc_kC + calc_kG`` is `\boldsymbol{K}_T` and the residual of
 structsolve is Eq. :eq:`an-residual`, with the corrections of
-Eq. :eq:`an-newton`, the convention of structsolve 0.9.3 or newer. The load
+Eq. :eq:`an-newton`, the convention of structsolve. The load
 factor goes from 0 to 1 in increments, the first of size
 ``Analysis.initialInc`` and the next ones growing up to ``Analysis.maxInc``,
 each starting from a predictor extrapolated from the previous increment, the

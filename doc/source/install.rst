@@ -35,10 +35,10 @@ their linear buckling and natural frequency solutions, see
 :doc:`analyses`. It is a requirement of the tests and of the examples of
 the documentation only: bfscplate2d does not import it, and it is not
 installed with bfscplate2d, not being in the ``dependencies`` of
-``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
-with the module ``structsolve.convergence`` and Crisfield's convergence
-criterion as default. The nonlinear analyses of :doc:`analyses` solved with
-structsolve require version 0.9.3 or newer, whose residual is
+``pyproject.toml``. The tests and the nonlinear analyses of :doc:`analyses`
+require structsolve 0.9.3 or newer, as ``requirements.txt`` states, with the
+module ``structsolve.convergence``, Crisfield's convergence criterion as
+default and the residual
 `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}`, the
 convention of these pages.
 
