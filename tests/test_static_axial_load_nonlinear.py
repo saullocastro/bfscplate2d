@@ -36,11 +36,7 @@ The linearised answer of ``test_static`` is
 with `\boldsymbol{K}_G(P)` of the static solution of the axial load `P`
 alone. Its amplification over the response to the transverse load alone is
 below the single-mode ceiling `1/(1 - P/P_{cr})`, `P_{cr}` the first
-buckling load, since a point load excites many modes. The old reference
-value for this case was 6.56e-5, an amplification of 10.4 over the
-transverse-load-only response, where `1/(1 - P/P_{cr}) = 2.49` is the
-ceiling; it was an artefact of an internal force vector that counted its
-geometric term twice.
+buckling load, since a point load excites many modes.
 
 """
 import sys
