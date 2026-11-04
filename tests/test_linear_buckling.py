@@ -2,10 +2,10 @@ r"""Linear buckling of a laminated plate with KG of a static solution
 
 A laminate ``[0, 45, -45, 90, 90, -45, 45, 0]`` of plies of ``0.001`` with
 ``E11 = 142.5e9``, ``E22 = 8.7e9``, ``nu12 = 0.28`` and ``G12 = G13 = G23 =
-5.1e9``, plate of ``a = 7`` by ``b = 3`` on a mesh of 7 by 5 nodes, with
-`w` constrained at the nodes of the four edges, `u` at `x = 0` and `v` at
-`y = 0`, under a compressive force per unit length ``Nxx = -1``
-applied as nodal forces along `u` on the edge `x = a`, half the force at
+5.1e9``, plate of ``a = 7`` by ``b = 3`` on a mesh of 7 by 5 nodes, simply
+supported, with `w` and its derivative along the edge constrained at the
+nodes of the four edges, `u` at `x = 0` and `v` at `y = 0`, under a
+compressive force per unit length ``Nxx = -1`` applied as nodal forces along `u` on the edge `x = a`, half the force at
 the two corner nodes. The membrane forces come from the linear static
 solution with :func:`bfscplate2d.bfscplate2d.update_KC0`, the geometric
 stiffness matrix from :func:`bfscplate2d.bfscplate2d.update_KG`, and the
@@ -35,6 +35,14 @@ unit length. They differ slightly from those of
 ``test_linear_buckling_cte_N.py``, whose membrane forces are exactly
 uniform, because the nodal forces and the constraints give a static
 solution whose membrane forces are not exactly uniform.
+
+Along an edge `x` = constant the interpolated `w` depends only on `w` and
+`w_{,y}` at the two nodes of the edge, so `w = 0` on the whole edge needs
+both nodal values constrained (`w` and `w_{,x}` on an edge `y` =
+constant). No closed-form solution applies to this laminate, whose
+`D_{16}` and `D_{26}` are not zero, so the reference values are those
+computed with the mesh of the test. With `w` alone constrained at the nodes
+of the edges the first load multiplier is 9450.14, 0.59 % below.
 
 """
 import sys
@@ -146,9 +154,12 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
     x = ncoords[:, 0]
     y = ncoords[:, 1]
 
-    # constraining w at all edges
-    check = (np.isclose(x, 0.) | np.isclose(x, a) | np.isclose(y, 0.) | np.isclose(y, b))
-    bk[6::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = np.isclose(x, 0.) | np.isclose(x, a)
+    edges_y = np.isclose(y, 0.) | np.isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
     # constraining u at x = 0
     check = np.isclose(x, 0.)
     bk[0::DOF] = check
@@ -220,7 +231,8 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
         plt.show()
 
     print('eigvals', eigvals)
-    assert np.allclose(eigvals, [ 9450.13884003, 11737.6011269, 12743.21420568, 18425.41484139, 26229.19251611], rtol=1e-5)
+    assert np.allclose(eigvals, [9506.571153181852, 11774.649397985586, 12876.263105935921,
+        18743.204263961918, 26948.00527079244], rtol=1e-5)
 
 if __name__ == '__main__':
     test_linear_buckling(plot_static=True, plot_lb=True)
