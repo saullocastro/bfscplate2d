@@ -42,6 +42,7 @@ Theory
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
 
     plate_theory.rst
     element.rst
@@ -82,13 +83,18 @@ Installing bfscplate2d
     install.rst
 
 
-Changelog
----------
+.. toctree::
+    :maxdepth: 1
+    :caption: Changelog
+
+    changelog.rst
+
 
 .. toctree::
     :maxdepth: 1
+    :caption: About this documentation
 
-    changelog.rst
+    documentation_levels.rst
 
 
 License
