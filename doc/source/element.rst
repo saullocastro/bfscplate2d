@@ -185,6 +185,17 @@ v_{,xy} = 0` at the nodes: the 12 functions of `u` (and of `v`) contain the
 linear polynomials, hence the states of constant membrane strain, and e.g.
 `x^2` and `y^3`, but not `xy`, whose cross derivative is 1 everywhere.
 
+The cross derivatives are left out by the design of the element
+[CastroJansen2021]_. The BFS element, with 6 degrees of freedom per node,
+interpolates `u` and `v` linearly, which converges poorly for the
+second-order displacement fields of Koiter's method of initial
+post-buckling and for the quantities computed from them. The BFSC element
+was made to reach a third-order interpolation also for `u` and `v` with
+the 4 nodes of the BFS element, by adding to each node only the first
+derivatives `u_{,x}`, `u_{,y}`, `v_{,x}` and `v_{,y}`, which gives 10
+degrees of freedom per node; a node carrying `u_{,xy}` and `v_{,xy}` too
+would have 12.
+
 The degrees of freedom mix lengths, dimensionless slopes and the cross
 derivative of dimension one over length. Norms of vectors of degrees of
 freedom, e.g. in a convergence criterion, depend on the units unless they
