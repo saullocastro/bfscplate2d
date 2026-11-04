@@ -1,4 +1,4 @@
-"""The tangent stiffness matrix must be the derivative of the internal force
+r"""The tangent stiffness matrix must be the derivative of the internal force
 
 KT = KC0 + KCNL(u) + KG(u) is what every Newton-Raphson built on this element
 uses as the Jacobian of fint. If the two drift apart, the analyses still
@@ -6,16 +6,29 @@ converge, but linearly instead of quadratically, with a contraction factor
 set by how far KT is from the true Jacobian, which on a fine mesh is close
 enough to one to exhaust the iteration cap at every load step.
 
-The check is a directional Taylor test,
-
-    |fint(u + h d) - fint(u) - h KT d| / |h KT d|
-
-which falls proportionally to h for a consistent tangent and plateaus for an
+The check is a directional Taylor test, whose relative error falls
+proportionally to the step h for a consistent tangent and plateaus for an
 inconsistent one. It runs over several random states and directions, in a
 deformed state of the order of the plate thickness so that the nonlinear
 terms actually carry weight, and over a symmetric, an unsymmetric and an
 isotropic laminate, so that the B matrix coupling membrane and bending is
 exercised rather than sitting at zero.
+
+Notes
+-----
+The relative error of the Taylor test in the direction `\boldsymbol{d}` is
+
+.. math::
+
+    \frac{\left| \boldsymbol{F}_{int}(\boldsymbol{u} + h \boldsymbol{d}) -
+    \boldsymbol{F}_{int}(\boldsymbol{u}) - h \boldsymbol{K}_T \boldsymbol{d}
+    \right|}{\left| h \boldsymbol{K}_T \boldsymbol{d} \right|}
+
+with `\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u})
++ \boldsymbol{K}_G(\boldsymbol{u})`. The remainder is `O(h^2)` for the
+exact Jacobian, a relative error `O(h)`, and `O(h)` for an inconsistent
+tangent, a relative error that does not fall with `h`.
+
 """
 import sys
 

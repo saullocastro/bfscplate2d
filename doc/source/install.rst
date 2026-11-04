@@ -35,11 +35,12 @@ their linear buckling and natural frequency solutions, see
 :doc:`analyses`. It is a requirement of the tests and of the examples of
 the documentation only: bfscplate2d does not import it, and it is not
 installed with bfscplate2d, not being in the ``dependencies`` of
-``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
-with the module ``structsolve.convergence`` and Crisfield's convergence
-criterion as default. The examples of :doc:`analyses` require structsolve
-0.9.3 or newer, whose residual is `\boldsymbol{R} = \boldsymbol{F}_{int} -
-\lambda \boldsymbol{F}_{ext}`, the convention of these pages.
+``pyproject.toml``. The tests and the nonlinear analyses of :doc:`analyses`
+require structsolve 0.9.3 or newer, as ``requirements.txt`` states, with the
+module ``structsolve.convergence``, Crisfield's convergence criterion as
+default and the residual
+`\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}`, the
+convention of these pages.
 
 To build in place, for running the tests from the source tree, which also
 writes ``bfscplate2d/version.py`` with the version of ``pyproject.toml``::
@@ -69,9 +70,10 @@ it was generated in the other mode, with or without line tracing.
 Building the documentation
 --------------------------
 
-The documentation requires Sphinx, numpydoc, nbsphinx and the PyData Sphinx
-theme, and the package built in place, see above::
+The documentation requires the packages of ``requirements_doc.txt``,
+Sphinx, numpydoc, the PyData Sphinx theme, nbsphinx, nbsphinx-link and
+ipykernel, and the package built in place, see above::
 
-    python -m pip install sphinx numpydoc nbsphinx pydata-sphinx-theme
+    python -m pip install -r requirements_doc.txt
     cd doc
     make html

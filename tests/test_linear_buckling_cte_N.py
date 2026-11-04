@@ -1,3 +1,44 @@
+r"""Linear buckling of a laminated plate with constant membrane forces
+
+A laminate ``[0, 45, -45, 90, 90, -45, 45, 0]`` of plies of ``0.001`` with
+``E11 = 142.5e9``, ``E22 = 8.7e9``, ``nu12 = 0.28`` and ``G12 = G13 = G23 =
+5.1e9``, plate of ``a = 7`` by ``b = 3`` on a mesh of 7 by 5 nodes, simply
+supported, with `w` and its derivative along the edge constrained at the
+nodes of the four edges, `u` at `x = 0` and `v` at `y = 0`, with the
+geometric stiffness matrix of
+:func:`bfscplate2d.bfscplate2d.update_KG_cte_N` for the constant membrane
+forces ``Nxx = -1``, ``Nyy = Nxy = 0``, without a static analysis. The
+first five load multipliers, the critical forces per unit length, are
+checked against the reference values of the test, with a relative
+tolerance of ``1e-5``.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The load multipliers `\lambda` and the buckling modes `\boldsymbol{\phi}`
+solve the linear buckling problem
+
+.. math::
+
+    (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}
+
+restricted to the unconstrained degrees of freedom. ``eigsh`` is called
+with ``A = KG`` and ``M = KC0``, i.e. it solves the equivalent problem
+`\boldsymbol{K}_G \boldsymbol{\phi} = \mu \boldsymbol{K}_{C0}
+\boldsymbol{\phi}` with `\mu = -1/\lambda`, in the shift-invert mode
+``cayley``, and the load multipliers are recovered as `\lambda = -1/\mu`.
+
+Along an edge `x` = constant the interpolated `w` depends only on `w` and
+`w_{,y}` at the two nodes of the edge, so `w = 0` on the whole edge needs
+both nodal values constrained (`w` and `w_{,x}` on an edge `y` =
+constant). No closed-form solution applies to this laminate, whose
+`D_{16}` and `D_{26}` are not zero, so the reference values are those
+computed with the mesh of the test. With `w` alone constrained at the nodes
+of the edges the first load multiplier is 9469.12, 0.60 % below.
+
+"""
 import sys
 sys.path.append('..')
 
@@ -107,9 +148,12 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
     x = ncoords[:, 0]
     y = ncoords[:, 1]
 
-    # constraining w at all edges
-    check = (np.isclose(x, 0.) | np.isclose(x, a) | np.isclose(y, 0.) | np.isclose(y, b))
-    bk[6::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = np.isclose(x, 0.) | np.isclose(x, a)
+    edges_y = np.isclose(y, 0.) | np.isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
     # constraining u at x = 0
     check = np.isclose(x, 0.)
     bk[0::DOF] = check
@@ -131,9 +175,7 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
     KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
     KGuu = KG[bu, :][:, bu]
 
-    # solving modified generalized eigenvalue problem
-    # Original: (KC0 + lambda*KG)*v = 0
-    # Modified: (-1/lambda)*KC0*v = KG*v  #NOTE here we find (-1/lambda)
+    # solving the generalized eigenvalue problem for -1/lambda
     num_eigenvalues = 5
     eigvals, eigvecsu = eigsh(A=KGuu, k=num_eigenvalues, which='SM', M=Kuu,
             tol=1e-6, sigma=1., mode='cayley')
@@ -154,7 +196,8 @@ def test_linear_buckling(plot_static=False, plot_lb=False):
         plt.show()
 
     print('eigvals', eigvals)
-    assert np.allclose(eigvals, [ 9469.11822736, 11706.06566909, 12835.65352178, 18537.34972827, 26327.59284352], rtol=1e-5)
+    assert np.allclose(eigvals, [9526.48142032251, 11741.153799346057, 12981.109691591295,
+        18881.33895814297, 27096.536334963534], rtol=1e-5)
 
 if __name__ == '__main__':
     test_linear_buckling(plot_static=True, plot_lb=True)

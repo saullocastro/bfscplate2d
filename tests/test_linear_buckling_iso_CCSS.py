@@ -1,3 +1,72 @@
+r"""Linear buckling of a square plate with clamped loaded edges
+
+A square isotropic plate of ``a = b = 3``, thickness ``h = 0.001``, on a
+mesh of 5 by 5 nodes, with `w` and its derivative along the edge
+constrained at the nodes of the four edges, the normal slope `w_{,x}` and
+its derivative along the edge `w_{,xy}` at the clamped loaded edges `x = 0`
+and `x = a`, `u` at the middle nodes of
+the edges `y = 0` and `y = b` and `v` at the middle nodes of the edges `x =
+0` and `x = a`, compressed along `x` by a consistent edge load integrated
+with the rows of :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The
+geometric stiffness matrix of :func:`bfscplate2d.bfscplate2d.update_KG` is
+computed with the linear static solution, and the buckling coefficient of
+the first critical load is checked against the exact value of the plate
+with simply supported unloaded edges and clamped loaded edges (Pflüger,
+1975, table II, A, a, case 3), computed by :func:`kc_clamped_loaded_edges`,
+within 1 %.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The load multipliers `\lambda` and the buckling modes `\boldsymbol{\phi}`
+solve the linear buckling problem
+
+.. math::
+
+    (\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}
+
+restricted to the unconstrained degrees of freedom. ``eigsh`` is called
+with ``A = KG`` and ``M = KC0``, i.e. it solves the equivalent problem
+`\boldsymbol{K}_G \boldsymbol{\phi} = \mu \boldsymbol{K}_{C0}
+\boldsymbol{\phi}` with `\mu = -1/\lambda`, in the shift-invert mode
+``cayley``, and the load multipliers are recovered as `\lambda = -1/\mu`.
+
+The buckling coefficient is
+
+.. math::
+
+    k_c = \frac{N_{xx,cr} \, b^2}{\pi^2 D}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+with `N_{xx,cr}` the first load multiplier of the unit force per unit
+length. The reference value is the exact solution of the plate with
+simply supported unloaded edges and clamped loaded edges under a uniform
+compression [1]_, `k_c = 6.7432` for the square plate, see
+:func:`kc_clamped_loaded_edges`.
+
+Along an edge `x` = constant the interpolated `w` and `w_{,x}` depend only
+on `w`, `w_{,y}` and on `w_{,x}`, `w_{,xy}` at the two nodes of the edge,
+so `w = 0` on the whole edge needs `w` and `w_{,y}` constrained, and
+`w_{,x} = 0` needs `w_{,x}` and `w_{,xy}` (`w` and `w_{,x}` on the
+supported edges `y` = constant). The mesh of the test gives `k_c = 6.782`,
+0.58 % above the exact value, which justifies the tolerance; the mesh
+converges to it from above (6.746 with 9 by 9 nodes, 6.743 with 17 by 17
+nodes). The value 6.6 read from Bruhn, Fig. C5.2, case C [2]_, is 2.1 %
+below the exact one. With `w` alone constrained at the nodes
+of the edges and `w_{,x}` alone at the nodes of the loaded edges, the mesh
+of the test gives `k_c = 6.608` and converges to the same value from below
+(6.727 with 9 by 9 nodes, 6.741 with 17 by 17 nodes).
+
+References
+----------
+.. [1] Pflüger, A., Stabilitätsprobleme der Elastostatik, 3rd ed.,
+   Springer, Berlin, 1975, p. 410, doi:10.1007/978-3-662-09994-0.
+.. [2] Bruhn, E. F., Analysis and Design of Flight Vehicle Structures,
+   Jacobs Publishing, Indianapolis, 1973.
+
+"""
 import sys
 sys.path.append('..')
 
@@ -5,6 +74,7 @@ import numpy as np
 from numpy import isclose
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh, spsolve
+from scipy.optimize import brentq
 import numpy as np
 from composites import isotropic_plate
 
@@ -13,9 +83,78 @@ from bfscplate2d import (BFSCPlate2D, update_KC0, update_KG, DOF, KC0_SPARSE_SIZ
 from bfscplate2d.quadrature import get_points_weights
 
 
-def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
-    """See Bruhn Fig. C5.2, case C with clamped loaded edges
+def kc_clamped_loaded_edges(alpha, kmax=40.):
+    r"""Exact buckling coefficient of a plate with clamped loaded edges
+
+    Isotropic rectangular plate of aspect ratio ``alpha = a/b``, simply
+    supported on the unloaded edges and clamped on the loaded edges, under
+    a uniform compression `N_{xx}`.
+
+    Parameters
+    ----------
+    alpha : float
+        Aspect ratio `a/b`, `a` the length along the load.
+    kmax : float, optional
+        Upper end of the interval of `k_c` searched.
+
+    Returns
+    -------
+    kc : float
+        The smallest buckling coefficient `k_c = N_{xx,cr} b^2/(\pi^2 D)`.
+
+    Notes
+    -----
+    With `w = \sin(\pi y/b) f(x)` the buckling mode is symmetric or
+    antisymmetric about `x = a/2`, and `k_c` is the smallest root of one of
+    the characteristic equations [1]_
+
+    .. math::
+
+        \lambda_1 \tan \frac{\lambda_1 \alpha}{2}
+        - \lambda_2 \tan \frac{\lambda_2 \alpha}{2} = 0, \qquad
+        \lambda_2 \tan \frac{\lambda_1 \alpha}{2}
+        - \lambda_1 \tan \frac{\lambda_2 \alpha}{2} = 0, \qquad
+        \lambda_{1,2} = \frac{\pi}{2} \left( \sqrt{k_c} \pm
+        \sqrt{k_c - 4} \right)
+
+    the first of the symmetric, the second of the antisymmetric modes,
+    from `f = 0` and `f_{,x} = 0` on the loaded edges. The roots are
+    bracketed on a grid of `k_c` in `(4, k_{max}]` and refined with
+    ``brentq``; the sign changes at the poles of the tangent are discarded.
+
+    References
+    ----------
+    .. [1] Pflüger, A., Stabilitätsprobleme der Elastostatik, 3rd ed.,
+       Springer, Berlin, 1975, p. 410, table II, A, a, case 3,
+       doi:10.1007/978-3-662-09994-0.
+
     """
+    def lambdas(k):
+        return (np.pi/2*(np.sqrt(k) + np.sqrt(k - 4)),
+                np.pi/2*(np.sqrt(k) - np.sqrt(k - 4)))
+
+    def symmetric(k):
+        l1, l2 = lambdas(k)
+        return l1*np.tan(l1*alpha/2) - l2*np.tan(l2*alpha/2)
+
+    def antisymmetric(k):
+        l1, l2 = lambdas(k)
+        return l2*np.tan(l1*alpha/2) - l1*np.tan(l2*alpha/2)
+
+    ks = np.linspace(4. + 1e-9, kmax, 100001)
+    roots = []
+    for func in (symmetric, antisymmetric):
+        values = func(ks)
+        for i in np.nonzero(np.sign(values[:-1]) != np.sign(values[1:]))[0]:
+            k = brentq(func, ks[i], ks[i+1], xtol=1e-14)
+            if abs(func(k)) < 1e-8:
+                roots.append(k)
+    return min(roots)
+
+
+def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
+    """Buckling coefficient against the exact value of the plate with
+    clamped loaded edges"""
     # number of nodes
     nx = 5 # along x
     ny = 5 # along y
@@ -109,11 +248,15 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
     y = ncoords[:, 1]
 
     # applying boundary conditions
-    # simply supported
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check
-    check = isclose(x, 0) | isclose(x, a)
-    bk[7::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
+    # clamped loaded edges: the normal slope and its derivative along the edge
+    bk[7::DOF] |= edges_x
+    bk[9::DOF] |= edges_x
     # point supports
     check = isclose(x, a/2) & (isclose(y, 0) | isclose(y, b))
     bk[0::DOF] = check
@@ -190,9 +333,7 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
     KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
     KGuu = KG[bu, :][:, bu]
 
-    # solving modified generalized eigenvalue problem
-    # Original: (KC0 + lambda*KG)*v = 0
-    # Modified: (-1/lambda)*KC0*v = KG*v  #NOTE here we find (-1/lambda)
+    # solving the generalized eigenvalue problem for -1/lambda
     num_eigenvalues = 5
     eigvals, eigvecsu = eigsh(A=KGuu, k=num_eigenvalues, which='SM', M=Kuu,
             tol=1e-6, sigma=1., mode='cayley')
@@ -213,7 +354,9 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
         plt.show()
 
     kc = eigvals[0]/(E*np.pi**2*(h/b)**2/(12*(1 - nu**2))*h)
-    assert isclose(kc, 6.6, rtol=0.05)
+    kc_exact = kc_clamped_loaded_edges(a/b)
+    print('kc', kc, 'exact', kc_exact)
+    assert isclose(kc, kc_exact, rtol=1e-2)
 
 
 if __name__ == '__main__':

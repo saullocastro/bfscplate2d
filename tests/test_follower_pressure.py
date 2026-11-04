@@ -1,41 +1,65 @@
 r"""Follower pressure: update_fext_follower and update_KCfollower
 
 A follower pressure stays normal to the deformed mid-surface and acts on its
-deformed area, with the area vector `\boldsymbol{a} = \boldsymbol{X}_{,x}
-\times \boldsymbol{X}_{,y}` truncated to
-first order in the displacement gradients (``quadratic=0``) or complete
-(``quadratic=1``). The checks, for both truncations:
+deformed area, with the area vector truncated to first order in the
+displacement gradients (``quadratic=0``) or complete (``quadratic=1``). The
+checks, for both truncations:
 
-1. in the undeformed state the force vector equals the dead pressure load
-   `\int p \boldsymbol{S}^w dA`, computed with the rows of
-   :meth:`.BFSCPlate2D.update_Sw`;
-2. the force vector against an independent integration of `\int p
-   \boldsymbol{S} \cdot \boldsymbol{a} dA`, with cubic Hermite polynomials
-   written here and ``np.cross``;
-3. directional Taylor test of the force vector against `-\boldsymbol{K}_F
-   \boldsymbol{d}`: exact for the first-order area vector, for which
-   `\boldsymbol{F}_p` is affine, and a remainder falling as `O(h)` for the
-   complete one;
-4. ``reference=0`` gives `\boldsymbol{F}_p(\boldsymbol{u}) -
-   \boldsymbol{F}_p(\boldsymbol{0})`;
+1. in the undeformed state the force vector equals the dead pressure load,
+   computed with the rows of :meth:`.BFSCPlate2D.update_Sw`;
+2. the force vector against an independent integration of the virtual work
+   of the pressure, with cubic Hermite polynomials written here and
+   ``np.cross``;
+3. directional Taylor test of the force vector against the load stiffness
+   matrix: exact for the first-order area vector, and a remainder falling
+   proportionally to the step for the complete one;
+4. ``reference=0`` gives the force vector minus that of the undeformed
+   state;
 5. no closed-form solution of the panels validation cases (rings and
    cylinders) applies to a flat plate, hence:
 
-   - the skew part of the load stiffness against the contour and area
-     integrals of ``theory/shells/follower_pressure/follower_pressure.md``
-     of panels, and its symmetry for the boundary conditions and pressures
-     for which that formula vanishes;
-   - a large-deflection Newton-Raphson analysis of a simply supported
-     plate, in which the follower pressure gives a solution measurably
-     different from the dead pressure, converging quadratically, against
-     reference values of the plate_clpt_donnell model of panels, the same
-     von Karman kinematics and area vector with another discretization;
+   - the skew part of the load stiffness matrix against the contour and
+     area integrals of the follower-pressure derivation of panels, and its
+     symmetry for the boundary conditions and pressures for which those
+     integrals vanish;
+   - a large-deflection Newton-Raphson analysis of a cantilever plate, in
+     which the follower pressure gives a solution measurably different from
+     the dead pressure, converging quadratically, against reference values
+     of the plate_clpt_donnell model of panels, the same von Karman
+     kinematics and area vector with another discretization;
 
-6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G +
-   \boldsymbol{K}_F` is the Jacobian of the residual `\boldsymbol{R} =
-   \boldsymbol{F}_{int} - \boldsymbol{F}_p`, against finite differences.
+6. the tangent stiffness matrix with the load stiffness matrix is the
+   Jacobian of the residual, against finite differences.
 
 Units: N, m, Pa.
+
+Notes
+-----
+The area vector is `\boldsymbol{a} = \boldsymbol{X}_{,x} \times
+\boldsymbol{X}_{,y}`, with `\boldsymbol{X}` the deformed position of the
+mid-surface. The checks above are, in the same order:
+
+1. `\boldsymbol{F}_p(\boldsymbol{0}) = \int_A p (\boldsymbol{S}^w)^\top dA`;
+2. `\boldsymbol{F}_p(\boldsymbol{u})` against `\int_A p \left(
+   (\boldsymbol{S}^u)^\top a_x + (\boldsymbol{S}^v)^\top a_y +
+   (\boldsymbol{S}^w)^\top a_z \right) dA`;
+3. `\boldsymbol{F}_p(\boldsymbol{u} + h \boldsymbol{d}) -
+   \boldsymbol{F}_p(\boldsymbol{u})` against `-h \boldsymbol{K}_F
+   \boldsymbol{d}`: exact for the first-order area vector, for which
+   `\boldsymbol{F}_p` is affine in `\boldsymbol{u}`, and a remainder of
+   `O(h)` relative to `h \boldsymbol{K}_F \boldsymbol{d}` for the complete
+   one;
+4. ``reference=0`` gives `\boldsymbol{F}_p(\boldsymbol{u}) -
+   \boldsymbol{F}_p(\boldsymbol{0})`;
+5. the skew part `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
+   \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d}` against the contour
+   integral over the boundary of the plate and the area integral of the
+   derivatives of `p` of ``theory/shells/follower_pressure/follower_pressure.md``
+   of panels;
+6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
+   \boldsymbol{K}_G + \boldsymbol{K}_F` is the Jacobian of the residual
+   `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`.
+
 """
 import sys
 sys.path.append('..')
@@ -241,8 +265,13 @@ def area_vector(R, ue, quadratic):
 
 
 def fext_follower_reference(m, u, func, quadratic, npts=8):
-    r"""`\int p (\boldsymbol{S}^u a_x + \boldsymbol{S}^v a_y
-    + \boldsymbol{S}^w a_z) dA` element by element"""
+    r"""Force vector of the follower pressure, integrated element by element
+    with the area vector of ``np.cross``
+
+    Notes
+    -----
+    `\int_A p (\boldsymbol{S}^u a_x + \boldsymbol{S}^v a_y + \boldsymbol{S}^w
+    a_z) dA` element by element."""
     pts, wts = leggauss(npts)
     out = np.zeros(m.N)
     for plate in m.elements:
@@ -381,9 +410,14 @@ def test_reference_zero(quadratic):
 # 5, the skew part of the load stiffness and its symmetry
 
 def skew_reference(m, d, D, p, px, py, npts=8):
-    r"""`P(d, D) - P(D, d)` of the first-order area vector, by the contour
-    integral over the boundary of the plate and the area integral of the
-    derivatives of `p` of follower_pressure.md of panels"""
+    r"""Skew part of the load stiffness of the first-order area vector for
+    the directions ``d`` and ``D``, by a contour integral over the boundary
+    of the plate and an area integral of the derivatives of ``p``
+
+    Notes
+    -----
+    `P(d, D) - P(D, d)`, with the contour and area integrals of
+    ``theory/shells/follower_pressure/follower_pressure.md`` of panels."""
     pts, wts = leggauss(npts)
     contour = 0.
     area = 0.
@@ -426,10 +460,15 @@ def skew_reference(m, d, D, p, px, py, npts=8):
 
 @pytest.mark.parametrize('case', ['uniform', 'function'])
 def test_skew_part_of_load_stiffness(case):
-    r"""`\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
+    r"""Skew part of the assembled load stiffness matrix against
+    ``skew_reference``, for a free plate, all degrees of freedom free
+
+    Notes
+    -----
+    `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
     \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d} = -(P(d, D) - P(D,
-    d))` for a free plate, all degrees of freedom free, since
-    `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} = -P(d, D)`"""
+    d))`, since `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} =
+    -P(d, D)`."""
     if case == 'uniform':
         p = lambda x, y: -2.e4 + 0*x*y
         px = py = lambda x, y: 0*x*y
@@ -471,7 +510,21 @@ def asym(K):
 def test_symmetry():
     r"""Symmetric when `p` is uniform over the whole plate and, on each edge,
     `w = 0` or the displacement normal to the edge is zero, unsymmetric
-    otherwise"""
+    otherwise
+
+    Notes
+    -----
+    For the complete area vector away from `\boldsymbol{u} = \boldsymbol{0}`,
+    with `w = 0` on the whole boundary and a uniform `p`, the load has the
+    potential `-p V`, with
+
+    .. math::
+
+        V = \int_A w \left( (1 + u_{,x}) (1 + v_{,y}) - u_{,y} v_{,x}
+            \right) dA
+
+    hence a symmetric load stiffness matrix also at `\boldsymbol{u} \neq
+    \boldsymbol{0}`, unsymmetric with a free edge."""
     m = Mesh(nx=5, ny=4)
     u0 = np.zeros(m.N)
     uniform = lambda x, y: -1.e4 + 0*x*y
@@ -498,10 +551,8 @@ def test_symmetry():
     patch = lambda x, y: np.where(x < m.a/2, -1.e4, 0.) + 0*y
     Kp = m.KCfollower(u0, patch, 0)
     assert asym(Kp[bu, :][:, bu]) > 1e-3
-    # the complete area vector away from u = 0: with w = 0 on the whole
-    # boundary and a uniform p the load has the potential -p V, V = int w
-    # ((1 + u,x) (1 + v,y) - u,y v,x) dA, hence a symmetric matrix also at
-    # u != 0, unsymmetric with a free edge
+    # the complete area vector away from u = 0: symmetric with w = 0 on the
+    # whole boundary and a uniform p, unsymmetric with a free edge
     rng = np.random.default_rng(2)
     u = m.random_state(rng)
     u[boundary_flags(m, ss)] = 0
@@ -518,10 +569,15 @@ def test_symmetry():
 
 @pytest.mark.parametrize('quadratic', TRUNCATIONS)
 def test_tangent_is_jacobian_of_residual(quadratic):
-    r"""`\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
-    \boldsymbol{K}_G + \boldsymbol{K}_F` against the central differences of
-    `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`, every entry,
-    and a Taylor test"""
+    r"""The tangent stiffness matrix with the load stiffness matrix against
+    the central differences of the residual, every entry, and a Taylor test
+
+    Notes
+    -----
+    `\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+    \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` against the
+    derivatives of `\boldsymbol{R} = \boldsymbol{F}_{int} -
+    \boldsymbol{F}_p`."""
     m = Mesh(nx=3, ny=2)
     func = lambda x, y: 100*p_function(x, y)
     rng = np.random.default_rng(7)
@@ -560,12 +616,8 @@ def test_tangent_is_jacobian_of_residual(quadratic):
 # ----------------------------------------------------------------------------
 # 5, large deflection of a cantilever plate against panels
 
-# plate_clpt_donnell of panels (commit f7a4275), the same von Karman strains
-# and area vector discretized with m = n = 16 Bardell functions and nx = ny =
-# 20 Gauss points, Newton-Raphson of structsolve with 10 increments and
-# relTOL = 1e-11: w and u at (a, b/2) of the cantilever below. Refining from
-# m = n = 12 changes w by 2e-4, and the BFSC mesh of the test is within 5e-4
-# of these values (20 by 20 elements: 5e-5), both converging from below
+# reference values of the plate_clpt_donnell model of panels, w/h and u at
+# (a, b/2) of the cantilever of test_cantilever_large_deflection_against_panels
 PANELS = {
     'dead': dict(w=20.05040761, u=-3.06710517e-03),
     0: dict(w=20.23571166, u=-3.12566486e-03),
@@ -575,12 +627,18 @@ PANELS = {
 
 def newton_raphson(m, bu, func, load, increments=5, tol=1.e-9,
                    max_iterations=30):
-    r"""Solves `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
-    \boldsymbol{F}_p(\boldsymbol{u})` (``load`` 0 or 1, the truncation of the
-    follower pressure) or `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
-    \boldsymbol{F}_p(\boldsymbol{0})` (``load =
-    'dead'``) for `\lambda` up to 1, returning the solution and the relative
-    residuals of each increment"""
+    r"""Newton-Raphson iterations under the follower pressure (``load`` 0 or
+    1, the truncation of the area vector) or the dead pressure (``load =
+    'dead'``), for the load factor `\lambda` up to 1 in ``increments`` equal
+    increments, returning the solution and the relative residuals of each
+    increment
+
+    Notes
+    -----
+    Solves `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{u})` for the follower pressure and
+    `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+    \boldsymbol{F}_p(\boldsymbol{0})` for the dead pressure."""
     u = np.zeros(m.N)
     histories = []
     for lbd in np.linspace(0, 1, increments + 1)[1:]:
@@ -614,7 +672,32 @@ def test_cantilever_large_deflection_against_panels():
     the tip displacement `u` 1.9% larger in magnitude than under the dead
     pressure, against panels within 5e-4 for `w`, i.e. the follower effect
     itself within 1%. The load stiffness is unsymmetric (free edges) and
-    Newton-Raphson converges quadratically with it"""
+    Newton-Raphson converges quadratically with it
+
+    Notes
+    -----
+    The quadratic convergence is checked as `e_{k+1} \le 10 \, e_k^{1.8}`
+    for the relative residuals `e_k` between ``1e-10`` and ``1e-3``. The
+    two truncations of the area vector give the same deflection, as the
+    follower-pressure derivation of panels
+    (``theory/shells/follower_pressure/follower_pressure.md``) predicts for
+    the moderate rotations of the von Karman strains.
+
+    The reference values ``PANELS`` are those of the plate_clpt_donnell
+    model of panels (commit f7a4275), the same von Karman strains and area
+    vector discretized with `m = n = 16` Bardell functions [1]_ and `nx =
+    ny = 20` Gauss points, solved with the Newton-Raphson method of
+    structsolve with 10 increments and ``relTOL = 1e-11``. Refining from `m
+    = n = 12` changes `w` by 2e-4, and the BFSC mesh of the test is within
+    5e-4 of these values (20 by 20 elements: 5e-5), both converging from
+    below.
+
+    References
+    ----------
+    .. [1] Castro, S. G. P., and Donadon, M. V., Assembly of semi-analytical
+       models to address linear buckling and vibration of stiffened
+       composite panels with debonding defect, Composite Structures, 160,
+       232-247, 2017, doi:10.1016/j.compstruct.2016.10.026."""
     E, nu, h = 70.e9, 0.3, 2.e-3
     a = b = 0.3
     nel = 10
@@ -632,8 +715,8 @@ def test_cantilever_large_deflection_against_panels():
     for load in ('dead', 0, 1):
         u, histories = newton_raphson(m, bu, func, load)
         out[load] = dict(w=u[DOF*tip + 6]/h, u=u[DOF*tip])
-        # quadratic, e_k+1 <= 10 e_k**1.8, from 1e-3 down to the round-off of
-        # the residual, about 1e-11 here
+        # quadratic convergence of the relative residuals, from 1e-3 down to
+        # the round-off of the residual, about 1e-11 here
         checked = 0
         for history in histories:
             for e0, e1 in zip(history[:-1], history[1:]):
@@ -649,6 +732,5 @@ def test_cantilever_large_deflection_against_panels():
     assert effect > 9.e-3
     assert isclose(effect, effect_ref, rtol=1.e-2), (effect, effect_ref)
     assert out[0]['u']/out['dead']['u'] - 1 > 1.5e-2
-    # the truncation of the area vector is immaterial, as follower_pressure.md
-    # of panels predicts for the moderate rotations of the von Karman strains
+    # the truncation of the area vector is immaterial
     assert isclose(out[1]['w'], out[0]['w'], rtol=1.e-6)
