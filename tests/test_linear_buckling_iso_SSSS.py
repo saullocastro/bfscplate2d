@@ -1,8 +1,8 @@
 r"""Linear buckling of a simply supported square plate
 
 A square isotropic plate of ``a = b = 3``, thickness ``h = 0.001``, on a
-mesh of 5 by 5 nodes, with `w` constrained at the nodes of the four edges,
-`u` at the middle nodes of the edges `y = 0` and `y = b` and `v` at the
+mesh of 5 by 5 nodes, simply supported, with `w` and its derivative along
+the edge constrained at the nodes of the four edges, `u` at the middle nodes of the edges `y = 0` and `y = b` and `v` at the
 middle nodes of the edges `x = 0` and `x = a`, compressed along `x` by a
 consistent edge load integrated with the rows of
 :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The geometric stiffness
@@ -10,7 +10,7 @@ matrix of :func:`bfscplate2d.bfscplate2d.update_KG` is computed with the
 linear static solution, and the first critical force per unit length is
 checked against the closed-form value of the simply supported plate with
 the buckling coefficient `k_c = 4` (Timoshenko and Gere, 1961), within
-5 %, and the first five load multipliers against those of
+0.1 %, and the first five load multipliers against those of
 ``structsolve.lb``, within ``1e-6``.
 
 Units: N, m, Pa.
@@ -42,6 +42,14 @@ uniform compression `N_{xx}` [1]_ is
 
 with `m` the number of half-waves along `x`, minimum `k_c = 4` for `m =
 a/b = 1`, i.e. `N_{xx,cr} = 80.34` for the plate of the test.
+
+Along an edge `x` = constant the interpolated `w` depends only on `w` and
+`w_{,y}` at the two nodes of the edge, so `w = 0` on the whole edge needs
+both nodal values constrained (`w` and `w_{,x}` on an edge `y` =
+constant). The mesh of the test gives `k_c = 4.0010`, 0.026 % above 4, and
+9 by 9 nodes 0.0016 %. With `w` alone constrained at the nodes of the edges,
+the buckling mode is not zero between the nodes of the edges and `k_c` is
+0.17 % below 4 with the mesh of the test, 0.0045 % with 9 by 9 nodes.
 
 References
 ----------
@@ -161,9 +169,12 @@ def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
     y = ncoords[:, 1]
 
     # applying boundary conditions
-    # simply supported
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
     # point supports
     check = isclose(x, a/2) & (isclose(y, 0) | isclose(y, b))
     bk[0::DOF] = check
@@ -264,7 +275,7 @@ def test_linear_buckling_iso_SSSS(plot_static=False, plot_lb=False):
     Nxxcr_theoretical = E*np.pi**2*(h/b)**2*kc/(12*(1 - nu**2))*h
     print(Nxxcr_theoretical, eigvals[0])
     print(eigvals[0]/(E*np.pi**2*(h/b)**2/(12*(1 - nu**2))*h))
-    assert isclose(eigvals[0], Nxxcr_theoretical, rtol=0.05)
+    assert isclose(eigvals[0], Nxxcr_theoretical, rtol=1e-3)
 
     # the same critical loads with the linear buckling solver of structsolve
     eigvals_lb, _ = lb(Kuu, KGuu, num_eigvalues=num_eigenvalues,

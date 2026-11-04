@@ -1,14 +1,15 @@
 r"""Linear static analysis of a plate under a uniform pressure
 
 A rectangular isotropic plate of ``a = 3`` by ``b = 7``, thickness
-``h = 0.005``, with `w` constrained at the nodes of the four edges and `u`
-and `v` at the central node, under the pressure ``P = 10``, on a mesh of
-5 by 7 nodes. The stiffness matrix is assembled with
+``h = 0.005``, simply supported, with `w` and its derivative along the
+edge constrained at the nodes of the four edges, and `u` and `v` at the
+central node, under the pressure ``P = 10``, on a mesh of 5 by 7 nodes. The
+stiffness matrix is assembled with
 :func:`bfscplate2d.bfscplate2d.update_KC0` and the consistent force vector
 of the pressure is integrated element by element with the rows of
 :meth:`.BFSCPlate2D.update_Sw`. The maximum deflection is checked against
-the reference value ``3.9407e-3`` of the test, with a relative tolerance of
-``1e-3``.
+the Navier solution of Timoshenko and Woinowsky-Krieger (1959), with a
+relative tolerance of ``1e-4``.
 
 Units: N, m, Pa.
 
@@ -21,11 +22,13 @@ The consistent force vector of the pressure `P` is
     \boldsymbol{F}_{ext} = \int_A P \, (\boldsymbol{S}^w)^\top dA
 
 computed element by element with ``nint = 4`` points along `\xi` and
-`\eta`, exact for the bicubic rows `\boldsymbol{S}^w`. Constraining `w` at
-the nodes of the edges, and not the slopes, gives the simply supported
-plate. The reference value is within 0.1 % of the Navier double-series
-solution of the simply supported rectangular plate under a uniform
-pressure [1]_,
+`\eta`, exact for the bicubic rows `\boldsymbol{S}^w`. Along an edge `x` =
+constant the interpolated `w` depends only on `w` and `w_{,y}` at the two
+nodes of the edge, so `w = 0` on the whole edge needs both nodal values
+constrained (`w` and `w_{,x}` on an edge `y` = constant); the normal slope
+and `w_{,xy}` stay free, which gives the simply supported plate. The
+reference value is the Navier double-series solution of the simply
+supported rectangular plate under a uniform pressure [1]_,
 
 .. math::
 
@@ -35,8 +38,12 @@ pressure [1]_,
         {m n \left( m^2/a^2 + n^2/b^2 \right)^2}, \qquad
     D = \frac{E h^3}{12 (1 - \nu^2)}
 
-which gives `w_{max} = 3.9372 \times 10^{-3}` with the terms up to
-`m = n = 199`.
+which gives `w_{max} = 3.937198 \times 10^{-3}` with the terms up to
+`m = n = 199`. The mesh of the test is 0.0024 % above it, and 0.0001 % with
+9 by 13 nodes. With `w` alone constrained at the nodes of the edges, `w`
+between the nodes of the edges reaches 1.9 % of `w_{max}` and `w_{max}`
+is 0.089 % above the Navier solution with the mesh of the test, 0.0025 %
+with 9 by 13 nodes.
 
 References
 ----------
@@ -120,9 +127,12 @@ def test_static_pressure(plot=False):
     # applying boundary conditions
     bk = np.zeros(KC0.shape[0], dtype=bool)
 
-    # simply supported
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
     # point supports (middle)
     check = isclose(x, a/2) & isclose(y, b/2)
     bk[0::DOF] = check
@@ -180,7 +190,9 @@ def test_static_pressure(plot=False):
         plt.contourf(xmesh, ymesh, w, levels=levels)
         plt.colorbar()
         plt.show()
-    assert np.isclose(w.max(), 3.9407e-3, rtol=1e-3)
+    # Navier solution of the Notes
+    w_ref = 3.937198e-3
+    assert np.isclose(w.max(), w_ref, rtol=1e-4)
 
 if __name__ == '__main__':
     test_static_pressure(plot=True)

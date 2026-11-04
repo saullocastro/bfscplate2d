@@ -1,8 +1,10 @@
 r"""Linear buckling of a square plate with clamped loaded edges
 
 A square isotropic plate of ``a = b = 3``, thickness ``h = 0.001``, on a
-mesh of 5 by 5 nodes, with `w` constrained at the nodes of the four edges,
-`w_{,x}` at the loaded edges `x = 0` and `x = a`, `u` at the middle nodes of
+mesh of 5 by 5 nodes, with `w` and its derivative along the edge
+constrained at the nodes of the four edges, the normal slope `w_{,x}` and
+its derivative along the edge `w_{,xy}` at the clamped loaded edges `x = 0`
+and `x = a`, `u` at the middle nodes of
 the edges `y = 0` and `y = b` and `v` at the middle nodes of the edges `x =
 0` and `x = a`, compressed along `x` by a consistent edge load integrated
 with the rows of :meth:`.BFSCPlate2D.update_Su` at `\xi = \pm 1`. The
@@ -39,6 +41,18 @@ The buckling coefficient is
 with `N_{xx,cr}` the first load multiplier of the unit force per unit
 length. The reference value `k_c = 6.6` is read from case C, with clamped
 loaded edges, of Bruhn, Fig. C5.2 [1]_, for the square plate.
+
+Along an edge `x` = constant the interpolated `w` and `w_{,x}` depend only
+on `w`, `w_{,y}` and on `w_{,x}`, `w_{,xy}` at the two nodes of the edge,
+so `w = 0` on the whole edge needs `w` and `w_{,y}` constrained, and
+`w_{,x} = 0` needs `w_{,x}` and `w_{,xy}` (`w` and `w_{,x}` on the
+supported edges `y` = constant). The mesh of the test gives `k_c = 6.782`,
+2.8 % above the value read from the figure; the mesh converges to `k_c =
+6.743` (6.746 with 9 by 9 nodes, 6.743 with 17 by 17 nodes), 2.2 % above
+it, which justifies the tolerance. With `w` alone constrained at the nodes
+of the edges and `w_{,x}` alone at the nodes of the loaded edges, the mesh
+of the test gives `k_c = 6.608` and converges to the same value from below
+(6.727 with 9 by 9 nodes, 6.741 with 17 by 17 nodes).
 
 References
 ----------
@@ -157,11 +171,15 @@ def test_linear_buckling_iso_CCSS(plot_static=False, plot_lb=False):
     y = ncoords[:, 1]
 
     # applying boundary conditions
-    # simply supported
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check
-    check = isclose(x, 0) | isclose(x, a)
-    bk[7::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
+    # clamped loaded edges: the normal slope and its derivative along the edge
+    bk[7::DOF] |= edges_x
+    bk[9::DOF] |= edges_x
     # point supports
     check = isclose(x, a/2) & (isclose(y, 0) | isclose(y, b))
     bk[0::DOF] = check

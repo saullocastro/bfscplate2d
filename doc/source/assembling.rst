@@ -168,10 +168,21 @@ an edge follows from Eq. :eq:`el-edge`:
       - `v`, `v_{,y}` (3, 5)
       - `v`, `v_{,x}` (3, 4)
 
-each value with its derivative along the edge. Constraining the value alone,
-e.g. `w` at the nodes of a simply supported edge, makes it vanish at the
-nodes only: between them it follows the free derivative along the edge,
-and the condition is reached as the mesh is refined. The rigid-body motions
+each value with its derivative along the edge. A simply supported edge,
+`w = 0` with a free normal slope, is therefore `w` and `w_{,y}` at the
+nodes of an edge `x` = constant (`w` and `w_{,x}` on an edge `y` =
+constant), with `w_{,x}` and `w_{,xy}` free; at a corner between two such
+edges `w`, `w_{,x}` and `w_{,y}` are constrained and `w_{,xy}` stays free,
+since the twist at the corner of a simply supported plate is not zero, as
+for the mode `w = \sin(m \pi x/a) \sin(n \pi y/b)`. A clamped edge adds the
+normal slope with its derivative along the edge. Constraining the value
+alone, e.g. `w` at the nodes of a simply supported edge, makes it vanish at
+the nodes only: between them `w` is the cubic of Eq. :eq:`el-edge` with
+the free nodal `w_{,y}`, the edge is more flexible than a supported one,
+and the condition is reached only as the mesh is refined. On a coarse mesh
+of a few elements per side the difference is a fraction of a per cent in
+the deflections and in the buckling loads, and grows with the number of
+half-waves of a mode. The rigid-body motions
 must be constrained, in-plane and out-of-plane, for ``KC0[bu, :][:, bu]`` to
 be nonsingular. Prescribed nonzero displacements are a partition with
 ``u[bk]`` given and the right-hand side `\boldsymbol{F}_u -
