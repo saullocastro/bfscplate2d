@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Follower pressure &#8212; bfscplate2d 0.5.0 documentation</title>
+    <title>4. Follower pressure &#8212; bfscplate2d 0.5.1 documentation</title>
   
   
   
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +47,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Linear static analysis" href="ex_linear_static.html" />
-    <link rel="prev" title="Analyses" href="analyses.html" />
+    <link rel="next" title="5. Assembly, loads and boundary conditions" href="assembling.html" />
+    <link rel="prev" title="3. Element matrices and internal forces" href="element_matrices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.5.0" />
+  <meta name="docsearch:version" content="0.5.1" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -100,7 +100,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">bfscplate2d 0.5.0 documentation</p>
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
   
 </a></div>
     
@@ -135,22 +135,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+    The BFSC plate element
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -163,8 +163,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
-    Linear static analysis
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
   </a>
 </li>
 
@@ -177,35 +177,56 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -228,6 +249,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -257,14 +285,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -284,7 +312,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -298,7 +326,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -315,22 +343,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+    The BFSC plate element
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -343,42 +371,63 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -404,6 +453,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -418,14 +474,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -482,10 +538,10 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Follower pressure</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">4. </span>Follower pressure</span></li>
   </ul>
 </nav>
 </div>
@@ -503,93 +559,200 @@
                 <article class="bd-article">
                   
   <section id="follower-pressure">
-<h1>Follower pressure<a class="headerlink" href="#follower-pressure" title="Link to this heading">#</a></h1>
-<p>A follower pressure stays normal to the deformed plate and acts on its
-deformed area, e.g. a gas pressure on a plate with large deflections, as
-opposed to a dead pressure, which keeps the direction <span class="math notranslate nohighlight">\(z\)</span> and the
-undeformed area. Its force vector depends on the displacements. Two
-functions give it:</p>
+<h1><span class="section-number">4. </span>Follower pressure<a class="headerlink" href="#follower-pressure" title="Link to this heading">#</a></h1>
+<p>A pressure of a gas or a liquid stays normal to the deformed plate and acts
+on its deformed area, as opposed to a dead pressure, which keeps the
+direction <span class="math notranslate nohighlight">\(z\)</span> and the undeformed area. For large deflections the
+difference matters: the force vector of a follower pressure depends on the
+displacements, and its derivative, the load stiffness matrix, enters the
+tangent stiffness matrix <a class="reference internal" href="references.html#hibbitt1979" id="id1"><span>[Hibbitt1979]</span></a> <a class="reference internal" href="references.html#schweizerhoframm1984" id="id2"><span>[SchweizerhofRamm1984]</span></a>. This
+chapter derives the two quantities computed by the library:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> adds the force vector <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u})\)</span> of one
-element to a global force vector;</p></li>
-<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a> writes the load stiffness matrix
-<span class="math notranslate nohighlight">\(\boldsymbol{K}_F = -\partial \boldsymbol{F}_p/\partial \boldsymbol{u}\)</span> of one element in
-sparse arrays, at the position <code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code>, with
-<code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span></code> entries, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p></li>
+<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, the force vector
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u})\)</span> of one element, added to a global
+force vector;</p></li>
+<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a>, the load stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_F =
+-\partial \boldsymbol{F}_p/\partial \boldsymbol{u}_e\)</span> of one element,
+written in sparse arrays, see <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>.</p></li>
 </ul>
-<p>The theory, from the area vector of the deformed mid-surface, is given in
-the Notes of these functions and of <a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a>.</p>
-<section id="pressure-at-the-integration-points">
-<h2>Pressure at the integration points<a class="headerlink" href="#pressure-at-the-integration-points" title="Link to this heading">#</a></h2>
-<p>The pressure <code class="docutils literal notranslate"><span class="pre">p</span></code> is given to both functions at the integration points of
-each element, as a C-contiguous array of shape <code class="docutils literal notranslate"><span class="pre">(nint,</span> <span class="pre">nint)</span></code>, <code class="docutils literal notranslate"><span class="pre">p[i,</span>
-<span class="pre">j]</span></code> at <code class="docutils literal notranslate"><span class="pre">xi</span> <span class="pre">=</span> <span class="pre">points[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span> <span class="pre">=</span> <span class="pre">points[j]</span></code>, per unit area of the
-undeformed plate and as a function of the undeformed coordinates. The
-method <code class="docutils literal notranslate"><span class="pre">Mesh.pressure</span></code> of <code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure.py</span></code> evaluates a
-function of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> at these points from the position of node 1 of the
-element, see <a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>. The pressure is multiplied by the
-load factor before it is given to the functions.</p>
+<section id="virtual-work-and-area-vector">
+<h2><span class="section-number">4.1. </span>Virtual work and area vector<a class="headerlink" href="#virtual-work-and-area-vector" title="Link to this heading">#</a></h2>
+<p>The pressure <span class="math notranslate nohighlight">\(p(x, y)\)</span> is given per unit area of the undeformed plate, as
+a function of the undeformed coordinates. With <span class="math notranslate nohighlight">\(\boldsymbol{X} =
+\boldsymbol{X}_0 + \boldsymbol{u}\)</span> the deformed position of the reference
+surface, <span class="math notranslate nohighlight">\(\boldsymbol{u} = \{u, v, w\}^\top\)</span>, its virtual work is</p>
+<div class="math notranslate nohighlight" id="equation-fp-virtual-work">
+<span class="eqno">(4.1)<a class="headerlink" href="#equation-fp-virtual-work" title="Link to this equation">#</a></span>\[\begin{split}\delta W_p = \int_A p \, \boldsymbol{a} \cdot \delta\boldsymbol{u} \, dx
+    \, dy, \qquad
+\boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}, \qquad
+\boldsymbol{X}_{,x} = \begin{Bmatrix} 1 + u_{,x} \\ v_{,x} \\ w_{,x}
+    \end{Bmatrix}, \qquad
+\boldsymbol{X}_{,y} = \begin{Bmatrix} u_{,y} \\ 1 + v_{,y} \\ w_{,y}
+    \end{Bmatrix}\end{split}\]</div>
+<p>The area vector <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is normal to the deformed surface, and its
+length is the ratio between the deformed and the undeformed areas. The cross
+product is bilinear in the displacement gradients; split by orders,
+<span class="math notranslate nohighlight">\(\boldsymbol{a} = \boldsymbol{a}_0 + \boldsymbol{a}_1 + \boldsymbol{a}_2\)</span>,</p>
+<div class="math notranslate nohighlight" id="equation-fp-area-vector">
+<span class="eqno">(4.2)<a class="headerlink" href="#equation-fp-area-vector" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+\boldsymbol{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} \\
+    u_{,x} + v_{,y} \end{Bmatrix}, \qquad
+\boldsymbol{a}_2 = \begin{Bmatrix} v_{,x} w_{,y} - w_{,x} v_{,y} \\
+    w_{,x} u_{,y} - u_{,x} w_{,y} \\
+    u_{,x} v_{,y} - v_{,x} u_{,y} \end{Bmatrix}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span> gives the dead pressure; <span class="math notranslate nohighlight">\(\boldsymbol{a}_1\)</span> contains the
+rotation of the normal, <span class="math notranslate nohighlight">\((-w_{,x}, -w_{,y})\)</span>, and the change of area
+<span class="math notranslate nohighlight">\(u_{,x} + v_{,y}\)</span>.</p>
 </section>
-<section id="sign">
-<h2>Sign<a class="headerlink" href="#sign" title="Link to this heading">#</a></h2>
-<p>A positive <code class="docutils literal notranslate"><span class="pre">p</span></code> pushes along <span class="math notranslate nohighlight">\(+z\)</span>, like a positive force on <span class="math notranslate nohighlight">\(w\)</span>, in the
-undeformed state. At <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span> the force vector is the dead pressure
-load, <span class="math notranslate nohighlight">\(\int_A p (\boldsymbol{S}^w)^\top dA\)</span>, the consistent load vector of a dead
-pressure.</p>
+<section id="consistent-truncation">
+<h2><span class="section-number">4.2. </span>Consistent truncation<a class="headerlink" href="#consistent-truncation" title="Link to this heading">#</a></h2>
+<p>With the moderate rotations of the von Kármán strains of
+<a class="reference internal" href="plate_theory.html"><span class="doc">Plate theory</span></a>, <span class="math notranslate nohighlight">\(u_{,x} \sim \epsilon\)</span> and <span class="math notranslate nohighlight">\(w_{,x} \sim
+\epsilon^{1/2}\)</span>, with <span class="math notranslate nohighlight">\(\epsilon\)</span> the order of the strains, such that <span class="math notranslate nohighlight">\(\delta
+u \sim \epsilon^{1/2} \delta w\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{a}_0 + \boldsymbol{a}_1\)</span> then
+keeps every term of <span class="math notranslate nohighlight">\(p \, \boldsymbol{a} \cdot \delta\boldsymbol{u}\)</span> up to
+the order <span class="math notranslate nohighlight">\(\epsilon \, p \, \delta w\)</span>, while <span class="math notranslate nohighlight">\(\boldsymbol{a}_2\)</span> adds terms
+of the order <span class="math notranslate nohighlight">\(\epsilon^2 p \, \delta w\)</span>, of the order of the terms that the
+strains neglect. The first-order area vector, <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code> (the
+default), is therefore the truncation consistent with the kinematics: the
+force vector is affine in the displacements and the load stiffness matrix
+constant, computed once for a given pressure. <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> uses the
+complete area vector, e.g. to check the sensitivity of a result to the
+truncation; the load stiffness matrix then depends on the displacements and
+is recomputed at each iteration.</p>
 </section>
-<section id="truncation-of-the-area-vector">
-<h2>Truncation of the area vector<a class="headerlink" href="#truncation-of-the-area-vector" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, the default, truncates the area vector to the first order
-in the displacement gradients, the truncation consistent with the moderate
-rotations of the von Karman strains. <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> is then affine in the
-displacements and <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> constant, computed once for a fixed
-pressure. <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> uses the complete area vector, e.g. to check that
-a result does not depend on the truncation; <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> then depends
-on the displacements and is computed at each iteration.</p>
-<p><code class="docutils literal notranslate"><span class="pre">reference=0</span></code> in <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> leaves out the dead part,
-giving <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0})\)</span>, which vanishes at <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>.</p>
+<section id="force-vector">
+<h2><span class="section-number">4.3. </span>Force vector<a class="headerlink" href="#force-vector" title="Link to this heading">#</a></h2>
+<p>Discretised with the rows of Eq. <a class="reference internal" href="element.html#equation-el-rows">(2.5)</a> and the quadrature of
+<a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>, Eq. <a class="reference internal" href="#equation-fp-virtual-work">(4.1)</a> gives the element
+force vector of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a></p>
+<div class="math notranslate nohighlight" id="equation-fp-force">
+<span class="eqno">(4.3)<a class="headerlink" href="#equation-fp-force" title="Link to this equation">#</a></span>\[\boldsymbol{F}_p = \int_A p \left( (\boldsymbol{S}^u)^\top a_x +
+    (\boldsymbol{S}^v)^\top a_y + (\boldsymbol{S}^w)^\top a_z \right) dA,
+\qquad
+\boldsymbol{a} = r \, \boldsymbol{a}_0 + \boldsymbol{a}_1 + q \,
+    \boldsymbol{a}_2\]</div>
+<p>with <span class="math notranslate nohighlight">\(q = 1\)</span> for <code class="docutils literal notranslate"><span class="pre">quadratic</span></code> not 0 and <span class="math notranslate nohighlight">\(r = 1\)</span> for <code class="docutils literal notranslate"><span class="pre">reference</span></code> not 0
+(the default), otherwise 0. At <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>,
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{0}) = \int_A p (\boldsymbol{S}^w)^\top dA\)</span> is
+the consistent load vector of the dead pressure. <code class="docutils literal notranslate"><span class="pre">reference=0</span></code> leaves this
+term out and gives <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}) -
+\boldsymbol{F}_p(\boldsymbol{0})\)</span>, the part that vanishes in the undeformed
+state.</p>
+<p>The pressure is given to the functions at the integration points of each
+element, a C-contiguous array <code class="docutils literal notranslate"><span class="pre">p</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(nint,</span> <span class="pre">nint)</span></code>, <code class="docutils literal notranslate"><span class="pre">p[i,</span> <span class="pre">j]</span></code>
+at <code class="docutils literal notranslate"><span class="pre">xi</span> <span class="pre">=</span> <span class="pre">points[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span> <span class="pre">=</span> <span class="pre">points[j]</span></code>, already multiplied by the
+load factor if there is one. A positive <code class="docutils literal notranslate"><span class="pre">p</span></code> pushes along <span class="math notranslate nohighlight">\(+z\)</span> in the
+undeformed state, like a positive force on <span class="math notranslate nohighlight">\(w\)</span>.</p>
+</section>
+<section id="load-stiffness-matrix">
+<h2><span class="section-number">4.4. </span>Load stiffness matrix<a class="headerlink" href="#load-stiffness-matrix" title="Link to this heading">#</a></h2>
+<p>The derivative of Eq. <a class="reference internal" href="#equation-fp-force">(4.3)</a> gives the load stiffness matrix of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a></p>
+<div class="math notranslate nohighlight" id="equation-fp-kf">
+<span class="eqno">(4.4)<a class="headerlink" href="#equation-fp-kf" title="Link to this equation">#</a></span>\[\boldsymbol{K}_F = -\frac{\partial \boldsymbol{F}_p}{\partial
+    \boldsymbol{u}_e} = -\int_A p \left( (\boldsymbol{S}^u)^\top
+    \frac{\partial a_x}{\partial \boldsymbol{u}_e} + (\boldsymbol{S}^v)^\top
+    \frac{\partial a_y}{\partial \boldsymbol{u}_e} + (\boldsymbol{S}^w)^\top
+    \frac{\partial a_z}{\partial \boldsymbol{u}_e} \right) dA\]</div>
+<p>For the first-order area vector, <span class="math notranslate nohighlight">\(\partial \boldsymbol{a}_1/\partial
+\boldsymbol{u}_e\)</span> has the constant rows <span class="math notranslate nohighlight">\(-\boldsymbol{S}^w_{,x}\)</span>,
+<span class="math notranslate nohighlight">\(-\boldsymbol{S}^w_{,y}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{S}^u_{,x} +
+\boldsymbol{S}^v_{,y}\)</span>, and</p>
+<div class="math notranslate nohighlight" id="equation-fp-kf-linear">
+<span class="eqno">(4.5)<a class="headerlink" href="#equation-fp-kf-linear" title="Link to this equation">#</a></span>\[\boldsymbol{K}_F = \int_A p \left( (\boldsymbol{S}^u)^\top
+    \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^v)^\top \boldsymbol{S}^w_{,y}
+    - (\boldsymbol{S}^w)^\top \boldsymbol{S}^u_{,x}
+    - (\boldsymbol{S}^w)^\top \boldsymbol{S}^v_{,y} \right) dA\]</div>
+<p>independent of the displacements, with entries in the blocks <span class="math notranslate nohighlight">\([u, w]\)</span>,
+<span class="math notranslate nohighlight">\([v, w]\)</span>, <span class="math notranslate nohighlight">\([w, u]\)</span> and <span class="math notranslate nohighlight">\([w, v]\)</span>. The complete area vector adds <span class="math notranslate nohighlight">\(\partial
+\boldsymbol{a}_2/\partial \boldsymbol{u}_e\)</span>, linear in the displacement
+gradients, to these blocks and to the blocks <span class="math notranslate nohighlight">\([u, v]\)</span> and <span class="math notranslate nohighlight">\([v, u]\)</span>. The
+function writes all six blocks, <code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span></code> entries per
+element, the values of <span class="math notranslate nohighlight">\([u, v]\)</span> and <span class="math notranslate nohighlight">\([v, u]\)</span> being zero for
+<code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>.</p>
+</section>
+<section id="symmetry-and-conservativeness">
+<h2><span class="section-number">4.5. </span>Symmetry and conservativeness<a class="headerlink" href="#symmetry-and-conservativeness" title="Link to this heading">#</a></h2>
+<p>A load derived from a potential has a symmetric load stiffness matrix. For
+the first-order area vector, <span class="math notranslate nohighlight">\(\boldsymbol{\delta}^\top \boldsymbol{K}_F
+\boldsymbol{\Delta} = -P(\delta, \Delta)\)</span> for two displacement fields
+<span class="math notranslate nohighlight">\(\delta\)</span> and <span class="math notranslate nohighlight">\(\Delta\)</span>, with the bilinear form <span class="math notranslate nohighlight">\(P(\delta, \Delta) = \int_A p
+\, \delta\boldsymbol{u} \cdot \boldsymbol{a}_1(\Delta\boldsymbol{u}) \,
+dA\)</span>. Its skew part collects into derivatives, <span class="math notranslate nohighlight">\(p \, \partial_x (\Delta u \,
+\delta w - \delta u \, \Delta w)\)</span> and the same along <span class="math notranslate nohighlight">\(y\)</span>, and an integration
+by parts gives</p>
+<div class="math notranslate nohighlight" id="equation-fp-skew">
+<span class="eqno">(4.6)<a class="headerlink" href="#equation-fp-skew" title="Link to this equation">#</a></span>\[P(\delta, \Delta) - P(\Delta, \delta) =
+- \oint p \left[ (\delta u \, \Delta w - \delta w \, \Delta u) n_x
+  + (\delta v \, \Delta w - \delta w \, \Delta v) n_y \right] ds
++ \int_A \left[ p_{,x} (\delta u \, \Delta w - \delta w \, \Delta u)
+  + p_{,y} (\delta v \, \Delta w - \delta w \, \Delta v) \right] dA\]</div>
+<p>with <span class="math notranslate nohighlight">\(\{n_x, n_y\}\)</span> the outward normal of the boundary of the loaded region.
+The load stiffness matrix is therefore symmetric, and the follower pressure
+conservative, if and only if</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p\)</span> is uniform over the loaded region, and</p></li>
+<li><p>at each point of the boundary of the loaded region either <span class="math notranslate nohighlight">\(w = 0\)</span> or the
+in-plane displacement normal to the boundary vanishes, <span class="math notranslate nohighlight">\(u = 0\)</span> on the
+edges <span class="math notranslate nohighlight">\(x\)</span> = constant and <span class="math notranslate nohighlight">\(v = 0\)</span> on the edges <span class="math notranslate nohighlight">\(y\)</span> = constant.</p></li>
+</ul>
+<p>Simply supported and clamped edges and symmetry planes meet the second
+condition; the load potential is then the pressure times the change of the
+enclosed volume. Free or partially restrained edges, a pressure on a patch
+whose edges lie inside the plate and a pressure that varies over the plate
+give an unsymmetric matrix, the result of <a class="reference internal" href="references.html#hibbitt1979" id="id3"><span>[Hibbitt1979]</span></a> and
+<a class="reference internal" href="references.html#schweizerhoframm1984" id="id4"><span>[SchweizerhofRamm1984]</span></a> for closed surfaces and for loaded surfaces with a
+fixed boundary.</p>
+<p>The boundary of one element is the boundary of its loaded region, where the
+second condition does not hold: the element matrix is unsymmetric. In the
+assembled matrix the contour integrals of the edges shared by two elements
+cancel when <span class="math notranslate nohighlight">\(p\)</span> is continuous, since <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> are continuous, see
+<a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>, and the conditions apply to the boundary of the loaded
+region of the plate. The matrix is written in full, not as a triangle, and
+must not be symmetrised: the linear systems and eigenvalue problems that
+contain it need solvers of unsymmetric matrices. These conditions are those
+of the first-order area vector; for <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> the matrix depends on
+the displacements.</p>
 </section>
 <section id="residual-and-tangent-stiffness-matrix">
-<h2>Residual and tangent stiffness matrix<a class="headerlink" href="#residual-and-tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
+<h2><span class="section-number">4.6. </span>Residual and tangent stiffness matrix<a class="headerlink" href="#residual-and-tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
 <p>With the pressure <span class="math notranslate nohighlight">\(\lambda p\)</span> of a load factor <span class="math notranslate nohighlight">\(\lambda\)</span>, the residual of
 the nonlinear static analysis of <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a> and its Jacobian are</p>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_p(\boldsymbol{u}), \qquad
-\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F,
-\qquad \boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}\]</div>
-<p>with <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> of the same <code class="docutils literal notranslate"><span class="pre">p</span></code> and <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>.
-Since the functions receive the pressure already multiplied by <span class="math notranslate nohighlight">\(\lambda\)</span>,
-the test of <a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a> gives them <code class="docutils literal notranslate"><span class="pre">lbd*func(x,</span> <span class="pre">y)</span></code>,
-recomputes <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u})\)</span> at every iteration and adds the load stiffness
-matrix of the current pressure to the tangent. A solver whose external
-force vector is fixed, <span class="math notranslate nohighlight">\(\lambda \boldsymbol{F}_{ext}\)</span>, takes the dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext} =
-\boldsymbol{F}_p(\boldsymbol{0})\)</span> as external forces and the part <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>,
-<span class="math notranslate nohighlight">\(\lambda(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))\)</span>, subtracted from the internal forces.</p>
+<div class="math notranslate nohighlight" id="equation-fp-residual">
+<span class="eqno">(4.7)<a class="headerlink" href="#equation-fp-residual" title="Link to this equation">#</a></span>\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) -
+    \lambda \boldsymbol{F}_p(\boldsymbol{u}), \qquad
+\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+    \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F, \qquad
+\boldsymbol{K}_F = \lambda \boldsymbol{K}_{F_{ref}}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> of the same <code class="docutils literal notranslate"><span class="pre">p</span></code>
+and <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>. Since the functions receive the pressure already
+multiplied by <span class="math notranslate nohighlight">\(\lambda\)</span>, the force vector and the load stiffness matrix of
+<span class="math notranslate nohighlight">\(\lambda p\)</span> are computed by giving them <code class="docutils literal notranslate"><span class="pre">lbd*p</span></code>. Writing
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}) = \boldsymbol{F}_p(\boldsymbol{0}) +
+(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))\)</span>, a
+solver whose external force vector is fixed, <span class="math notranslate nohighlight">\(\lambda
+\boldsymbol{F}_{ext}\)</span>, takes the dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext} =
+\boldsymbol{F}_p(\boldsymbol{0})\)</span> as external forces and the part of
+<code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, times <span class="math notranslate nohighlight">\(\lambda\)</span>, subtracted from the internal forces, see
+<a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>.</p>
 <p>A linear buckling analysis under a follower pressure <span class="math notranslate nohighlight">\(\lambda p\)</span> adds the
-load stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code> to <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the linear static solution of
-<code class="docutils literal notranslate"><span class="pre">p</span></code>:</p>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+load stiffness matrix of <code class="docutils literal notranslate"><span class="pre">p</span></code> to the geometric stiffness matrix of the
+linear static solution of <code class="docutils literal notranslate"><span class="pre">p</span></code>:</p>
+<div class="math notranslate nohighlight" id="equation-fp-buckling">
+<span class="eqno">(4.8)<a class="headerlink" href="#equation-fp-buckling" title="Link to this equation">#</a></span>\[\left( \boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G +
+    \boldsymbol{K}_{F_{ref}}) \right) \boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>an unsymmetric eigenvalue problem unless the conditions above hold.</p>
 </section>
-<section id="unsymmetric-load-stiffness-matrix">
-<h2>Unsymmetric load stiffness matrix<a class="headerlink" href="#unsymmetric-load-stiffness-matrix" title="Link to this heading">#</a></h2>
-<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> is unsymmetric in general, a non-conservative load. For
-the first-order area vector, <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, it is symmetric, and the
-follower pressure conservative, if and only if the pressure is uniform
-over the loaded region and, at each point of the boundary of the loaded
-region, <span class="math notranslate nohighlight">\(w = 0\)</span> or the in-plane displacement normal to the boundary is
-zero, e.g. simply supported or clamped edges and symmetry planes. The
-matrix of one element, free or partially restrained edges, a pressure on
-a patch whose edges lie inside the plate or a varying pressure give an
-unsymmetric matrix; in the assembled matrix, restricted to the unknown
-degrees of freedom, the contributions of the edges shared by two elements
-cancel. The conditions are derived in the Notes of
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a> and checked by <code class="docutils literal notranslate"><span class="pre">test_symmetry</span></code> of
-<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure.py</span></code>. The matrix is written in full, not as
-an upper triangle, and must not be symmetrized: the linear systems and the
-eigenvalue problems are solved with the solvers of unsymmetric matrices,
-e.g. <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code>, as in the tests, and not with those
-of symmetric matrices such as <code class="docutils literal notranslate"><span class="pre">eigsh</span></code>.</p>
+<section id="numerical-integration">
+<h2><span class="section-number">4.7. </span>Numerical integration<a class="headerlink" href="#numerical-integration" title="Link to this heading">#</a></h2>
+<p>For a pressure constant over the element the integrands of Eqs.
+<a class="reference internal" href="#equation-fp-force">(4.3)</a> and <a class="reference internal" href="#equation-fp-kf">(4.4)</a> are polynomials of degree at most 6 in <span class="math notranslate nohighlight">\(\xi\)</span>
+and in <span class="math notranslate nohighlight">\(\eta\)</span> for <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code> and 8 for <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code>, integrated
+exactly with <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">&gt;=</span> <span class="pre">4</span></code> and <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">&gt;=</span> <span class="pre">5</span></code>.</p>
+<p>The force vector, the load stiffness matrix, its symmetry conditions and the
+consistency of the tangent stiffness matrix are verified in
+<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure.py</span></code>.</p>
 </section>
 </section>
 
@@ -604,20 +767,20 @@ of symmetric matrices such as <code class="docutils literal notranslate"><span c
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="analyses.html"
+       href="element_matrices.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Analyses</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Element matrices and internal forces</p>
       </div>
     </a>
     <a class="right-next"
-       href="ex_linear_static.html"
+       href="assembling.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Linear static analysis</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Assembly, loads and boundary conditions</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -628,7 +791,7 @@ of symmetric matrices such as <code class="docutils literal notranslate"><span c
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -640,11 +803,13 @@ of symmetric matrices such as <code class="docutils literal notranslate"><span c
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pressure-at-the-integration-points">Pressure at the integration points</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sign">Sign</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#truncation-of-the-area-vector">Truncation of the area vector</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-and-tangent-stiffness-matrix">Residual and tangent stiffness matrix</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unsymmetric-load-stiffness-matrix">Unsymmetric load stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#virtual-work-and-area-vector">4.1. Virtual work and area vector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-truncation">4.2. Consistent truncation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#force-vector">4.3. Force vector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-stiffness-matrix">4.4. Load stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#symmetry-and-conservativeness">4.5. Symmetry and conservativeness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-and-tangent-stiffness-matrix">4.6. Residual and tangent stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-integration">4.7. Numerical integration</a></li>
 </ul>
   </nav></div>
 
@@ -670,8 +835,8 @@ of symmetric matrices such as <code class="docutils literal notranslate"><span c
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -704,7 +869,7 @@ of symmetric matrices such as <code class="docutils literal notranslate"><span c
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>

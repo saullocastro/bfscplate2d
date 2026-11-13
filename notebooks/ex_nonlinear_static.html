@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Nonlinear static analysis &#8212; bfscplate2d 0.5.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ex_nonlinear_static';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Nonlinear static analysis with structsolve" href="ex_structsolve_nonlinear.html" />
+    <link rel="prev" title="Natural frequencies" href="ex_natural_frequency.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.1" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element_matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element_matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Nonlinear static analysis</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Nonlinear-static-analysis">
+<h1>Nonlinear static analysis<a class="headerlink" href="#Nonlinear-static-analysis" title="Link to this heading">#</a></h1>
+<p>A simply supported rectangular isotropic plate, compressed along <span class="math notranslate nohighlight">\(x\)</span> below its first buckling load and loaded by a transverse force at the centre, so that it deflects out of plane instead of staying on the flat path. Two transverse loads are analysed:</p>
+<ol class="arabic simple">
+<li><p>a small one, for which the response is the linearised one, compared with the solution of the linear static problem with the stiffness reduced by the geometric stiffness of the axial load;</p></li>
+<li><p>a large one, reaching a deflection of about 2.6 times the thickness, where the membrane stretching of the von Kármán strains [1] carries part of the load and the plate is stiffer than the linearised prediction.</p></li>
+</ol>
+<p>The same model is checked in <code class="docutils literal notranslate"><span class="pre">tests/test_static_axial_load_nonlinear.py</span></code>.</p>
+<section id="Theory">
+<h2>Theory<a class="headerlink" href="#Theory" title="Link to this heading">#</a></h2>
+<p>For deflections of the order of the thickness or larger, the equilibrium</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{R}(\boldsymbol{u}, \lambda) =
+\boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}
+= \boldsymbol{0}\]</div>
+<p>is solved for the displacements at increasing values of the load factor <span class="math notranslate nohighlight">\(\lambda\)</span>. Each Newton-Raphson iteration solves</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{K}_T \Delta\boldsymbol{u} = -\boldsymbol{R}, \qquad
+\boldsymbol{K}_T = \frac{\partial \boldsymbol{R}}{\partial \boldsymbol{u}}
+= \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u})
++ \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u})\]</div>
+<p>with all the matrices computed with the current displacements, from <code class="docutils literal notranslate"><span class="pre">update_KC0</span></code>, <code class="docutils literal notranslate"><span class="pre">update_KCNL</span></code> and <code class="docutils literal notranslate"><span class="pre">update_KG</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> from <code class="docutils literal notranslate"><span class="pre">update_fint</span></code>. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, the iterations converge quadratically near the solution: each step squares the residual. With an inconsistent tangent the residual falls by a roughly constant factor instead.</p>
+<p>Below the buckling load, the response to a small transverse load <span class="math notranslate nohighlight">\(\boldsymbol{F}_t\)</span> superposed on the in-plane load <span class="math notranslate nohighlight">\(P\)</span> tends to the linearised solution</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{u}_{lin} = \left( \boldsymbol{K}_{C0} + \boldsymbol{K}_G(P)
+\right)^{-1} \boldsymbol{F}_t\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(P)\)</span> of the static solution of the in-plane load alone. Its amplification over the response to the transverse load alone, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}^{-1} \boldsymbol{F}_t\)</span>, is below the single-mode ceiling <span class="math notranslate nohighlight">\(1/(1 - P/P_{cr})\)</span>, <span class="math notranslate nohighlight">\(P_{cr}\)</span> the first buckling load, since a point load excites many modes.</p>
+<p>The nonlinear equilibrium is solved with the full Newton-Raphson method of <code class="docutils literal notranslate"><span class="pre">structsolve.Analysis</span></code>, the tangent stiffness matrix rebuilt at every iteration, with Crisfield’s convergence criterion: the residual and the reference forces scaled with the diagonal of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, and the iterations stop when their ratio <span class="math notranslate nohighlight">\(\zeta\)</span> is below <code class="docutils literal notranslate"><span class="pre">Analysis.relTOL</span> <span class="pre">=</span> <span class="pre">1e-9</span></code>.</p>
+</section>
+<section id="Model">
+<h2>Model<a class="headerlink" href="#Model" title="Link to this heading">#</a></h2>
+<p>The plate has <span class="math notranslate nohighlight">\(a = 0.9\)</span> m by <span class="math notranslate nohighlight">\(b = 0.5\)</span> m, <span class="math notranslate nohighlight">\(h = 1\)</span> mm, <span class="math notranslate nohighlight">\(E = 70\)</span> GPa and <span class="math notranslate nohighlight">\(\nu = 0.3\)</span>, on a mesh of 13 by 7 nodes. The four edges are simply supported: <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are constrained on the edges <span class="math notranslate nohighlight">\(x\)</span> = constant, <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,x}\)</span> on the edges <span class="math notranslate nohighlight">\(y\)</span> = constant, since along an edge the interpolated <span class="math notranslate nohighlight">\(w\)</span> depends only on <span class="math notranslate nohighlight">\(w\)</span> and its derivative along the edge at the two nodes of the edge. <span class="math notranslate nohighlight">\(v\)</span> is constrained on the edges
+<span class="math notranslate nohighlight">\(x = 0\)</span> and <span class="math notranslate nohighlight">\(x = a\)</span>, and <span class="math notranslate nohighlight">\(u\)</span> on the line <span class="math notranslate nohighlight">\(x = a/2\)</span>. The element matrices and the internal forces are integrated with 7 by 7 points (<code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">=</span> <span class="pre">7</span></code>), which integrate <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> exactly. The test uses the same model and stores the buckling load and the deflections computed here.</p>
+<p><code class="docutils literal notranslate"><span class="pre">build_model</span></code> creates the elements and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, and keeps the value arrays of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, which are zeroed and recomputed at each iteration, since the update functions add to them.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">isclose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">eigsh</span><span class="p">,</span> <span class="n">spsolve</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">structsolve</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analysis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">structsolve.convergence</span><span class="w"> </span><span class="kn">import</span> <span class="n">crisfield_weights</span><span class="p">,</span> <span class="n">crisfield_zeta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bfscplate2d</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BFSCPlate2D</span><span class="p">,</span> <span class="n">update_KC0</span><span class="p">,</span> <span class="n">update_KCNL</span><span class="p">,</span> <span class="n">update_KG</span><span class="p">,</span>
+        <span class="n">update_fint</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">KC0_SPARSE_SIZE</span><span class="p">,</span> <span class="n">KCNL_SPARSE_SIZE</span><span class="p">,</span>
+        <span class="n">KG_SPARSE_SIZE</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bfscplate2d.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+
+<span class="c1"># number of nodes</span>
+<span class="n">nx</span> <span class="o">=</span> <span class="mi">13</span>
+<span class="n">ny</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="c1"># geometry</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="c1"># material properties</span>
+<span class="n">E</span> <span class="o">=</span> <span class="mf">0.7e11</span>
+<span class="n">nu</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">0.001</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Mesh, elements, boundary conditions and the operators built on them."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build_model</span><span class="p">():</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu</span><span class="p">)</span>
+
+    <span class="n">xlin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">ylin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+    <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xlin</span><span class="p">,</span> <span class="n">ylin</span><span class="p">)</span>
+
+    <span class="n">ncoords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">xmesh</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">ymesh</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">ncoords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">ncoords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">nids</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ncoords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">nid_pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nids</span><span class="p">))))</span>
+
+    <span class="n">nids_mesh</span> <span class="o">=</span> <span class="n">nids</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+    <span class="n">n1s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">n2s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">n3s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">n4s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">n1s</span><span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nx</span><span class="o">*</span><span class="n">ny</span>
+    <span class="n">KC0r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KC0c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KC0v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+    <span class="n">KCNLr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KCNLc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KCNLv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+    <span class="n">KGr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KGc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+    <span class="n">KGv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+    <span class="n">init_k_KC0</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">init_k_KCNL</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">init_k_KG</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">n1s</span><span class="p">,</span> <span class="n">n2s</span><span class="p">,</span> <span class="n">n3s</span><span class="p">,</span> <span class="n">n4s</span><span class="p">):</span>
+        <span class="n">plate</span> <span class="o">=</span> <span class="n">BFSCPlate2D</span><span class="p">()</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">n1</span> <span class="o">=</span> <span class="n">n1</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">n2</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">n3</span> <span class="o">=</span> <span class="n">n3</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">n4</span> <span class="o">=</span> <span class="n">n4</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">c3</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n3</span><span class="p">]</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n4</span><span class="p">]</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">ABD</span> <span class="o">=</span> <span class="n">lam</span><span class="o">.</span><span class="n">ABD</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">lex</span> <span class="o">=</span> <span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">ley</span> <span class="o">=</span> <span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KC0</span> <span class="o">=</span> <span class="n">init_k_KC0</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KCNL</span> <span class="o">=</span> <span class="n">init_k_KCNL</span>
+        <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">init_k_KG</span>
+        <span class="n">update_KC0</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">,</span> <span class="n">KC0v</span><span class="p">)</span>
+        <span class="n">init_k_KC0</span> <span class="o">+=</span> <span class="n">KC0_SPARSE_SIZE</span>
+        <span class="n">init_k_KCNL</span> <span class="o">+=</span> <span class="n">KCNL_SPARSE_SIZE</span>
+        <span class="n">init_k_KG</span> <span class="o">+=</span> <span class="n">KG_SPARSE_SIZE</span>
+        <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plate</span><span class="p">)</span>
+
+    <span class="n">KC0</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KC0v</span><span class="p">,</span> <span class="p">(</span><span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+
+    <span class="c1"># simply supported: w and its derivative along the edge</span>
+    <span class="n">bk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">edges_x</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">edges_y</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">bk</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_x</span> <span class="o">|</span> <span class="n">edges_y</span>
+    <span class="n">bk</span><span class="p">[</span><span class="mi">8</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_x</span>
+    <span class="n">bk</span><span class="p">[</span><span class="mi">7</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_y</span>
+    <span class="c1"># in-plane supports</span>
+    <span class="n">bk</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_x</span>
+    <span class="n">bk</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+    <span class="n">bu</span> <span class="o">=</span> <span class="o">~</span><span class="n">bk</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">lam</span> <span class="o">=</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">lam</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">ncoords</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">ncoords</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">xmesh</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">ymesh</span> <span class="o">=</span> <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">nid_pos</span> <span class="o">=</span> <span class="n">nid_pos</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KC0</span> <span class="o">=</span> <span class="n">KC0</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span> <span class="o">=</span> <span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">bk</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">bu</span> <span class="o">=</span> <span class="n">bk</span><span class="p">,</span> <span class="n">bu</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">=</span> <span class="n">KCNLr</span><span class="p">,</span> <span class="n">KCNLc</span><span class="p">,</span> <span class="n">KCNLv</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGc</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGv</span> <span class="o">=</span> <span class="n">KGr</span><span class="p">,</span> <span class="n">KGc</span><span class="p">,</span> <span class="n">KGv</span>
+    <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_KCNL</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The nonlinear part K_CNL(u) + K_GNL(u) of the tangent."""</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">*=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+        <span class="n">update_KCNL</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">)),</span>
+                      <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_KG</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The geometric stiffness K_G(u), of the tangent and of the linearised</span>
+<span class="sd">    solutions."""</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">KGv</span> <span class="o">*=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+        <span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGc</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">KGv</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KGc</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_fint</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="n">fint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+        <span class="n">update_fint</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">fint</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fint</span>
+</pre></div>
+</div>
+</div>
+<p>The callables of <code class="docutils literal notranslate"><span class="pre">structsolve.Analysis</span></code> work on the unknown degrees of freedom only: the solution vector of the solver is <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">u[bu]</span></code>, and the force vectors and matrices are restricted to <code class="docutils literal notranslate"><span class="pre">bu</span></code>. <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code> returns <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL}\)</span> and <code class="docutils literal notranslate"><span class="pre">calc_kG</span></code> returns <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, such that their sum is <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>. <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> also keeps the load factor and the internal forces of each iteration, from which the residual history is computed. <code class="docutils literal notranslate"><span class="pre">w_field</span></code> interpolates <span class="math notranslate nohighlight">\(w\)</span> inside the elements for the plots.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Callables</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The callables of structsolve.Analysis for the model m under the</span>
+<span class="sd">    external forces fext."""</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">fext</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">m</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fext</span> <span class="o">=</span> <span class="n">fext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The displacements of the model from those of the unknown dofs."""</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="n">u</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">inc</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fext</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">fint</span> <span class="o">=</span> <span class="n">calc_fint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">))[</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">inc</span><span class="p">,</span> <span class="n">fint</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">fint</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NLgeom</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span>
+        <span class="n">bu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span>
+        <span class="n">KCNL</span> <span class="o">=</span> <span class="n">calc_KCNL</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">KCNL</span><span class="p">)[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">bu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span>
+        <span class="k">return</span> <span class="n">calc_KG</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">))[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">w_field</span><span class="p">(</span><span class="n">plates</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">9</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The deflection w interpolated with the rows Sw of each element on</span>
+<span class="sd">    n by n points per element, for the contour plots."""</span>
+    <span class="n">lex</span><span class="p">,</span> <span class="n">ley</span> <span class="o">=</span> <span class="n">plates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lex</span><span class="p">,</span> <span class="n">plates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ley</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">lex</span><span class="p">,</span> <span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ley</span><span class="p">,</span> <span class="p">(</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+    <span class="n">xis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">plates</span><span class="p">:</span>
+        <span class="n">ue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="n">c</span><span class="p">:</span><span class="n">c</span> <span class="o">+</span> <span class="n">DOF</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span>
+                             <span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">plate</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">plate</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">plate</span><span class="o">.</span><span class="n">c4</span><span class="p">)])</span>
+        <span class="n">pos1</span> <span class="o">=</span> <span class="n">plate</span><span class="o">.</span><span class="n">c1</span><span class="o">//</span><span class="n">DOF</span>
+        <span class="n">ix0</span><span class="p">,</span> <span class="n">iy0</span> <span class="o">=</span> <span class="n">pos1</span><span class="o">//</span><span class="n">ny</span><span class="p">,</span> <span class="n">pos1</span> <span class="o">%</span> <span class="n">ny</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xis</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">eta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xis</span><span class="p">):</span>
+                <span class="n">plate</span><span class="o">.</span><span class="n">update_Sw</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+                <span class="n">W</span><span class="p">[</span><span class="n">iy0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">ix0</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">Sw</span><span class="p">)</span> <span class="o">@</span> <span class="n">ue</span>
+    <span class="n">Xmesh</span><span class="p">,</span> <span class="n">Ymesh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Xmesh</span><span class="p">,</span> <span class="n">Ymesh</span><span class="p">,</span> <span class="n">W</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Loads-and-first-buckling-load">
+<h2>Loads and first buckling load<a class="headerlink" href="#Loads-and-first-buckling-load" title="Link to this heading">#</a></h2>
+<p>The axial compression <span class="math notranslate nohighlight">\(P = 300\)</span> N is applied as nodal forces along <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(P/n_y\)</span> at each node of the edges <span class="math notranslate nohighlight">\(x = 0\)</span> (along <span class="math notranslate nohighlight">\(+x\)</span>) and <span class="math notranslate nohighlight">\(x = a\)</span> (along <span class="math notranslate nohighlight">\(-x\)</span>), and the transverse force at the centre node. The first buckling load <span class="math notranslate nohighlight">\(P_{cr}\)</span> comes from the linear buckling problem <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} =
+\boldsymbol{0}\)</span> with <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the static solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_P\)</span> of the axial load alone, the same <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(P)\)</span> used by the linearised solutions below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">m</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'elements'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">),</span> <span class="s1">', unknown degrees of freedom'</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+<span class="n">load</span> <span class="o">=</span> <span class="mf">300.</span>  <span class="c1"># N</span>
+<span class="n">f_axial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+<span class="n">f_axial</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">][</span><span class="n">isclose</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="o">+</span><span class="n">load</span><span class="o">/</span><span class="n">ny</span>
+<span class="n">f_axial</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">][</span><span class="n">isclose</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="n">load</span><span class="o">/</span><span class="n">ny</span>
+<span class="n">centre</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">isclose</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">b</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">f_unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>   <span class="c1"># transverse force of 1 N at the centre</span>
+<span class="n">f_unit</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">][</span><span class="n">centre</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+
+<span class="c1"># static solution of the axial load alone and linear buckling</span>
+<span class="n">u_P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+<span class="n">u_P</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span><span class="p">,</span> <span class="n">f_axial</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">])</span>
+<span class="n">KG_P</span> <span class="o">=</span> <span class="n">calc_KG</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">u_P</span><span class="p">)</span>
+<span class="n">KGuu</span> <span class="o">=</span> <span class="n">KG_P</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+<span class="n">eigvals</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eigsh</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">KGuu</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">'SM'</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+                   <span class="n">sigma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'cayley'</span><span class="p">)</span>
+<span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">eigvals</span>
+<span class="n">load_cr</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">load</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'P_cr = </span><span class="si">%.3f</span><span class="s1"> N, P/P_cr = </span><span class="si">%.4f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">load_cr</span><span class="p">,</span> <span class="n">load</span><span class="o">/</span><span class="n">load_cr</span><span class="p">))</span>
+
+<span class="c1"># operators of the linearised solutions</span>
+<span class="n">K_lin</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">KG_P</span><span class="p">)[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+elements 72 , unknown degrees of freedom 813
+P_cr = 501.719 N, P/P_cr = 0.5979
+</pre></div></div>
+</div>
+</section>
+<section id="1.-Small-transverse-load:-the-linearised-response">
+<h2>1. Small transverse load: the linearised response<a class="headerlink" href="#1.-Small-transverse-load:-the-linearised-response" title="Link to this heading">#</a></h2>
+<p>A transverse force of 0.01 N, applied with the axial load in one increment of the load factor. At this deflection the membrane stretching is negligible, and the nonlinear solution must reproduce the linearised one <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \boldsymbol{K}_G(P))^{-1}\boldsymbol{F}_t\)</span>, the reference of this case, while its amplification over the response to the transverse load alone must lie between 1 and the ceiling <span class="math notranslate nohighlight">\(1/(1 - P/P_{cr})\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transverse</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># N</span>
+<span class="n">ftrans</span> <span class="o">=</span> <span class="n">transverse</span><span class="o">*</span><span class="n">f_unit</span>
+<span class="n">fext</span> <span class="o">=</span> <span class="n">f_axial</span> <span class="o">+</span> <span class="n">ftrans</span>
+
+<span class="n">callables</span> <span class="o">=</span> <span class="n">Callables</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">fext</span><span class="p">)</span>
+<span class="n">an</span> <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="n">calc_fext</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_fext</span><span class="p">,</span> <span class="n">calc_fint</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">,</span>
+              <span class="n">calc_kC</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_kC</span><span class="p">,</span> <span class="n">calc_kG</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_kG</span><span class="p">)</span>
+<span class="n">an</span><span class="o">.</span><span class="n">initialInc</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">an</span><span class="o">.</span><span class="n">maxInc</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">increments</span><span class="p">,</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">static</span><span class="p">(</span><span class="n">NLgeom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'converged load factors'</span><span class="p">,</span> <span class="n">increments</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">callables</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">w_max</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="c1"># Crisfield's ratio of every iteration</span>
+<span class="n">weights_c</span> <span class="o">=</span> <span class="n">crisfield_weights</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">fext</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+<span class="n">history1</span> <span class="o">=</span> <span class="p">[(</span><span class="n">inc</span><span class="p">,</span> <span class="n">crisfield_zeta</span><span class="p">(</span><span class="n">inc</span><span class="o">*</span><span class="n">f</span> <span class="o">-</span> <span class="n">fint</span><span class="p">,</span> <span class="n">inc</span><span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="n">fint</span><span class="p">,</span> <span class="n">weights_c</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">inc</span><span class="p">,</span> <span class="n">fint</span> <span class="ow">in</span> <span class="n">callables</span><span class="o">.</span><span class="n">iterations</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'zeta per iteration:'</span><span class="p">,</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%.2e</span><span class="s1">'</span> <span class="o">%</span> <span class="n">z</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">history1</span><span class="p">))</span>
+
+<span class="c1"># linearised solution and the transverse load alone</span>
+<span class="n">u_lin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+<span class="n">u_lin</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">K_lin</span><span class="p">,</span> <span class="n">ftrans</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">])</span>
+<span class="n">w_lin</span> <span class="o">=</span> <span class="n">u_lin</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">u_bend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+<span class="n">u_bend</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">KC0uu</span><span class="p">,</span> <span class="n">ftrans</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">])</span>
+<span class="n">w_bend</span> <span class="o">=</span> <span class="n">u_bend</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">amplification</span> <span class="o">=</span> <span class="n">w_max</span><span class="o">/</span><span class="n">w_bend</span>
+<span class="n">ceiling</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">load</span><span class="o">/</span><span class="n">load_cr</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'w_max/h = </span><span class="si">%.4f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">w_max</span><span class="o">/</span><span class="n">h</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1"> </span><span class="si">%12s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'nonlinear'</span><span class="p">,</span> <span class="s1">'reference'</span><span class="p">,</span> <span class="s1">'rel. diff.'</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%14.6e</span><span class="s1"> </span><span class="si">%14.6e</span><span class="s1"> </span><span class="si">%+11.4f%%</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'w_max vs linearised (m)'</span><span class="p">,</span> <span class="n">w_max</span><span class="p">,</span>
+      <span class="n">w_lin</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">w_max</span> <span class="o">-</span> <span class="n">w_lin</span><span class="p">)</span><span class="o">/</span><span class="n">w_lin</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%14.4f</span><span class="s1"> </span><span class="si">%14.4f</span><span class="s1"> </span><span class="si">%12s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'amplification vs ceiling'</span><span class="p">,</span>
+      <span class="n">amplification</span><span class="p">,</span> <span class="n">ceiling</span><span class="p">,</span> <span class="s1">'bound'</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+converged load factors [1.0]
+zeta per iteration: 4.01e-04, 4.09e-05, 2.78e-12
+
+w_max/h = 0.0111
+                                nonlinear      reference   rel. diff.
+w_max vs linearised (m)      1.110364e-05   1.110397e-05     -0.0030%
+amplification vs ceiling           1.7615         2.4872        bound
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">history1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">history1</span><span class="p">],</span> <span class="s1">'o-'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">relTOL</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'relTOL'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'iteration'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Crisfield ratio $\zeta$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Residual, transverse force </span><span class="si">%.2f</span><span class="s1"> N'</span> <span class="o">%</span> <span class="n">transverse</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">Xf</span><span class="p">,</span> <span class="n">Yf</span><span class="p">,</span> <span class="n">Wf</span> <span class="o">=</span> <span class="n">w_field</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Xf</span><span class="p">,</span> <span class="n">Yf</span><span class="p">,</span> <span class="n">Wf</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'viridis'</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'$w$ ($\mu$m)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'$x$ (m)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$y$ (m)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Deflection, transverse force </span><span class="si">%.2f</span><span class="s1"> N'</span> <span class="o">%</span> <span class="n">transverse</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_nonlinear_static_10_0.png" src="../_images/notebooks_ex_nonlinear_static_10_0.png" />
+</div>
+</div>
+<p>The plate is at <span class="math notranslate nohighlight">\(P/P_{cr} = 0.598\)</span>, <span class="math notranslate nohighlight">\(P_{cr} = 501.7\)</span> N. Newton-Raphson converges in one increment: <span class="math notranslate nohighlight">\(\zeta\)</span> goes from <span class="math notranslate nohighlight">\(4.1 \times 10^{-5}\)</span> to <span class="math notranslate nohighlight">\(2.8 \times 10^{-12}\)</span> in the last step, below the square of the previous value, the quadratic convergence of a consistent tangent. At <span class="math notranslate nohighlight">\(w_{max}/h =
+0.011\)</span> the nonlinear deflection, <span class="math notranslate nohighlight">\(1.1104 \times 10^{-5}\)</span> m, equals the linearised one within 0.0030 %. Its amplification over the response to the transverse force alone, 1.76, lies between 1 and the single-mode ceiling <span class="math notranslate nohighlight">\(1/(1 - P/P_{cr}) = 2.49\)</span>.</p>
+</section>
+<section id="2.-Large-deflection:-membrane-stiffening">
+<h2>2. Large deflection: membrane stiffening<a class="headerlink" href="#2.-Large-deflection:-membrane-stiffening" title="Link to this heading">#</a></h2>
+<p>A transverse force of 5 N, applied with the axial load in four equal increments of the load factor, <span class="math notranslate nohighlight">\(\lambda = 0.25, 0.5, 0.75, 1\)</span>, each starting from the solution of the previous one. At a deflection of the order of the thickness the membrane stretching carries part of the transverse load, and the plate comes out stiffer than the linearised prediction <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \boldsymbol{K}_G(P))^{-1}\boldsymbol{F}_t\)</span>, which is therefore an upper bound here rather than a reference
+value. At each load factor the linearised prediction is <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda
+\boldsymbol{K}_G(P))^{-1} \lambda \boldsymbol{F}_t\)</span>, since the axial load grows with the load factor too.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transverse</span> <span class="o">=</span> <span class="mf">5.</span>  <span class="c1"># N</span>
+<span class="n">ftrans</span> <span class="o">=</span> <span class="n">transverse</span><span class="o">*</span><span class="n">f_unit</span>
+<span class="n">fext</span> <span class="o">=</span> <span class="n">f_axial</span> <span class="o">+</span> <span class="n">ftrans</span>
+
+<span class="n">callables</span> <span class="o">=</span> <span class="n">Callables</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">fext</span><span class="p">)</span>
+<span class="n">an</span> <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="n">calc_fext</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_fext</span><span class="p">,</span> <span class="n">calc_fint</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">,</span>
+              <span class="n">calc_kC</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_kC</span><span class="p">,</span> <span class="n">calc_kG</span><span class="o">=</span><span class="n">callables</span><span class="o">.</span><span class="n">calc_kG</span><span class="p">)</span>
+<span class="n">an</span><span class="o">.</span><span class="n">initialInc</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">an</span><span class="o">.</span><span class="n">maxInc</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">increments</span><span class="p">,</span> <span class="n">cs</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">static</span><span class="p">(</span><span class="n">NLgeom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'converged load factors'</span><span class="p">,</span> <span class="n">increments</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">callables</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">w_max</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">fext</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+<span class="n">history2</span> <span class="o">=</span> <span class="p">[(</span><span class="n">inc</span><span class="p">,</span> <span class="n">crisfield_zeta</span><span class="p">(</span><span class="n">inc</span><span class="o">*</span><span class="n">f</span> <span class="o">-</span> <span class="n">fint</span><span class="p">,</span> <span class="n">inc</span><span class="o">*</span><span class="n">f</span><span class="p">,</span> <span class="n">fint</span><span class="p">,</span> <span class="n">weights_c</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">inc</span><span class="p">,</span> <span class="n">fint</span> <span class="ow">in</span> <span class="n">callables</span><span class="o">.</span><span class="n">iterations</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">lbd</span> <span class="ow">in</span> <span class="n">increments</span><span class="p">:</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">inc</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">history2</span> <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="n">lbd</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'lambda = </span><span class="si">%.2f</span><span class="s1">, zeta per iteration: </span><span class="si">%s</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">lbd</span><span class="p">,</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%.2e</span><span class="s1">'</span> <span class="o">%</span> <span class="n">z</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zs</span><span class="p">)))</span>
+
+<span class="c1"># linearised prediction at each converged load factor</span>
+<span class="n">w_nl_inc</span> <span class="o">=</span> <span class="p">[</span><span class="n">callables</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">]</span>
+<span class="n">w_lin_inc</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">lbd</span> <span class="ow">in</span> <span class="n">increments</span><span class="p">:</span>
+    <span class="n">u_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">u_l</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">lbd</span><span class="o">*</span><span class="n">KG_P</span><span class="p">)[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">],</span>
+                        <span class="n">lbd</span><span class="o">*</span><span class="n">ftrans</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">bu</span><span class="p">])</span>
+    <span class="n">w_lin_inc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u_l</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">w_lin</span> <span class="o">=</span> <span class="n">w_lin_inc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-8s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1"> </span><span class="si">%10s</span><span class="s1"> </span><span class="si">%8s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'lambda'</span><span class="p">,</span> <span class="s1">'w_max (m)'</span><span class="p">,</span> <span class="s1">'w_lin (m)'</span><span class="p">,</span>
+                                   <span class="s1">'ratio'</span><span class="p">,</span> <span class="s1">'w_max/h'</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">lbd</span><span class="p">,</span> <span class="n">wn</span><span class="p">,</span> <span class="n">wl</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">increments</span><span class="p">,</span> <span class="n">w_nl_inc</span><span class="p">,</span> <span class="n">w_lin_inc</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-8.2f</span><span class="s1"> </span><span class="si">%14.6e</span><span class="s1"> </span><span class="si">%14.6e</span><span class="s1"> </span><span class="si">%10.4f</span><span class="s1"> </span><span class="si">%8.3f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">lbd</span><span class="p">,</span> <span class="n">wn</span><span class="p">,</span> <span class="n">wl</span><span class="p">,</span> <span class="n">wn</span><span class="o">/</span><span class="n">wl</span><span class="p">,</span> <span class="n">wn</span><span class="o">/</span><span class="n">h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+converged load factors [0.25, 0.5, 0.75, 1.0]
+lambda = 0.25, zeta per iteration: 9.28e-01, 6.05e-03, 9.61e-04, 2.96e-09, 5.51e-15
+lambda = 0.50, zeta per iteration: 9.34e-01, 2.59e-02, 4.45e-03, 1.68e-06, 1.51e-11
+lambda = 0.75, zeta per iteration: 8.29e-01, 1.66e-02, 2.80e-03, 6.97e-07, 3.56e-12
+lambda = 1.00, zeta per iteration: 6.85e-01, 6.49e-03, 5.37e-04, 2.71e-08, 1.06e-14
+
+lambda        w_max (m)      w_lin (m)      ratio  w_max/h
+0.25       8.057639e-04   8.814025e-04     0.9142    0.806
+0.50       1.497975e-03   2.003327e-03     0.7477    1.498
+0.75       2.074973e-03   3.486929e-03     0.5951    2.075
+1.00       2.582450e-03   5.551985e-03     0.4651    2.582
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">lbd</span> <span class="ow">in</span> <span class="n">increments</span><span class="p">:</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">inc</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">history2</span> <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="n">lbd</span><span class="p">)]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">zs</span><span class="p">)),</span> <span class="n">zs</span><span class="p">,</span> <span class="s1">'o-'</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">'$\lambda$ = </span><span class="si">%.2f</span><span class="s1">'</span> <span class="o">%</span> <span class="n">lbd</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">relTOL</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'relTOL'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'iteration (cumulative)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Crisfield ratio $\zeta$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Residual, transverse force </span><span class="si">%.0f</span><span class="s1"> N'</span> <span class="o">%</span> <span class="n">transverse</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">lbds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mf">0.</span><span class="p">],</span> <span class="n">increments</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lbds</span><span class="p">,</span> <span class="mf">1e3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mf">0.</span><span class="p">],</span> <span class="n">w_nl_inc</span><span class="p">)),</span> <span class="s1">'o-'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'nonlinear'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lbds</span><span class="p">,</span> <span class="mf">1e3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mf">0.</span><span class="p">],</span> <span class="n">w_lin_inc</span><span class="p">)),</span> <span class="s1">'s--'</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'linearised'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'load factor $\lambda$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$w_</span><span class="si">{max}</span><span class="s1">$ (mm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Deflection at the centre'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">Xf</span><span class="p">,</span> <span class="n">Yf</span><span class="p">,</span> <span class="n">Wf</span> <span class="o">=</span> <span class="n">w_field</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Xf</span><span class="p">,</span> <span class="n">Yf</span><span class="p">,</span> <span class="n">Wf</span><span class="o">*</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'viridis'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">'$w$ (mm)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'$x$ (m)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'$y$ (m)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Deflection, transverse force </span><span class="si">%.0f</span><span class="s1"> N, $</span><span class="se">\\</span><span class="s1">lambda$ = 1'</span> <span class="o">%</span> <span class="n">transverse</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_nonlinear_static_14_0.png" src="../_images/notebooks_ex_nonlinear_static_14_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_nonlinear_static_14_1.png" src="../_images/notebooks_ex_nonlinear_static_14_1.png" />
+</div>
+</div>
+<p>Each of the four increments converges in five iterations; the last step takes <span class="math notranslate nohighlight">\(\zeta\)</span> from <span class="math notranslate nohighlight">\(10^{-6}\)</span> to <span class="math notranslate nohighlight">\(10^{-8}\)</span> down to <span class="math notranslate nohighlight">\(10^{-11}\)</span> to <span class="math notranslate nohighlight">\(10^{-14}\)</span>, the round-off level of the residual, the quadratic convergence of a consistent tangent. At <span class="math notranslate nohighlight">\(\lambda = 1\)</span> the maximum deflection is <span class="math notranslate nohighlight">\(2.582 \times 10^{-3}\)</span> m, <span class="math notranslate nohighlight">\(w_{max}/h = 2.58\)</span>, 46.5 % of the linearised prediction <span class="math notranslate nohighlight">\(5.552 \times 10^{-3}\)</span> m. The ratio of the two falls from 0.91 at
+<span class="math notranslate nohighlight">\(\lambda = 0.25\)</span>, <span class="math notranslate nohighlight">\(w_{max}/h = 0.81\)</span>, to 0.47 at <span class="math notranslate nohighlight">\(\lambda = 1\)</span>: the membrane stretching stiffens the plate as it deflects, and the linearised solution, which also grows faster as the axial load approaches the buckling load, overestimates the deflection by a factor of 2.15.</p>
+</section>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Reddy, J. N., <em>Mechanics of Laminated Composite Plates and Shells: Theory and Analysis</em>, 2nd ed., CRC Press, Boca Raton, 2003, doi:10.1201/b12409.</p></li>
+</ol>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ex_natural_frequency.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Natural frequencies</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ex_structsolve_nonlinear.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Nonlinear static analysis with structsolve</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Theory">Theory</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Model">Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Loads-and-first-buckling-load">Loads and first buckling load</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Small-transverse-load:-the-linearised-response">1. Small transverse load: the linearised response</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Large-deflection:-membrane-stiffening">2. Large deflection: membrane stiffening</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#References">References</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/notebooks/ex_nonlinear_static.nblink.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

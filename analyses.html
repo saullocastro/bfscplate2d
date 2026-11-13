@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Analyses &#8212; bfscplate2d 0.5.0 documentation</title>
+    <title>6. Analyses &#8212; bfscplate2d 0.5.1 documentation</title>
   
   
   
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +47,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Follower pressure" href="follower_pressure.html" />
-    <link rel="prev" title="Assembling a model" href="assembling.html" />
+    <link rel="next" title="7. References" href="references.html" />
+    <link rel="prev" title="5. Assembly, loads and boundary conditions" href="assembling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.5.0" />
+  <meta name="docsearch:version" content="0.5.1" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -100,7 +100,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">bfscplate2d 0.5.0 documentation</p>
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
   
 </a></div>
     
@@ -135,22 +135,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Analyses
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -163,8 +163,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
-    Linear static analysis
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
   </a>
 </li>
 
@@ -176,36 +176,57 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Analyses
+  </a>
+</li>
+
+
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -228,6 +249,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -257,14 +285,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -284,7 +312,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -298,7 +326,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -315,22 +343,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Analyses
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -343,42 +371,63 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -404,6 +453,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -418,14 +474,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -482,10 +538,10 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Analyses</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">6. </span>Analyses</span></li>
   </ul>
 </nav>
 </div>
@@ -503,242 +559,258 @@
                 <article class="bd-article">
                   
   <section id="analyses">
-<h1>Analyses<a class="headerlink" href="#analyses" title="Link to this heading">#</a></h1>
-<p>The matrices and vectors of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>, restricted to the unknown
-degrees of freedom <code class="docutils literal notranslate"><span class="pre">bu</span></code>, give the systems of the analyses below, solved
-with SciPy as in the tests, or with structsolve, see <a class="reference internal" href="#id1">Solving with
-structsolve</a>. The theory of each matrix is in the Notes of its function.</p>
+<h1><span class="section-number">6. </span>Analyses<a class="headerlink" href="#analyses" title="Link to this heading">#</a></h1>
+<p>The matrices and vectors of <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a> and
+<a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>, assembled and restricted to the unknown degrees of
+freedom as in <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>, give the equations of four analyses:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Analysis</p></th>
+<th class="head"><p>Equations</p></th>
+<th class="head"><p>Functions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linear static</p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Linear buckling</p></td>
+<td><p><span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} =
+\boldsymbol{0}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> or
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Natural frequencies</p></td>
+<td><p><span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M})\boldsymbol{\phi} =
+\boldsymbol{0}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Nonlinear static</p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda \boldsymbol{F}_{ext}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCNL" title="bfscplate2d.bfscplate2d.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a>,
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The library solves none of them: the systems are solved with SciPy or with
+<a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>, see <a class="reference internal" href="#id2">Solving
+with structsolve</a>.</p>
 <section id="linear-static-analysis">
-<h2>Linear static analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}\]</div>
-<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, which needs <code class="docutils literal notranslate"><span class="pre">lex</span></code>, <code class="docutils literal notranslate"><span class="pre">ley</span></code> and
-<code class="docutils literal notranslate"><span class="pre">ABD</span></code> of each element, and the force vector <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.
-The tests solve it with <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code>, see
-<a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>.</p>
+<h2><span class="section-number">6.1. </span>Linear static analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
+<p>For small displacements the internal forces of Eq. <a class="reference internal" href="element_matrices.html#equation-em-fint">(3.2)</a> reduce to
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\boldsymbol{u}\)</span>, and the equilibrium is</p>
+<div class="math notranslate nohighlight" id="equation-an-static">
+<span class="eqno">(6.1)<a class="headerlink" href="#equation-an-static" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{C0} \boldsymbol{u} = \boldsymbol{F}_{ext}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> symmetric, positive definite once the rigid-body
+motions are constrained, e.g. solved with <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code>.
+The membrane and bending problems are coupled only through
+<span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span>: for <span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span> in-plane loads give
+no deflection and transverse loads no membrane forces.</p>
 </section>
 <section id="linear-buckling-analysis">
-<h2>Linear buckling analysis<a class="headerlink" href="#linear-buckling-analysis" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\]</div>
-<p>The critical loads are <span class="math notranslate nohighlight">\(\lambda\)</span> times the load that gives <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, and
-<span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> are the buckling modes. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is computed in one of two ways:</p>
+<h2><span class="section-number">6.2. </span>Linear buckling analysis<a class="headerlink" href="#linear-buckling-analysis" title="Link to this heading">#</a></h2>
+<p>Under in-plane loads <span class="math notranslate nohighlight">\(\lambda \boldsymbol{F}_{ext}\)</span> a flat plate with
+<span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span> has the linear pre-buckling state
+<span class="math notranslate nohighlight">\(\lambda \boldsymbol{u}_0\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\boldsymbol{u}_0 =
+\boldsymbol{F}_{ext}\)</span>, without deflection. Its slopes are null, hence
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} = \boldsymbol{0}\)</span>, and the
+tangent stiffness matrix of Eq. <a class="reference internal" href="element_matrices.html#equation-em-tangent">(3.4)</a> along this path is
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G(\boldsymbol{u}_0)\)</span>, since
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is linear in the displacements. A bifurcation occurs
+where it becomes singular:</p>
+<div class="math notranslate nohighlight" id="equation-an-buckling">
+<span class="eqno">(6.2)<a class="headerlink" href="#equation-an-buckling" title="Link to this equation">#</a></span>\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G) \boldsymbol{\phi} =
+    \boldsymbol{0}\]</div>
+<p>with the load multipliers <span class="math notranslate nohighlight">\(\lambda\)</span>, the critical loads being <span class="math notranslate nohighlight">\(\lambda
+\boldsymbol{F}_{ext}\)</span>, and the buckling modes <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span>. A negative
+<span class="math notranslate nohighlight">\(\lambda\)</span> is the critical load of the reversed load. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is
+computed in one of two ways, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, from the displacements <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of the linear static
-solution of a reference load <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span>, such that the membrane forces are
-those of the plate with its boundary conditions. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is linear
-in <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span>;</p></li>
-<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a>, from membrane forces <code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Nxy</span></code> given for each element, positive in tension, without a static
-analysis: <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies these membrane forces, e.g. <code class="docutils literal notranslate"><span class="pre">Nxx</span> <span class="pre">=</span> <span class="pre">-1</span></code>
-gives the critical compressive force per unit length.</p></li>
+<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> with the solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of the linear
+static analysis of the reference load: the membrane forces are those of the
+plate with its boundary conditions and the actual distribution of the load;</p></li>
+<li><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a> with membrane forces given for each element,
+positive in tension, without a static analysis: <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies
+these forces, e.g. <code class="docutils literal notranslate"><span class="pre">Nxx</span> <span class="pre">=</span> <span class="pre">-1</span></code> in every element gives <span class="math notranslate nohighlight">\(\lambda\)</span> equal to
+the critical compressive force per unit length.</p></li>
 </ul>
-<p>The tests compute the lowest load multipliers with
-<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.eigsh</span></code>, writing the problem as <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\boldsymbol{\phi} = \mu
-\boldsymbol{K}_{C0}\boldsymbol{\phi}\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> positive definite once the boundary
-conditions are applied, and <span class="math notranslate nohighlight">\(\lambda = -1/\mu\)</span>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecsu</span> <span class="o">=</span> <span class="n">eigsh</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">KGuu</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">num_eigenvalues</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">'SM'</span><span class="p">,</span>
-                          <span class="n">M</span><span class="o">=</span><span class="n">Kuu</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'cayley'</span><span class="p">)</span>
-<span class="n">eigvals</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">eigvals</span>
-</pre></div>
-</div>
-<p>see <a class="reference internal" href="ex_linear_buckling.html"><span class="doc">Linear buckling analysis</span></a>.</p>
+<p>The second is exact for a pre-buckling state of uniform membrane forces; the
+first represents non-uniform states, e.g. from nodal forces or constrained
+in-plane displacements, whose load multipliers therefore differ slightly
+from those of the uniform state.</p>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> is positive definite and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> symmetric
+and indefinite, such that Eq. <a class="reference internal" href="#equation-an-buckling">(6.2)</a> is a symmetric generalised
+eigenvalue problem. With <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> as the positive definite
+matrix of the pencil it is written <span class="math notranslate nohighlight">\(\boldsymbol{K}_G \boldsymbol{\phi} = \mu
+\boldsymbol{K}_{C0} \boldsymbol{\phi}\)</span>, <span class="math notranslate nohighlight">\(\mu = -1/\lambda\)</span>, the form that
+the tests solve with <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.eigsh</span></code> (<code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">KG</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span>
+<span class="pre">KC0</span></code>, shift-invert mode <code class="docutils literal notranslate"><span class="pre">'cayley'</span></code>), recovering <span class="math notranslate nohighlight">\(\lambda = -1/\mu\)</span>. With
+a follower pressure the problem becomes
+Eq. <a class="reference internal" href="follower_pressure.html#equation-fp-buckling">(4.8)</a>, unsymmetric in general.</p>
+<p>The classical buckling coefficients verify this formulation: for a simply
+supported plate of sides <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> under a uniform compression
+<span class="math notranslate nohighlight">\(N_{xx}\)</span> <a class="reference internal" href="references.html#timoshenkogere1961" id="id1"><span>[TimoshenkoGere1961]</span></a></p>
+<div class="math notranslate nohighlight" id="equation-an-kc">
+<span class="eqno">(6.3)<a class="headerlink" href="#equation-an-kc" title="Link to this equation">#</a></span>\[N_{xx,cr} = k_c \frac{\pi^2 D}{b^2}, \qquad
+k_c = \left( \frac{m b}{a} + \frac{a}{m b} \right)^2\]</div>
+<p>with <span class="math notranslate nohighlight">\(D\)</span> of Eq. <a class="reference internal" href="plate_theory.html#equation-pt-d-isotropic">(1.4)</a> and <span class="math notranslate nohighlight">\(m\)</span> the number of half-waves along
+<span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(k_c = 4\)</span> for a square plate, checked in
+<code class="docutils literal notranslate"><span class="pre">tests/test_linear_buckling_iso_SSSS.py</span></code>.</p>
+<p><strong>Limits.</strong> The linear buckling analysis assumes a pre-buckling state
+without rotations. For <span class="math notranslate nohighlight">\(\boldsymbol{B} \neq \boldsymbol{0}\)</span>, e.g.
+unsymmetric laminates, or for loads with a transverse part, the
+pre-buckling state deflects, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> and the second-order
+terms are not null, and Eq. <a class="reference internal" href="#equation-an-buckling">(6.2)</a> is an approximation of the
+nonlinear response, to be checked with the nonlinear static analysis. The
+critical load does not describe the post-buckling behaviour, nor the
+sensitivity to imperfections.</p>
 </section>
 <section id="natural-frequencies">
-<h2>Natural frequencies<a class="headerlink" href="#natural-frequencies" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M})\boldsymbol{\phi} = \boldsymbol{0}\]</div>
-<p>with the mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span> of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>, which needs <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code> of each element and no integration points, and
-<span class="math notranslate nohighlight">\(\omega_n\)</span> the natural angular frequencies, in radians per unit time. The
-test of <a class="reference internal" href="ex_natural_frequency.html"><span class="doc">Natural frequencies</span></a> solves the problem with the dense
-<code class="docutils literal notranslate"><span class="pre">scipy.linalg.eigh</span></code> and takes <span class="math notranslate nohighlight">\(\omega_n\)</span> as the square roots of its
-eigenvalues.</p>
+<h2><span class="section-number">6.3. </span>Natural frequencies<a class="headerlink" href="#natural-frequencies" title="Link to this heading">#</a></h2>
+<p>The kinetic energy of Eq. <a class="reference internal" href="element_matrices.html#equation-em-m">(3.8)</a> and the linear strain energy give the
+equations of free vibration <span class="math notranslate nohighlight">\(\boldsymbol{M}\ddot{\boldsymbol{u}} +
+\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{0}\)</span>, whose harmonic
+solutions <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{\phi} \sin \omega_n t\)</span> satisfy</p>
+<div class="math notranslate nohighlight" id="equation-an-frequency">
+<span class="eqno">(6.4)<a class="headerlink" href="#equation-an-frequency" title="Link to this equation">#</a></span>\[(\boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M}) \boldsymbol{\phi} =
+    \boldsymbol{0}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\omega_n\)</span> the natural angular frequencies, in radians per unit time,
+<span class="math notranslate nohighlight">\(f_n = \omega_n/(2\pi)\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> the modes. Both matrices
+are symmetric and positive definite once the rigid-body motions are
+constrained, e.g. solved with <code class="docutils literal notranslate"><span class="pre">scipy.linalg.eigh</span></code> or with
+<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.eigsh</span></code>. <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> needs <code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code>
+of each element and no integration points. For a simply supported isotropic
+plate, without the rotary inertia, the mode <span class="math notranslate nohighlight">\(w = \sin(m\pi x/a)\sin(n\pi
+y/b)\)</span> gives <span class="math notranslate nohighlight">\(\omega_{mn} = \pi^2 (m^2/a^2 + n^2/b^2) \sqrt{D/(\rho h)}\)</span>,
+checked in <code class="docutils literal notranslate"><span class="pre">tests/test_natural_frequency.py</span></code>. The geometric stiffness
+matrix of a static pre-stress, added to <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, gives the
+frequencies of the pre-stressed plate, which vanish at the buckling load.</p>
 </section>
 <section id="nonlinear-static-analysis">
-<h2>Nonlinear static analysis<a class="headerlink" href="#nonlinear-static-analysis" title="Link to this heading">#</a></h2>
-<p>For large deflections, with the nonlinear strains of von Karman, the
-equilibrium of the internal forces of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> with the
-external forces is solved for the displacements, e.g. with the
-Newton-Raphson method:</p>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}, \qquad
-\boldsymbol{K}_T(\boldsymbol{u}) = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}), \qquad
-\boldsymbol{K}_T \Delta \boldsymbol{u} = -\boldsymbol{R}\]</div>
-<p>with the load factor <span class="math notranslate nohighlight">\(\lambda\)</span> increased in steps and the tangent stiffness
-matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCNL" title="bfscplate2d.bfscplate2d.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, all computed with the current displacements and the
-same integration points as <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of
-<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, such that the Newton-Raphson iterations converge
-quadratically; <code class="docutils literal notranslate"><span class="pre">tests/test_tangent_consistency.py</span></code> checks it with Taylor
-tests and finite differences. The internal forces always include the
-nonlinear terms, and for small displacements <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int} \approx \boldsymbol{K}_{C0}
-\boldsymbol{u}\)</span>.</p>
-<p>The value arrays of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> are zeroed before each
-assembly, since the functions add to them, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>. The test
-of <a class="reference internal" href="ex_nonlinear_static.html"><span class="doc">Nonlinear static analysis</span></a> solves the iterations with structsolve, see
-<a class="reference internal" href="#id1">Solving with structsolve</a> and <a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>. A follower
-pressure adds its force vector to the residual and its load stiffness
-matrix to <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<h2><span class="section-number">6.4. </span>Nonlinear static analysis<a class="headerlink" href="#nonlinear-static-analysis" title="Link to this heading">#</a></h2>
+<p>For deflections of the order of the thickness or larger, the membrane
+stretching of the von Kármán strains carries part of the load and the
+equilibrium</p>
+<div class="math notranslate nohighlight" id="equation-an-residual">
+<span class="eqno">(6.5)<a class="headerlink" href="#equation-an-residual" title="Link to this equation">#</a></span>\[\boldsymbol{R}(\boldsymbol{u}, \lambda) =
+    \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}
+    = \boldsymbol{0}\]</div>
+<p>is solved for the displacements at increasing values of the load factor
+<span class="math notranslate nohighlight">\(\lambda\)</span>. In the Newton-Raphson method each iteration solves</p>
+<div class="math notranslate nohighlight" id="equation-an-newton">
+<span class="eqno">(6.6)<a class="headerlink" href="#equation-an-newton" title="Link to this equation">#</a></span>\[\boldsymbol{K}_T \Delta\boldsymbol{u} = -\boldsymbol{R}, \qquad
+\boldsymbol{K}_T = \frac{\partial \boldsymbol{R}}{\partial \boldsymbol{u}}
+    = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u})
+    + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u})\]</div>
+<p>with the tangent stiffness matrix of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>,
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCNL" title="bfscplate2d.bfscplate2d.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, all computed with the current
+displacements and the same integration points as <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>, the iterations converge
+quadratically near the solution, as asserted in
+<code class="docutils literal notranslate"><span class="pre">tests/test_static_axial_load_nonlinear.py</span></code>. The value arrays of KCNL and
+KG are zeroed before each assembly, since the functions add to them. A
+follower pressure adds its force vector to the residual and its load
+stiffness matrix to <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>, Eq. <a class="reference internal" href="follower_pressure.html#equation-fp-residual">(4.7)</a>.</p>
+<p>Under load control the iterations fail at a limit point, where
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> becomes singular; beyond it, path-following
+(arc-length) methods are needed. A perfect plate under in-plane
+compression stays flat on the trivial path: the nonlinear analysis of
+buckling and post-buckling needs a small perturbation, e.g. a small
+transverse load or an initial deflection, that selects the buckled path.
+Below the buckling load, the response to a small transverse load
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_t\)</span> superposed on the in-plane load <span class="math notranslate nohighlight">\(P\)</span> tends to the
+linearised solution <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \boldsymbol{K}_G(P))
+\boldsymbol{u} = \boldsymbol{F}_t\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the in-plane
+load alone, amplified as the load approaches the buckling load.</p>
 </section>
 <section id="solving-with-structsolve">
-<span id="id1"></span><h2>Solving with structsolve<a class="headerlink" href="#solving-with-structsolve" title="Link to this heading">#</a></h2>
+<span id="id2"></span><h2><span class="section-number">6.5. </span>Solving with structsolve<a class="headerlink" href="#solving-with-structsolve" title="Link to this heading">#</a></h2>
 <p>The solvers of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>
-receive the matrices and vectors of the model, assembled by the user. It is
-used by the tests and the examples, and it is not a requirement of
-bfscplate2d, see <a class="reference internal" href="install.html"><span class="doc">Installing bfscplate2d</span></a>. The linear buckling and natural frequency
-problems above are solved by <code class="docutils literal notranslate"><span class="pre">structsolve.lb(Kuu,</span> <span class="pre">KGuu)</span></code> and
-<code class="docutils literal notranslate"><span class="pre">structsolve.freq(Kuu,</span> <span class="pre">Muu)</span></code>, which return the load multipliers
-<span class="math notranslate nohighlight">\(\lambda\)</span> and <span class="math notranslate nohighlight">\(-\omega_n^2\)</span>, as cross-checked in
-<code class="docutils literal notranslate"><span class="pre">tests/test_linear_buckling_iso_SSSS.py</span></code> and
-<code class="docutils literal notranslate"><span class="pre">tests/test_natural_frequency.py</span></code>.</p>
+receive the matrices and vectors of the model assembled by the user. It is
+used by the tests and not required by bfscplate2d, see <a class="reference internal" href="install.html"><span class="doc">Installing bfscplate2d</span></a>. The
+linear buckling and natural frequency problems are solved by
+<code class="docutils literal notranslate"><span class="pre">structsolve.lb(Kuu,</span> <span class="pre">KGuu)</span></code>, which returns the load multipliers
+<span class="math notranslate nohighlight">\(\lambda\)</span>, and <code class="docutils literal notranslate"><span class="pre">structsolve.freq(Kuu,</span> <span class="pre">Muu)</span></code>, which returns <span class="math notranslate nohighlight">\(-\omega_n^2\)</span>.</p>
 <p>The nonlinear static analysis is solved by <code class="docutils literal notranslate"><span class="pre">structsolve.Analysis</span></code>, with
 four callables that loop over the elements, call the functions of the
-element and assemble, see <a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
+element and assemble:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">calc_fext(inc=1.,</span> <span class="pre">silent=False)</span></code>, the external forces <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> times
-the load factor <code class="docutils literal notranslate"><span class="pre">inc</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_fext(inc=1.,</span> <span class="pre">silent=False)</span></code>, the external forces
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> times the load factor <code class="docutils literal notranslate"><span class="pre">inc</span></code>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">calc_fint(c,</span> <span class="pre">silent=False)</span></code>, the internal forces of
 <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> at the displacements <code class="docutils literal notranslate"><span class="pre">c</span></code>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">calc_kC(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> with
-<code class="docutils literal notranslate"><span class="pre">NLgeom=False</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})\)</span> with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{c})\)</span> of
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, called with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+<code class="docutils literal notranslate"><span class="pre">NLgeom=False</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} +
+\boldsymbol{K}_{CNL}(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})\)</span>
+with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>,
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{c})\)</span> of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, called with
+<code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
 </ul>
-<p>such that <code class="docutils literal notranslate"><span class="pre">calc_kC</span> <span class="pre">+</span> <span class="pre">calc_kG</span></code> is the tangent stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> and
-the residual of structsolve is the one above, <span class="math notranslate nohighlight">\(\boldsymbol{R} =
-\boldsymbol{F}_{int}(\boldsymbol{c}) - \lambda \boldsymbol{F}_{ext}\)</span>, with
-the Newton-Raphson corrections <span class="math notranslate nohighlight">\(\boldsymbol{K}_T \Delta \boldsymbol{c} =
--\boldsymbol{R}\)</span>, the convention of structsolve 0.9.3 or newer, which
-the examples of bfscplate2d require, see <a class="reference internal" href="install.html"><span class="doc">Installing bfscplate2d</span></a>. The value arrays are zeroed in each call. The
-load factor goes from 0 to 1 in increments, the first one of size
-<code class="docutils literal notranslate"><span class="pre">Analysis.initialInc</span></code> and the next ones growing up to
-<code class="docutils literal notranslate"><span class="pre">Analysis.maxInc</span></code>, each starting from a predictor extrapolated from the
-previous increment, the linear solution of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> in the first one;
+<p>such that <code class="docutils literal notranslate"><span class="pre">calc_kC</span> <span class="pre">+</span> <span class="pre">calc_kG</span></code> is <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> and the residual of
+structsolve is Eq. <a class="reference internal" href="#equation-an-residual">(6.5)</a>, with the corrections of
+Eq. <a class="reference internal" href="#equation-an-newton">(6.6)</a>, the convention of structsolve. The load
+factor goes from 0 to 1 in increments, the first of size
+<code class="docutils literal notranslate"><span class="pre">Analysis.initialInc</span></code> and the next ones growing up to <code class="docutils literal notranslate"><span class="pre">Analysis.maxInc</span></code>,
+each starting from a predictor extrapolated from the previous increment, the
+linear solution of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> in the first one;
 <code class="docutils literal notranslate"><span class="pre">Analysis.static</span></code> returns the load factors and the solutions of the
 converged increments.</p>
 <p>structsolve imposes no boundary condition itself. The constrained degrees
-of freedom are removed in one of two ways:</p>
-<ul class="simple">
-<li><p>the partition of the free degrees of freedom, as in the tests: the
-callables receive <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">u[bu]</span></code> and return the vectors restricted to
-<code class="docutils literal notranslate"><span class="pre">bu</span></code> and the matrices to <code class="docutils literal notranslate"><span class="pre">bu</span></code> by <code class="docutils literal notranslate"><span class="pre">bu</span></code>, and the solutions are
-expanded with <code class="docutils literal notranslate"><span class="pre">u[bu]</span> <span class="pre">=</span> <span class="pre">c</span></code>;</p></li>
-<li><p>null rows and columns: the callables return the vectors and matrices of
-the whole model, with the rows and columns of the constrained degrees of
-freedom zeroed in all the matrices. The solvers remove them and return
-vectors with the size of the model, zero at these degrees of freedom.</p></li>
-</ul>
+of freedom are removed either by the partition of <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>, the
+callables receiving <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">u[bu]</span></code> and returning vectors and matrices
+restricted to <code class="docutils literal notranslate"><span class="pre">bu</span></code>, or by returning the vectors and matrices of the whole
+model with the rows and columns of the constrained degrees of freedom zeroed
+in all the matrices, which the solvers remove.</p>
 <p>The convergence criterion is, by default, Crisfield’s: the residual and the
-reference forces, the external forces and the internal forces, are scaled
-with the diagonal of the linear stiffness matrix <code class="docutils literal notranslate"><span class="pre">calc_kC()</span></code> over the
-free degrees of freedom, and the iterations stop when their ratio is below
+reference forces, the external and the internal forces, are scaled with the
+diagonal of the linear stiffness matrix <code class="docutils literal notranslate"><span class="pre">calc_kC()</span></code> over the free degrees
+of freedom, and the iterations stop when their ratio is below
 <code class="docutils literal notranslate"><span class="pre">Analysis.relTOL</span> <span class="pre">=</span> <span class="pre">1e-9</span></code>. The scaled norm does not depend on the units of
-the degrees of freedom, which here mix displacements, their first
-derivatives and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, and leaves out the reactions at the constrained
-ones; <code class="docutils literal notranslate"><span class="pre">Analysis.convergence</span> <span class="pre">=</span> <span class="pre">'relative'</span></code> selects the Euclidean norm
-instead. With a consistent tangent the criterion is reached in a few
-iterations.</p>
-<p>A follower pressure <span class="math notranslate nohighlight">\(\lambda p\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>, enters
-through the optional keyword argument <code class="docutils literal notranslate"><span class="pre">inc</span></code>, the load factor, which
-structsolve passes to the callables that declare it. The external forces
-are the dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{0})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> subtracts the part
-that depends on the displacements, <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> adds the
-load stiffness matrix of <span class="math notranslate nohighlight">\(\lambda p\)</span>, as in
-<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure_structsolve.py</span></code>, see
-<a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FollowerCallables</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""The callables of structsolve.Analysis for the mesh ``m`` under the</span>
-<span class="sd">    follower pressure ``func(x, y)`` times the load factor</span>
-
-<span class="sd">    They loop over the elements with the update functions and assemble, and</span>
-<span class="sd">    work on the unknown degrees of freedom ``bu`` only, the partition of the</span>
-<span class="sd">    free dofs of structsolve: the solution vector of the solvers is ``c =</span>
-<span class="sd">    u[bu]``, and the force vectors and matrices are restricted to ``bu``.</span>
-<span class="sd">    ``quadratic`` is the truncation of the area vector.</span>
-<span class="sd">    """</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">bu</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">quadratic</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">m</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bu</span> <span class="o">=</span> <span class="n">bu</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span> <span class="o">=</span> <span class="n">quadratic</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">KC0</span><span class="p">()</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span>
-        <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCfollower_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCfollower_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KCfollower_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span>
-                             <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="c1"># the dead part of the pressure, the force vector at u = 0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">plate</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
-            <span class="n">update_fext_follower</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span>
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">,</span> <span class="n">quadratic</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""The displacements of the model from those of the unknown dofs."""</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="n">u</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
-        <span class="k">return</span> <span class="n">u</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">inc</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">fint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">plate</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
-            <span class="n">update_fint</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">fint</span><span class="p">)</span>
-            <span class="c1"># minus the part of the follower pressure that depends on u</span>
-            <span class="n">update_fext_follower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="o">-</span><span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">fint</span><span class="p">,</span>
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">fint</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">bu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">NLgeom</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">plate</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
-            <span class="n">update_KCNL</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">)</span>
-            <span class="c1"># the load stiffness matrix of the pressure inc*p</span>
-            <span class="n">update_KCfollower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span>
-                              <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">)</span>
-        <span class="n">KCNL</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">)),</span>
-                          <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="n">KCf</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">)),</span>
-                         <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">KCNL</span> <span class="o">+</span> <span class="n">KCf</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">,</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">)</span>
-        <span class="n">KG</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">KG</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>The tangent stiffness matrix is then unsymmetric in general, which the
-solvers of structsolve support with LU factorizations. For the arc-length methods, <code class="docutils literal notranslate"><span class="pre">Analysis.NL_method</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> also
-declares the configuration <code class="docutils literal notranslate"><span class="pre">c</span></code> and returns the follower force vector
-<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{c})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, minus the derivative of the
-residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
-\boldsymbol{F}_p(\boldsymbol{c})\)</span> with respect to the load factor.</p>
+the degrees of freedom, which here mix displacements, slopes and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>,
+see <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>; <code class="docutils literal notranslate"><span class="pre">Analysis.convergence</span> <span class="pre">=</span> <span class="pre">'relative'</span></code> selects the
+Euclidean norm instead.</p>
+<p>A follower pressure <span class="math notranslate nohighlight">\(\lambda p\)</span> enters through the optional keyword argument
+<code class="docutils literal notranslate"><span class="pre">inc</span></code>, the load factor, which structsolve passes to the callables that
+declare it: <code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> gives the dead part <span class="math notranslate nohighlight">\(\lambda
+\boldsymbol{F}_p(\boldsymbol{0})\)</span>, <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> subtracts the part of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">reference=0</span></code> for the pressure
+<code class="docutils literal notranslate"><span class="pre">inc*p</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> adds the load stiffness matrix of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a> for <code class="docutils literal notranslate"><span class="pre">inc*p</span></code>, such that the residual and the
+tangent are those of Eq. <a class="reference internal" href="follower_pressure.html#equation-fp-residual">(4.7)</a>. The tangent stiffness matrix is
+then unsymmetric in general, which the solvers of structsolve support with
+LU factorisations. For the arc-length methods, <code class="docutils literal notranslate"><span class="pre">Analysis.NL_method</span></code>,
+<code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> also declares the configuration <code class="docutils literal notranslate"><span class="pre">c</span></code> and returns the follower
+force vector <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{c})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, minus the
+derivative of the residual with respect to the load factor.</p>
+</section>
+<section id="choosing-an-analysis-and-its-parameters">
+<h2><span class="section-number">6.6. </span>Choosing an analysis and its parameters<a class="headerlink" href="#choosing-an-analysis-and-its-parameters" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Linear static</strong> for deflections small compared with the thickness;
+for larger ones the membrane stiffening, absent from the linear solution,
+reduces the deflections under transverse loads, and the nonlinear analysis
+is needed.</p></li>
+<li><p><strong>Linear buckling</strong> for the critical loads of flat plates under in-plane
+loads; <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a> when the pre-buckling membrane forces are
+known and uniform per element, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> with a static solution
+otherwise.</p></li>
+<li><p><strong>Nonlinear static</strong> for large deflections, post-buckling with a
+perturbation, follower pressures, and to check a linear buckling analysis
+of a plate whose pre-buckling state deflects.</p></li>
+<li><p><strong>Integration points</strong>: <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">=</span> <span class="pre">4</span></code> integrates KC0 and the constant-force
+KG exactly, <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">=</span> <span class="pre">5</span></code> the KG of a static solution, <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">=</span> <span class="pre">7</span></code> the
+internal forces and KCNL, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>; the same points
+for every function of one analysis.</p></li>
+<li><p><strong>Mesh</strong>: the accuracy of buckling loads and frequencies depends on the
+number of elements per half-wave of the modes of interest, to be checked
+by refining the mesh. Boundary conditions constraining only the nodal
+values, without the derivatives along the edge, converge with the mesh,
+see <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>.</p></li>
+</ul>
 </section>
 </section>
 
@@ -758,15 +830,15 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Assembling a model</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Assembly, loads and boundary conditions</p>
       </div>
     </a>
     <a class="right-next"
-       href="follower_pressure.html"
+       href="references.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Follower pressure</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -777,7 +849,7 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -789,11 +861,12 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">Linear static analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-analysis">Linear buckling analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#natural-frequencies">Natural frequencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-static-analysis">Nonlinear static analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-with-structsolve">Solving with structsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">6.1. Linear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-analysis">6.2. Linear buckling analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#natural-frequencies">6.3. Natural frequencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-static-analysis">6.4. Nonlinear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-with-structsolve">6.5. Solving with structsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-analysis-and-its-parameters">6.6. Choosing an analysis and its parameters</a></li>
 </ul>
   </nav></div>
 
@@ -819,8 +892,8 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -853,7 +926,7 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>

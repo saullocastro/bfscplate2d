@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Plate theory &#8212; bfscplate2d 0.5.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'plate_theory';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. The BFSC plate element" href="element.html" />
+    <link rel="prev" title="BFSC plate finite element - bfscplate2d" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.1" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">1. </span>Plate theory</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="plate-theory">
+<h1><span class="section-number">1. </span>Plate theory<a class="headerlink" href="#plate-theory" title="Link to this heading">#</a></h1>
+<p>This chapter states the plate theory that every function of
+<a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a> discretises: the classical laminated plate
+theory with the nonlinear strains of von Kármán <a class="reference internal" href="references.html#reddy2003" id="id1"><span>[Reddy2003]</span></a>. The element
+that approximates it is the subject of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>, and the matrices that
+follow from it of <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>.</p>
+<section id="coordinates-and-sign-conventions">
+<h2><span class="section-number">1.1. </span>Coordinates and sign conventions<a class="headerlink" href="#coordinates-and-sign-conventions" title="Link to this heading">#</a></h2>
+<p>The plate lies in the plane <span class="math notranslate nohighlight">\(x\)</span>-<span class="math notranslate nohighlight">\(y\)</span> of a right-handed Cartesian system, with
+<span class="math notranslate nohighlight">\(z\)</span> normal to the plate. The reference surface is <span class="math notranslate nohighlight">\(z = 0\)</span>; the
+displacements of its points along <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are <span class="math notranslate nohighlight">\(u(x, y)\)</span>,
+<span class="math notranslate nohighlight">\(v(x, y)\)</span> and <span class="math notranslate nohighlight">\(w(x, y)\)</span>. Subscripts after a comma denote partial
+derivatives, <span class="math notranslate nohighlight">\(w_{,x} = \partial w/\partial x\)</span>, as in the names of the code
+(<code class="docutils literal notranslate"><span class="pre">w_x</span></code>, <code class="docutils literal notranslate"><span class="pre">Sw_x</span></code>, …). With this convention:</p>
+<ul class="simple">
+<li><p>the membrane forces <span class="math notranslate nohighlight">\(\boldsymbol{N} = \{N_{xx}, N_{yy}, N_{xy}\}^\top\)</span>
+(<code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code>, <code class="docutils literal notranslate"><span class="pre">Nxy</span></code>), forces per unit length, are positive in
+tension;</p></li>
+<li><p>the moments <span class="math notranslate nohighlight">\(\boldsymbol{M} = \{M_{xx}, M_{yy}, M_{xy}\}^\top\)</span> (<code class="docutils literal notranslate"><span class="pre">Mxx</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Myy</span></code>, <code class="docutils literal notranslate"><span class="pre">Mxy</span></code>), moments per unit length, are the first moments
+<span class="math notranslate nohighlight">\(\int \sigma z \, dz\)</span> of the stresses through the thickness;</p></li>
+<li><p>a positive transverse force or pressure acts along <span class="math notranslate nohighlight">\(+z\)</span>, like a positive
+<span class="math notranslate nohighlight">\(w\)</span>.</p></li>
+</ul>
+<p>The library has no units: the lengths, the forces and the masses of a model
+are given in a consistent system, e.g. N, m and kg, and every result is in
+that system.</p>
+</section>
+<section id="kinematics">
+<h2><span class="section-number">1.2. </span>Kinematics<a class="headerlink" href="#kinematics" title="Link to this heading">#</a></h2>
+<p>The classical laminated plate theory keeps the Kirchhoff hypotheses: the
+normals to the reference surface remain straight, unstretched and normal to
+the deformed reference surface, i.e. without transverse shear strains
+<span class="math notranslate nohighlight">\(\gamma_{xz}\)</span> and <span class="math notranslate nohighlight">\(\gamma_{yz}\)</span> and with <span class="math notranslate nohighlight">\(\epsilon_{zz} = 0\)</span>. The normal
+rotates by <span class="math notranslate nohighlight">\(-w_{,x}\)</span> about <span class="math notranslate nohighlight">\(y\)</span> and by <span class="math notranslate nohighlight">\(-w_{,y}\)</span> about <span class="math notranslate nohighlight">\(x\)</span>, and the
+displacements of a point at the distance <span class="math notranslate nohighlight">\(z\)</span> from the reference surface are
+<a class="reference internal" href="references.html#reddy2003" id="id2"><span>[Reddy2003]</span></a></p>
+<div class="math notranslate nohighlight" id="equation-pt-displacements">
+<span class="eqno">(1.1)<a class="headerlink" href="#equation-pt-displacements" title="Link to this equation">#</a></span>\[u(x, y, z) = u - z w_{,x}, \qquad
+v(x, y, z) = v - z w_{,y}, \qquad
+w(x, y, z) = w\]</div>
+<p>The strain-displacement relations of a plate contain the squares and
+products of all the displacement gradients. For small strains and
+moderate rotations, the assumptions of von Kármán, only the squares and
+products of the slopes <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are kept: the slopes may be
+of the order of the square root of the strains, whereas the in-plane
+gradients <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span> are of the order of the
+strains, and their squares are neglected. The strains at <span class="math notranslate nohighlight">\(z\)</span> are then
+<span class="math notranslate nohighlight">\(\boldsymbol{\epsilon} + z \boldsymbol{\kappa}\)</span>, with the membrane strains
+and the curvatures of the reference surface</p>
+<div class="math notranslate nohighlight" id="equation-pt-strains">
+<span class="eqno">(1.2)<a class="headerlink" href="#equation-pt-strains" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{\epsilon} =
+\begin{Bmatrix} \epsilon_{xx} \\ \epsilon_{yy} \\ \gamma_{xy} \end{Bmatrix}
+= \begin{Bmatrix} u_{,x} \\ v_{,y} \\ u_{,y} + v_{,x} \end{Bmatrix}
++ \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\ w_{,x} w_{,y} \end{Bmatrix},
+\qquad
+\boldsymbol{\kappa} =
+\begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy} \end{Bmatrix}
+= \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy} \end{Bmatrix}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\gamma_{xy}\)</span> is the engineering shear strain. The first vector of
+<span class="math notranslate nohighlight">\(\boldsymbol{\epsilon}\)</span> is the linear membrane strain, the second the
+nonlinear one, which couples the membrane and the bending behaviour: a
+deflection stretches the reference surface, and membrane forces change the
+bending stiffness. The curvatures are linear in <span class="math notranslate nohighlight">\(w\)</span>. Without the nonlinear
+part, Eq. <a class="reference internal" href="#equation-pt-strains">(1.2)</a> is the linear theory, in which the membrane and
+the bending problems are coupled only through the matrix <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span>
+below.</p>
+</section>
+<section id="constitutive-relation">
+<h2><span class="section-number">1.3. </span>Constitutive relation<a class="headerlink" href="#constitutive-relation" title="Link to this heading">#</a></h2>
+<p>For a laminate of linear elastic plies, the integration of the plane-stress
+relation of each ply through the thickness gives the membrane forces and
+the moments <a class="reference internal" href="references.html#reddy2003" id="id3"><span>[Reddy2003]</span></a></p>
+<div class="math notranslate nohighlight" id="equation-pt-abd">
+<span class="eqno">(1.3)<a class="headerlink" href="#equation-pt-abd" title="Link to this equation">#</a></span>\[\begin{split}\begin{Bmatrix} \boldsymbol{N} \\ \boldsymbol{M} \end{Bmatrix}
+= \begin{bmatrix} \boldsymbol{A} &amp; \boldsymbol{B} \\
+                  \boldsymbol{B} &amp; \boldsymbol{D} \end{bmatrix}
+  \begin{Bmatrix} \boldsymbol{\epsilon} \\ \boldsymbol{\kappa} \end{Bmatrix}\end{split}\]</div>
+<p>with the extensional stiffness <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span> (force per unit length),
+the extension-bending coupling <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> (force) and the bending
+stiffness <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> (force times length), three symmetric <span class="math notranslate nohighlight">\(3 \times 3\)</span>
+matrices. The <span class="math notranslate nohighlight">\(6 \times 6\)</span> matrix is the <code class="docutils literal notranslate"><span class="pre">ABD</span></code> attribute of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D" title="bfscplate2d.bfscplate2d.BFSCPlate2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code></a>, in the order of Eq. <a class="reference internal" href="#equation-pt-abd">(1.3)</a>, e.g. the <code class="docutils literal notranslate"><span class="pre">ABD</span></code>
+attribute of a laminate of <a class="reference external" href="https://github.com/saullocastro/composites">composites</a>. The functions read only the entries
+<code class="docutils literal notranslate"><span class="pre">A11</span></code>, <code class="docutils literal notranslate"><span class="pre">A12</span></code>, <code class="docutils literal notranslate"><span class="pre">A16</span></code>, <code class="docutils literal notranslate"><span class="pre">A22</span></code>, <code class="docutils literal notranslate"><span class="pre">A26</span></code>, <code class="docutils literal notranslate"><span class="pre">A66</span></code> on and above the
+diagonal of <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, and likewise of <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span>; the matrix is taken as symmetric.</p>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span> for a laminate symmetric about the
+reference surface, which then separates the linear membrane and bending
+problems. A reference surface that is not the mid-surface, e.g. an offset
+plate, enters only through <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> computed about that surface; the mass matrix, however,
+assumes the mid-surface, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>. For an isotropic
+plate of Young’s modulus <span class="math notranslate nohighlight">\(E\)</span>, Poisson’s ratio <span class="math notranslate nohighlight">\(\nu\)</span> and thickness <span class="math notranslate nohighlight">\(h\)</span>,
+<span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span>, <span class="math notranslate nohighlight">\(A_{11} = E h/(1 - \nu^2)\)</span> and the
+bending stiffness is</p>
+<div class="math notranslate nohighlight" id="equation-pt-d-isotropic">
+<span class="eqno">(1.4)<a class="headerlink" href="#equation-pt-d-isotropic" title="Link to this equation">#</a></span>\[D_{11} = D = \frac{E h^3}{12 (1 - \nu^2)}\]</div>
+</section>
+<section id="strain-energy-and-equilibrium">
+<h2><span class="section-number">1.4. </span>Strain energy and equilibrium<a class="headerlink" href="#strain-energy-and-equilibrium" title="Link to this heading">#</a></h2>
+<p>The strain energy of the plate is</p>
+<div class="math notranslate nohighlight" id="equation-pt-strain-energy">
+<span class="eqno">(1.5)<a class="headerlink" href="#equation-pt-strain-energy" title="Link to this equation">#</a></span>\[U = \frac{1}{2} \int_A \left( \boldsymbol{\epsilon}^\top \boldsymbol{A}
+    \boldsymbol{\epsilon} + 2 \boldsymbol{\epsilon}^\top \boldsymbol{B}
+    \boldsymbol{\kappa} + \boldsymbol{\kappa}^\top \boldsymbol{D}
+    \boldsymbol{\kappa} \right) dA
+  = \frac{1}{2} \int_A \left( \boldsymbol{N}^\top \boldsymbol{\epsilon}
+    + \boldsymbol{M}^\top \boldsymbol{\kappa} \right) dA\]</div>
+<p>and its first variation, with <span class="math notranslate nohighlight">\(\delta\boldsymbol{\kappa}\)</span> linear in <span class="math notranslate nohighlight">\(\delta
+w\)</span> and</p>
+<div class="math notranslate nohighlight" id="equation-pt-strain-variation">
+<span class="eqno">(1.6)<a class="headerlink" href="#equation-pt-strain-variation" title="Link to this equation">#</a></span>\[\begin{split}\delta\boldsymbol{\epsilon} =
+\begin{Bmatrix} \delta u_{,x} + w_{,x} \delta w_{,x} \\
+                \delta v_{,y} + w_{,y} \delta w_{,y} \\
+                \delta u_{,y} + \delta v_{,x} + w_{,x} \delta w_{,y}
+                + w_{,y} \delta w_{,x} \end{Bmatrix}\end{split}\]</div>
+<p>is the internal virtual work <span class="math notranslate nohighlight">\(\delta U = \int_A (\boldsymbol{N}^\top
+\delta\boldsymbol{\epsilon} + \boldsymbol{M}^\top \delta\boldsymbol{\kappa})
+\, dA\)</span>. The equilibrium of the plate is the principle of virtual work,
+<span class="math notranslate nohighlight">\(\delta U = \delta W\)</span> for every admissible variation, with <span class="math notranslate nohighlight">\(\delta W\)</span> the
+virtual work of the external forces. For loads that do not depend on the
+displacements, <span class="math notranslate nohighlight">\(\delta W\)</span> is linear in the variations; a pressure that
+follows the deformation makes it depend on the displacements, see
+<a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<p>Two features of <span class="math notranslate nohighlight">\(\delta U\)</span> determine the element and its matrices:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\boldsymbol{\kappa}\)</span> contains the second derivatives of <span class="math notranslate nohighlight">\(w\)</span>, such that
+the energy is finite for an approximation of <span class="math notranslate nohighlight">\(w\)</span> only when <span class="math notranslate nohighlight">\(w\)</span> and its
+first derivatives are continuous over the plate, see <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>;</p></li>
+<li><p>the products <span class="math notranslate nohighlight">\(w_{,x} \delta w_{,x}\)</span>, … of Eq.
+<a class="reference internal" href="#equation-pt-strain-variation">(1.6)</a> make the internal forces nonlinear in the
+displacements, and the derivative of the term <span class="math notranslate nohighlight">\(\boldsymbol{N}^\top
+\delta\boldsymbol{\epsilon}\)</span> with respect to the displacements at
+constant <span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> is the geometric stiffness, the term that
+governs buckling, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>.</p></li>
+</ul>
+</section>
+<section id="limits-of-validity">
+<h2><span class="section-number">1.5. </span>Limits of validity<a class="headerlink" href="#limits-of-validity" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Thin plates.</strong> Without transverse shear deformation the theory
+overestimates the stiffness, and the buckling loads and natural
+frequencies, of plates whose thickness is not small compared with the
+in-plane dimensions and with the wavelengths of the deformation, and of
+laminates or sandwich plates of low transverse shear stiffness.</p></li>
+<li><p><strong>Moderate rotations.</strong> The strains of Eq. <a class="reference internal" href="#equation-pt-strains">(1.2)</a> hold for
+small strains, slopes <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span> small compared with one, and
+small in-plane rotations. They describe the membrane stiffening of
+plates deflecting by several thicknesses, but not large rotations.</p></li>
+<li><p><strong>Linear elasticity.</strong> The <code class="docutils literal notranslate"><span class="pre">ABD</span></code> matrix is constant: no plasticity,
+damage or temperature dependence.</p></li>
+<li><p><strong>Flat plates.</strong> The reference surface is a plane; curvature of the
+undeformed surface, as in shells, is not represented.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BFSC plate finite element - bfscplate2d</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="element.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>The BFSC plate element</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coordinates-and-sign-conventions">1.1. Coordinates and sign conventions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematics">1.2. Kinematics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constitutive-relation">1.3. Constitutive relation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-energy-and-equilibrium">1.4. Strain energy and equilibrium</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limits-of-validity">1.5. Limits of validity</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/plate_theory.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

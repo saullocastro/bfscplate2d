@@ -37,30 +37,32 @@ Code repository
 https://github.com/saullocastro/bfscplate2d
 
 
-User guide
-----------
+Theory
+------
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
 
+    plate_theory.rst
     element.rst
+    element_matrices.rst
+    follower_pressure.rst
     assembling.rst
     analyses.rst
-    follower_pressure.rst
+    references.rst
 
-
-Usage examples
---------------
 
 .. toctree::
     :maxdepth: 1
+    :caption: Worked examples
 
-    ex_linear_static.rst
-    ex_linear_buckling.rst
-    ex_natural_frequency.rst
-    ex_nonlinear_static.rst
-    ex_structsolve_nonlinear.rst
-    ex_follower_pressure.rst
+    notebooks/ex_linear_static.nblink
+    notebooks/ex_linear_buckling.nblink
+    notebooks/ex_natural_frequency.nblink
+    notebooks/ex_nonlinear_static.nblink
+    notebooks/ex_structsolve_nonlinear.nblink
+    notebooks/ex_follower_pressure.nblink
 
 
 bfscplate2d API
@@ -81,13 +83,18 @@ Installing bfscplate2d
     install.rst
 
 
-Changelog
----------
+.. toctree::
+    :maxdepth: 1
+    :caption: Changelog
+
+    changelog.rst
+
 
 .. toctree::
     :maxdepth: 1
+    :caption: About this documentation
 
-    changelog.rst
+    documentation_levels.rst
 
 
 License
@@ -100,7 +107,7 @@ License
 Citing this library
 -------------------
 
-Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.5.0). https://github.com/saullocastro/bfscplate2d.
+Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.5.1). https://github.com/saullocastro/bfscplate2d.
 
 In BibTeX:
 
@@ -110,7 +117,7 @@ In BibTeX:
       author  = {Castro, Saullo G. P.},
       title   = {Implementation of the BFSC plate finite element in 2D},
       year    = {2026},
-      version = {0.5.0},
+      version = {0.5.1},
       url     = {https://github.com/saullocastro/bfscplate2d}
     }
 

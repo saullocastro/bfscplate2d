@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assembling a model &#8212; bfscplate2d 0.5.0 documentation</title>
+    <title>5. Assembly, loads and boundary conditions &#8212; bfscplate2d 0.5.1 documentation</title>
   
   
   
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +47,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Analyses" href="analyses.html" />
-    <link rel="prev" title="The element and its degrees of freedom" href="element.html" />
+    <link rel="next" title="6. Analyses" href="analyses.html" />
+    <link rel="prev" title="4. Follower pressure" href="follower_pressure.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.5.0" />
+  <meta name="docsearch:version" content="0.5.1" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -100,7 +100,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">bfscplate2d 0.5.0 documentation</p>
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
   
 </a></div>
     
@@ -135,22 +135,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Assembling a model
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -162,9 +162,9 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
-    Linear static analysis
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Assembly, loads and boundary conditions
   </a>
 </li>
 
@@ -177,35 +177,56 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -228,6 +249,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -257,14 +285,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -284,7 +312,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -298,7 +326,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -315,15 +343,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
-    Assembling a model
+    Assembly, loads and boundary conditions
   </a>
 </li>
 
@@ -336,49 +385,49 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="references.html">
+    References
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -404,6 +453,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -418,14 +474,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -482,10 +538,10 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Assembling a model</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">5. </span>Assembly, loads and boundary conditions</span></li>
   </ul>
 </nav>
 </div>
@@ -502,147 +558,191 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="assembling-a-model">
-<h1>Assembling a model<a class="headerlink" href="#assembling-a-model" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> computes the contributions of one element; the mesh, the
-global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository, see
-<a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>.</p>
-<section id="mesh">
-<h2>Mesh<a class="headerlink" href="#mesh" title="Link to this heading">#</a></h2>
-<p>A rectangular plate of sides <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> is divided into <code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">-</span> <span class="pre">1</span></code> by
-<code class="docutils literal notranslate"><span class="pre">ny</span> <span class="pre">-</span> <span class="pre">1</span></code> elements of equal sides <code class="docutils literal notranslate"><span class="pre">lex</span> <span class="pre">=</span> <span class="pre">a/(nx</span> <span class="pre">-</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span> <span class="pre">=</span> <span class="pre">b/(ny</span> <span class="pre">-</span>
-<span class="pre">1)</span></code>. The tests number the nodes with <span class="math notranslate nohighlight">\(x\)</span> varying slowest, <code class="docutils literal notranslate"><span class="pre">nids_mesh</span> <span class="pre">=</span>
-<span class="pre">nids.reshape(nx,</span> <span class="pre">ny)</span></code>, and take the four nodes of each element from the
-corners of this array, in the order of <a class="reference internal" href="element.html"><span class="doc">The element and its degrees of freedom</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n1s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="n">n2s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="n">n3s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-<span class="n">n4s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>with <code class="docutils literal notranslate"><span class="pre">nid_pos</span></code> mapping each node identification number to its index,
-such that <code class="docutils literal notranslate"><span class="pre">c1</span> <span class="pre">=</span> <span class="pre">DOF*nid_pos[n1]</span></code>, and so on, and the model has <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span>
-<span class="pre">DOF*nx*ny</span></code> degrees of freedom.</p>
+  <section id="assembly-loads-and-boundary-conditions">
+<h1><span class="section-number">5. </span>Assembly, loads and boundary conditions<a class="headerlink" href="#assembly-loads-and-boundary-conditions" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> computes the contributions of one element. The mesh, the
+global matrices and vectors, the loads and the boundary conditions belong to
+the model, written by the user with NumPy and SciPy. This chapter states the
+conventions that connect the element of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a> to a model.</p>
+<section id="global-degrees-of-freedom">
+<h2><span class="section-number">5.1. </span>Global degrees of freedom<a class="headerlink" href="#global-degrees-of-freedom" title="Link to this heading">#</a></h2>
+<p>A model with <code class="docutils literal notranslate"><span class="pre">num_nodes</span></code> nodes has <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">DOF*num_nodes</span></code> degrees of
+freedom. The attributes <code class="docutils literal notranslate"><span class="pre">c1</span></code> to <code class="docutils literal notranslate"><span class="pre">c4</span></code> of each element give the position
+of the first degree of freedom of its nodes in the global vectors; the usual
+choice is <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">DOF*i</span></code> for the node of index <code class="docutils literal notranslate"><span class="pre">i</span></code>, with which the slice
+<code class="docutils literal notranslate"><span class="pre">u[6::DOF]</span></code> of a global vector gives <span class="math notranslate nohighlight">\(w\)</span> at all the nodes, <code class="docutils literal notranslate"><span class="pre">u[0::DOF]</span></code>
+gives <span class="math notranslate nohighlight">\(u\)</span>, <code class="docutils literal notranslate"><span class="pre">u[7::DOF]</span></code> gives <span class="math notranslate nohighlight">\(w_{,x}\)</span>, and so on, in the order of the
+table of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>.</p>
+<p>A rectangular plate of sides <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> is divided into rectangles of
+sides <code class="docutils literal notranslate"><span class="pre">lex</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span></code>; with <code class="docutils literal notranslate"><span class="pre">nx</span></code> by <code class="docutils literal notranslate"><span class="pre">ny</span></code> nodes on a regular grid,
+<code class="docutils literal notranslate"><span class="pre">lex</span> <span class="pre">=</span> <span class="pre">a/(nx</span> <span class="pre">-</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span> <span class="pre">=</span> <span class="pre">b/(ny</span> <span class="pre">-</span> <span class="pre">1)</span></code>. Each element takes its four
+nodes counterclockwise from the corner of smallest <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, the order
+of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>; a node shared by several elements has the same <code class="docutils literal notranslate"><span class="pre">c</span></code> in
+all of them, which makes the assembled fields continuous.</p>
 </section>
-<section id="element-loop-and-sparse-arrays">
-<h2>Element loop and sparse arrays<a class="headerlink" href="#element-loop-and-sparse-arrays" title="Link to this heading">#</a></h2>
-<p>Each function <code class="docutils literal notranslate"><span class="pre">update_K*</span></code> and <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> writes the entries of one
-element in three 1-D arrays, the row indices, the column indices and the
-values, at the positions <code class="docutils literal notranslate"><span class="pre">init_k</span></code> to <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">+</span> <span class="pre">SPARSE_SIZE</span> <span class="pre">-</span> <span class="pre">1</span></code>, with
-<code class="docutils literal notranslate"><span class="pre">init_k</span></code> the attribute of the element for that matrix and <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE</span></code>
-the number of entries of one element:</p>
+<section id="sparse-arrays">
+<h2><span class="section-number">5.2. </span>Sparse arrays<a class="headerlink" href="#sparse-arrays" title="Link to this heading">#</a></h2>
+<p>Each element matrix is written as triplets, the row index, the column index
+and the value of each entry, in three 1-D arrays, the coordinate format of
+<code class="docutils literal notranslate"><span class="pre">scipy.sparse.coo_matrix</span></code>. The functions write the entries of one element
+at the positions <code class="docutils literal notranslate"><span class="pre">init_k</span></code> to <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">+</span> <span class="pre">SPARSE_SIZE</span> <span class="pre">-</span> <span class="pre">1</span></code>, with <code class="docutils literal notranslate"><span class="pre">init_k</span></code>
+the attribute of the element for that matrix and <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE</span></code> the number
+of entries per element. The sizes follow from the pairs of degrees of
+freedom that each matrix couples, with 24 in-plane degrees of freedom (<span class="math notranslate nohighlight">\(u\)</span>
+to <span class="math notranslate nohighlight">\(v_{,y}\)</span> of the four nodes) and 16 out-of-plane ones (<span class="math notranslate nohighlight">\(w\)</span> to <span class="math notranslate nohighlight">\(w_{,xy}\)</span>)
+per element:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Function</p></th>
 <th class="head"><p>Position attribute</p></th>
 <th class="head"><p>Entries per element</p></th>
+<th class="head"><p>Pairs written</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">init_k_KC0</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">KC0_SPARSE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KC0_SPARSE_SIZE</span> <span class="pre">=</span> <span class="pre">1600</span></code></p></td>
+<td><p>all, <span class="math notranslate nohighlight">\(40^2\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCNL" title="bfscplate2d.bfscplate2d.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">init_k_KCNL</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">KCNL_SPARSE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KCNL_SPARSE_SIZE</span> <span class="pre">=</span> <span class="pre">1024</span></code></p></td>
+<td><p>in-plane with out-of-plane in both orders and out-of-plane with
+out-of-plane, <span class="math notranslate nohighlight">\(2 \cdot 24 \cdot 16 + 16^2\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">init_k_KG</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">KG_SPARSE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KG_SPARSE_SIZE</span> <span class="pre">=</span> <span class="pre">256</span></code></p></td>
+<td><p>out-of-plane with out-of-plane, <span class="math notranslate nohighlight">\(16^2\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">init_k_M</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">M_SPARSE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">M_SPARSE_SIZE</span> <span class="pre">=</span> <span class="pre">544</span></code></p></td>
+<td><p>among <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, among <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span> and
+among the out-of-plane ones, <span class="math notranslate nohighlight">\(2 \cdot 12^2 + 16^2\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCfollower" title="bfscplate2d.bfscplate2d.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span> <span class="pre">=</span> <span class="pre">1056</span></code></p></td>
+<td><p>the blocks <span class="math notranslate nohighlight">\([u, v]\)</span>, <span class="math notranslate nohighlight">\([v, u]\)</span> (<span class="math notranslate nohighlight">\(12^2\)</span> each) and <span class="math notranslate nohighlight">\([u, w]\)</span>, <span class="math notranslate nohighlight">\([v, w]\)</span>,
+<span class="math notranslate nohighlight">\([w, u]\)</span>, <span class="math notranslate nohighlight">\([w, v]\)</span> (<span class="math notranslate nohighlight">\(12 \cdot 16\)</span> each)</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>For <code class="docutils literal notranslate"><span class="pre">num_elements</span></code> elements the arrays have <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE*num_elements</span></code>
 entries, of type <code class="docutils literal notranslate"><span class="pre">INT</span></code> for the indices and <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> for the values, and
-the element of index <code class="docutils literal notranslate"><span class="pre">k</span></code> gets <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">=</span> <span class="pre">k*SPARSE_SIZE</span></code>, e.g. by
-increasing a counter by <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE</span></code> in the element loop:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KC0r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-<span class="n">KC0c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-<span class="n">KC0v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-<span class="n">init_k_KC0</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">n1s</span><span class="p">,</span> <span class="n">n2s</span><span class="p">,</span> <span class="n">n3s</span><span class="p">,</span> <span class="n">n4s</span><span class="p">):</span>
-    <span class="n">plate</span> <span class="o">=</span> <span class="n">BFSCPlate2D</span><span class="p">()</span>
-    <span class="n">plate</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
-    <span class="o">...</span>
-    <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KC0</span> <span class="o">=</span> <span class="n">init_k_KC0</span>
-    <span class="n">update_KC0</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">,</span> <span class="n">KC0v</span><span class="p">)</span>
-    <span class="n">init_k_KC0</span> <span class="o">+=</span> <span class="n">KC0_SPARSE_SIZE</span>
-
-<span class="n">KC0</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KC0v</span><span class="p">,</span> <span class="p">(</span><span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
+the element of index <code class="docutils literal notranslate"><span class="pre">k</span></code> gets <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">=</span> <span class="pre">k*SPARSE_SIZE</span></code>. The global
+matrix is the sum of the element matrices,
+<span class="math notranslate nohighlight">\(\boldsymbol{K} = \sum_e \boldsymbol{L}_e^\top \boldsymbol{K}_e
+\boldsymbol{L}_e\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{L}_e\)</span> the Boolean matrix that extracts
+<span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span> from the global vector; <code class="docutils literal notranslate"><span class="pre">coo_matrix</span></code> performs this sum
+by adding the values at repeated positions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KC0</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KC0v</span><span class="p">,</span> <span class="p">(</span><span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">scipy.sparse.coo_matrix</span></code> sums the values at repeated positions, the
-entries of the nodes shared by several elements. <code class="docutils literal notranslate"><span class="pre">INT</span></code>, <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code>,
-<code class="docutils literal notranslate"><span class="pre">DOF</span></code> and the sizes are given by the <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> namespace. The
-element writes all the pairs of degrees of freedom of each matrix, not only
-an upper triangle; the matrices that are symmetric come out symmetric
-after the sum.</p>
-<p>The functions overwrite the indices but <strong>add</strong> the values to the existing
-ones. Arrays reused for a new configuration, e.g. KCNL and KG at each
-iteration of a nonlinear analysis, are zeroed first, <code class="docutils literal notranslate"><span class="pre">KCNLv</span> <span class="pre">*=</span> <span class="pre">0</span></code>; the
-indices do not change for a fixed mesh.</p>
-<p>The vectors are assembled without position attributes:
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> and <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> add the vector of
-one element directly to a global vector of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, at the positions of
-its nodes, and the functions that depend on the displacements read them
-from a global vector <code class="docutils literal notranslate"><span class="pre">u</span></code> of size <code class="docutils literal notranslate"><span class="pre">N</span></code>.</p>
+<p>The functions write all the pairs, not only a triangle, such that the
+symmetric matrices come out symmetric after the sum and the unsymmetric
+load stiffness matrix of <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a> is complete. The indices
+are overwritten, but the values are <strong>added</strong> to the existing ones: value
+arrays reused for a new configuration, e.g. those of KCNL and KG at each
+iteration of a nonlinear analysis, are zeroed first; the indices do not
+change for a fixed mesh. <code class="docutils literal notranslate"><span class="pre">INT</span></code>, <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code>, <code class="docutils literal notranslate"><span class="pre">DOF</span></code> and the sizes are
+given by the <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> namespace.</p>
+<p>The vectors have no position attributes: <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> and
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> add the vector of one element to a global
+vector of size <code class="docutils literal notranslate"><span class="pre">N</span></code> at the positions of its nodes, and every function that
+depends on the displacements reads them from a global vector <code class="docutils literal notranslate"><span class="pre">u</span></code> of size
+<code class="docutils literal notranslate"><span class="pre">N</span></code>.</p>
 </section>
 <section id="loads">
-<h2>Loads<a class="headerlink" href="#loads" title="Link to this heading">#</a></h2>
-<p>A concentrated load is a value of the global force vector at a degree of
-freedom of a node, e.g. <code class="docutils literal notranslate"><span class="pre">f[6::DOF][check]</span> <span class="pre">=</span> <span class="pre">fmid</span></code> for a transverse force
-at the nodes selected by the boolean array <code class="docutils literal notranslate"><span class="pre">check</span></code>. Distributed loads are
-integrated with the interpolation functions of the element, the
-consistent load vector: a pressure <span class="math notranslate nohighlight">\(P\)</span> with the rows of
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sw()</span></code></a> over the integration points of the element,
-see <a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>, and a force per unit length on an edge with
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Su()</span></code></a> at <span class="math notranslate nohighlight">\(\xi = \pm 1\)</span>, see
-<a class="reference internal" href="ex_linear_buckling.html"><span class="doc">Linear buckling analysis</span></a>. The force vector of a pressure that follows the
-deformation is given by <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, see
-<a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<h2><span class="section-number">5.3. </span>Loads<a class="headerlink" href="#loads" title="Link to this heading">#</a></h2>
+<p>The external force vector is the virtual work of the loads,
+<span class="math notranslate nohighlight">\(\delta W = \delta\boldsymbol{u}^\top \boldsymbol{F}_{ext}\)</span>. A concentrated
+force or moment is a value at one degree of freedom of a node, e.g. a
+transverse force at the position <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">+</span> <span class="pre">6</span></code>; the conjugate of <span class="math notranslate nohighlight">\(w_{,x}\)</span> is a
+moment, that of <span class="math notranslate nohighlight">\(w_{,xy}\)</span> a generalised force of dimension force times
+length squared. Distributed loads give the
+consistent load vectors, integrated with the rows of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a> and the
+quadrature of <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>:</p>
+<ul class="simple">
+<li><p>a dead pressure <span class="math notranslate nohighlight">\(P\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext} = \int_A P
+(\boldsymbol{S}^w)^\top dA\)</span>, with <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sw()</span></code></a> at the
+integration points; this is also <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> at
+<span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>;</p></li>
+<li><p>an in-plane force per unit length <span class="math notranslate nohighlight">\(\bar{N}_{xx}\)</span> on an edge <span class="math notranslate nohighlight">\(x\)</span> =
+constant, <span class="math notranslate nohighlight">\(\int \bar{N}_{xx} (\boldsymbol{S}^u)^\top dy\)</span>, with
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Su()</span></code></a> at <span class="math notranslate nohighlight">\(\xi = \pm 1\)</span>;</p></li>
+<li><p>a follower pressure, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fext_follower" title="bfscplate2d.bfscplate2d.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, see
+<a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p></li>
+</ul>
+<p>The consistent load of a uniform edge load on an edge <span class="math notranslate nohighlight">\(x\)</span> = constant has,
+besides the forces at <span class="math notranslate nohighlight">\(u\)</span>, entries at <span class="math notranslate nohighlight">\(u_{,y}\)</span> of the two nodes at the ends
+of the edge (those of the interior nodes cancel between neighbouring
+elements). Nodal forces at <span class="math notranslate nohighlight">\(u\)</span> alone, e.g. with half the force at the
+corner nodes, are not equivalent, and the membrane forces of the resulting
+static solution are not exactly uniform, see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>.</p>
 </section>
 <section id="boundary-conditions">
-<h2>Boundary conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading">#</a></h2>
-<p>The tests constrain degrees of freedom by partitioning the global system: a
-boolean array <code class="docutils literal notranslate"><span class="pre">bk</span></code> marks the constrained degrees of freedom, selected with
-the slices of <a class="reference internal" href="element.html"><span class="doc">The element and its degrees of freedom</span></a> and the coordinates of the nodes, and <code class="docutils literal notranslate"><span class="pre">bu</span> <span class="pre">=</span>
-<span class="pre">~bk</span></code> the unknown ones:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="n">check</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">check</span>            <span class="c1"># w = 0 at the nodes of the four edges</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>    <span class="c1"># u = 0 at x = 0</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>    <span class="c1"># v = 0 at y = 0</span>
-<span class="n">bu</span> <span class="o">=</span> <span class="o">~</span><span class="n">bk</span>
-
-<span class="n">Kuu</span> <span class="o">=</span> <span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
-<span class="n">u</span><span class="p">[</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">spsolve</span><span class="p">(</span><span class="n">Kuu</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="n">bu</span><span class="p">])</span>
-</pre></div>
+<h2><span class="section-number">5.4. </span>Boundary conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading">#</a></h2>
+<p>A constrained degree of freedom is set to zero by partitioning the global
+system into the unknown degrees of freedom <code class="docutils literal notranslate"><span class="pre">bu</span></code> and the constrained ones
+<code class="docutils literal notranslate"><span class="pre">bk</span> <span class="pre">=</span> <span class="pre">~bu</span></code>, two Boolean arrays of size <code class="docutils literal notranslate"><span class="pre">N</span></code>:</p>
+<div class="math notranslate nohighlight" id="equation-as-partition">
+<span class="eqno">(5.1)<a class="headerlink" href="#equation-as-partition" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{uu} \boldsymbol{u}_u = \boldsymbol{F}_u\]</div>
+<p>with the matrices restricted to <code class="docutils literal notranslate"><span class="pre">bu</span></code> by <code class="docutils literal notranslate"><span class="pre">bu</span></code> and the vectors to <code class="docutils literal notranslate"><span class="pre">bu</span></code>,
+e.g. <code class="docutils literal notranslate"><span class="pre">KC0[bu,</span> <span class="pre">:][:,</span> <span class="pre">bu]</span></code>. The solution is expanded to the size of the
+model, with zeros at the constrained degrees of freedom, <code class="docutils literal notranslate"><span class="pre">u[bu]</span> <span class="pre">=</span> <span class="pre">uu</span></code>,
+before it is given to the functions that depend on the displacements.</p>
+<p>Since a degree of freedom is a nodal value, the condition it imposes along
+an edge follows from Eq. <a class="reference internal" href="element.html#equation-el-edge">(2.8)</a>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Condition along an edge</p></th>
+<th class="head"><p>Edge <span class="math notranslate nohighlight">\(x\)</span> = constant (positions)</p></th>
+<th class="head"><p>Edge <span class="math notranslate nohighlight">\(y\)</span> = constant (positions)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(w = 0\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span> (6, 8)</p></td>
+<td><p><span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span> (6, 7)</p></td>
+</tr>
+<tr class="row-odd"><td><p>normal slope zero, with <span class="math notranslate nohighlight">\(w = 0\)</span> a clamped edge</p></td>
+<td><p><span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span> (7, 9)</p></td>
+<td><p><span class="math notranslate nohighlight">\(w_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span> (8, 9)</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(u = 0\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span> (0, 2)</p></td>
+<td><p><span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,x}\)</span> (0, 1)</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(v = 0\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span> (3, 5)</p></td>
+<td><p><span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span> (3, 4)</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>The solution of the reduced system is expanded to the size of the model,
-with zeros at the constrained degrees of freedom, before it is given to the
-functions that depend on the displacements, e.g. <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>.</p>
-<p>Since <span class="math notranslate nohighlight">\(w\)</span> along an edge is interpolated from <span class="math notranslate nohighlight">\(w\)</span> and its derivative along
-the edge at the nodes, see <a class="reference internal" href="element.html"><span class="doc">The element and its degrees of freedom</span></a>, <span class="math notranslate nohighlight">\(w\)</span> vanishes along the whole
-edge <span class="math notranslate nohighlight">\(x\)</span> = constant when <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are constrained at its nodes,
-positions <code class="docutils literal notranslate"><span class="pre">6</span></code> and <code class="docutils literal notranslate"><span class="pre">8</span></code>, and along an edge <span class="math notranslate nohighlight">\(y\)</span> = constant with <span class="math notranslate nohighlight">\(w\)</span> and
-<span class="math notranslate nohighlight">\(w_{,x}\)</span>, positions <code class="docutils literal notranslate"><span class="pre">6</span></code> and <code class="docutils literal notranslate"><span class="pre">7</span></code>. A clamped edge <span class="math notranslate nohighlight">\(x\)</span> = constant also
-constrains the normal slope <span class="math notranslate nohighlight">\(w_{,x}\)</span> and its derivative along the edge
-<span class="math notranslate nohighlight">\(w_{,xy}\)</span>, positions <code class="docutils literal notranslate"><span class="pre">7</span></code> and <code class="docutils literal notranslate"><span class="pre">9</span></code>. The function <code class="docutils literal notranslate"><span class="pre">boundary_flags</span></code> of
-<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure.py</span></code> builds <code class="docutils literal notranslate"><span class="pre">bk</span></code> in this way, for the
-value and the derivative along the edge of each constrained displacement,
-see <a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<p>each value with its derivative along the edge. A simply supported edge,
+<span class="math notranslate nohighlight">\(w = 0\)</span> with a free normal slope, is therefore <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> at the
+nodes of an edge <span class="math notranslate nohighlight">\(x\)</span> = constant (<span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,x}\)</span> on an edge <span class="math notranslate nohighlight">\(y\)</span> =
+constant), with <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span> free; at a corner between two such
+edges <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are constrained and <span class="math notranslate nohighlight">\(w_{,xy}\)</span> stays free,
+since the twist at the corner of a simply supported plate is not zero, as
+for the mode <span class="math notranslate nohighlight">\(w = \sin(m \pi x/a) \sin(n \pi y/b)\)</span>. A clamped edge adds the
+normal slope with its derivative along the edge. Constraining the value
+alone, e.g. <span class="math notranslate nohighlight">\(w\)</span> at the nodes of a simply supported edge, makes it vanish at
+the nodes only: between them <span class="math notranslate nohighlight">\(w\)</span> is the cubic of Eq. <a class="reference internal" href="element.html#equation-el-edge">(2.8)</a> with
+the free nodal <span class="math notranslate nohighlight">\(w_{,y}\)</span>, the edge is more flexible than a supported one,
+and the condition is reached only as the mesh is refined. On a coarse mesh
+of a few elements per side the difference is a fraction of a per cent in
+the deflections and in the buckling loads, and grows with the number of
+half-waves of a mode. The rigid-body motions
+must be constrained, in-plane and out-of-plane, for <code class="docutils literal notranslate"><span class="pre">KC0[bu,</span> <span class="pre">:][:,</span> <span class="pre">bu]</span></code> to
+be nonsingular. Prescribed nonzero displacements are a partition with
+<code class="docutils literal notranslate"><span class="pre">u[bk]</span></code> given and the right-hand side <span class="math notranslate nohighlight">\(\boldsymbol{F}_u -
+\boldsymbol{K}_{uk}\boldsymbol{u}_k\)</span>.</p>
 </section>
 </section>
 
@@ -657,12 +757,12 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="element.html"
+       href="follower_pressure.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">The element and its degrees of freedom</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Follower pressure</p>
       </div>
     </a>
     <a class="right-next"
@@ -670,7 +770,7 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Analyses</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>Analyses</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -681,7 +781,7 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -693,10 +793,10 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh">Mesh</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#element-loop-and-sparse-arrays">Element loop and sparse arrays</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loads">Loads</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions">Boundary conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-degrees-of-freedom">5.1. Global degrees of freedom</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparse-arrays">5.2. Sparse arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loads">5.3. Loads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions">5.4. Boundary conditions</a></li>
 </ul>
   </nav></div>
 
@@ -722,8 +822,8 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -756,7 +856,7 @@ see <a class="reference internal" href="ex_follower_pressure.html"><span class="
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>

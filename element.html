@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The element and its degrees of freedom &#8212; bfscplate2d 0.5.0 documentation</title>
+    <title>2. The BFSC plate element &#8212; bfscplate2d 0.5.1 documentation</title>
   
   
   
@@ -26,18 +26,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1dd76d02"></script>
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +47,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Assembling a model" href="assembling.html" />
-    <link rel="prev" title="BFSC plate finite element - bfscplate2d" href="index.html" />
+    <link rel="next" title="3. Element matrices and internal forces" href="element_matrices.html" />
+    <link rel="prev" title="1. Plate theory" href="plate_theory.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.5.0" />
+  <meta name="docsearch:version" content="0.5.1" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -100,7 +100,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -120,7 +120,7 @@
   
   
   
-    <p class="title logo__title">bfscplate2d 0.5.0 documentation</p>
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
   
 </a></div>
     
@@ -134,23 +134,23 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
-    The element and its degrees of freedom
+    The BFSC plate element
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -163,8 +163,8 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
-    Linear static analysis
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
   </a>
 </li>
 
@@ -177,35 +177,56 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -228,6 +249,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -257,14 +285,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -284,7 +312,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -298,7 +326,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -314,23 +342,23 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
-    The element and its degrees of freedom
+    The BFSC plate element
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element_matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -343,42 +371,63 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
@@ -404,6 +453,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -418,14 +474,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -482,10 +538,10 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The element and its degrees of freedom</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">2. </span>The BFSC plate element</span></li>
   </ul>
 </nav>
 </div>
@@ -502,55 +558,130 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="the-element-and-its-degrees-of-freedom">
-<h1>The element and its degrees of freedom<a class="headerlink" href="#the-element-and-its-degrees-of-freedom" title="Link to this heading">#</a></h1>
-<p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D" title="bfscplate2d.bfscplate2d.BFSCPlate2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code></a> is a four-node rectangle of sides <code class="docutils literal notranslate"><span class="pre">lex</span></code> along <span class="math notranslate nohighlight">\(x\)</span>
-and <code class="docutils literal notranslate"><span class="pre">ley</span></code> along <span class="math notranslate nohighlight">\(y\)</span>, parallel to the axes, of the classical laminated
-plate theory: the deflection <span class="math notranslate nohighlight">\(w\)</span> and the in-plane displacements <span class="math notranslate nohighlight">\(u\)</span> and
-<span class="math notranslate nohighlight">\(v\)</span> are interpolated with products of cubic Hermite polynomials, whose
-nodal values are the degrees of freedom below. The kinematics, the
-interpolation functions and the integration of each matrix are given in the
-Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a>.</p>
-<section id="node-ordering">
-<h2>Node ordering<a class="headerlink" href="#node-ordering" title="Link to this heading">#</a></h2>
-<p>The nodes are numbered counterclockwise from the corner with the smallest
-<span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, as the CQUAD4 element of Nastran:</p>
+  <section id="the-bfsc-plate-element">
+<h1><span class="section-number">2. </span>The BFSC plate element<a class="headerlink" href="#the-bfsc-plate-element" title="Link to this heading">#</a></h1>
+<p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D" title="bfscplate2d.bfscplate2d.BFSCPlate2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code></a> approximates the plate theory of <a class="reference internal" href="plate_theory.html"><span class="doc">Plate theory</span></a>
+over a rectangle with four nodes. Its name comes from the element of
+Bogner, Fox and Schmit (BFS) <a class="reference internal" href="references.html#bogner1965" id="id1"><span>[Bogner1965]</span></a>, for the deflection <span class="math notranslate nohighlight">\(w\)</span>, whose
+interpolation the BFSC element extends to the in-plane displacements <span class="math notranslate nohighlight">\(u\)</span>
+and <span class="math notranslate nohighlight">\(v\)</span> <a class="reference internal" href="references.html#castrojansen2021" id="id2"><span>[CastroJansen2021]</span></a>. This chapter derives its interpolation
+functions, its degrees of freedom and the operators that give the strains;
+<a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a> uses them to build the matrices.</p>
+<section id="why-the-interpolation-of-w-must-be-c1">
+<h2><span class="section-number">2.1. </span>Why the interpolation of <span class="math notranslate nohighlight">\(w\)</span> must be C<sup>1</sup><a class="headerlink" href="#why-the-interpolation-of-w-must-be-c1" title="Link to this heading">#</a></h2>
+<p>The curvatures of Eq. <a class="reference internal" href="plate_theory.html#equation-pt-strains">(1.2)</a> contain the second derivatives of
+<span class="math notranslate nohighlight">\(w\)</span>. The strain energy of an approximation of <span class="math notranslate nohighlight">\(w\)</span> built element by element
+is finite, and the approximation is conforming, only when <span class="math notranslate nohighlight">\(w\)</span> and its first
+derivatives <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are continuous across the edges between
+elements, i.e. when <span class="math notranslate nohighlight">\(w\)</span> is of class C<sup>1</sup>; within an element the
+second derivatives need only be integrable. Interpolations with the nodal
+values of <span class="math notranslate nohighlight">\(w\)</span> alone, as in the membrane elements, are C<sup>0</sup>: the slope
+normal to an edge jumps from one element to the next.</p>
+<p>On a mesh of rectangles with sides parallel to the axes, C<sup>1</sup>
+continuity is obtained with products of one-dimensional cubic Hermite
+polynomials, which interpolate a function from its values and first
+derivatives at the two ends of an interval <a class="reference internal" href="references.html#bogner1965" id="id3"><span>[Bogner1965]</span></a>. The products of
+the four Hermite polynomials along <span class="math notranslate nohighlight">\(x\)</span> with the four along <span class="math notranslate nohighlight">\(y\)</span> are 16
+functions, which span all the bicubic polynomials, and need four degrees of
+freedom of <span class="math notranslate nohighlight">\(w\)</span> per node: <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span> and the cross derivative
+<span class="math notranslate nohighlight">\(w_{,xy}\)</span>, the nodal value multiplying the product of the two slope
+functions. This is the BFS element. The construction uses the constant
+mapping between the natural and the physical coordinates of a rectangle
+with sides parallel to <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, below, to which the element is
+restricted.</p>
+</section>
+<section id="geometry-and-natural-coordinates">
+<h2><span class="section-number">2.2. </span>Geometry and natural coordinates<a class="headerlink" href="#geometry-and-natural-coordinates" title="Link to this heading">#</a></h2>
+<p>The element has the sides <code class="docutils literal notranslate"><span class="pre">lex</span></code> along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">ley</span></code> along <span class="math notranslate nohighlight">\(y\)</span>. Its
+natural coordinates <span class="math notranslate nohighlight">\(\xi\)</span> and <span class="math notranslate nohighlight">\(\eta\)</span> (<code class="docutils literal notranslate"><span class="pre">xi</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span></code>) go from <span class="math notranslate nohighlight">\(-1\)</span> to
+<span class="math notranslate nohighlight">\(1\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-el-mapping">
+<span class="eqno">(2.1)<a class="headerlink" href="#equation-el-mapping" title="Link to this equation">#</a></span>\[x = x_1 + \frac{lex}{2} (\xi + 1), \qquad
+y = y_1 + \frac{ley}{2} (\eta + 1), \qquad
+\frac{\partial}{\partial x} = \frac{2}{lex} \frac{\partial}{\partial \xi},
+\qquad
+\frac{\partial}{\partial y} = \frac{2}{ley} \frac{\partial}{\partial \eta},
+\qquad
+dA = \frac{lex \, ley}{4} \, d\xi \, d\eta\]</div>
+<p>with <span class="math notranslate nohighlight">\((x_1, y_1)\)</span> the position of node 1. The nodes are numbered
+counterclockwise from the corner with the smallest <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, as the
+CQUAD4 element of Nastran:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Node</p></th>
-<th class="head"><p>Natural coordinates</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\((\xi_i, \eta_i)\)</span></p></th>
 <th class="head"><p>Position</p></th>
+<th class="head"><p>Attribute of its first degree of freedom</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>1</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = -1, \eta = -1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((-1, -1)\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\((x_1, y_1)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">c1</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>2</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = +1, \eta = -1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((+1, -1)\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\((x_1 + lex, y_1)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">c2</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>3</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = +1, \eta = +1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((+1, +1)\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\((x_1 + lex, y_1 + ley)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">c3</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>4</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = -1, \eta = +1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((-1, +1)\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\((x_1, y_1 + ley)\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">c4</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>with <span class="math notranslate nohighlight">\(x = x_1 + lex (\xi + 1)/2\)</span> and <span class="math notranslate nohighlight">\(y = y_1 + ley (\eta + 1)/2\)</span>. The
-element knows neither <span class="math notranslate nohighlight">\(x_1\)</span> nor <span class="math notranslate nohighlight">\(y_1\)</span>: its matrices depend on <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ley</span></code>, its properties and its degrees of freedom, not on its position.</p>
+<p>The element knows neither <span class="math notranslate nohighlight">\(x_1\)</span> nor <span class="math notranslate nohighlight">\(y_1\)</span>: its matrices depend on <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">ABD</span></code> (and <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">rho</span></code>) and on its degrees of freedom, not on
+its position.</p>
 </section>
-<section id="degrees-of-freedom-of-a-node">
-<h2>Degrees of freedom of a node<a class="headerlink" href="#degrees-of-freedom-of-a-node" title="Link to this heading">#</a></h2>
-<p>Each node has <code class="docutils literal notranslate"><span class="pre">DOF</span> <span class="pre">=</span> <span class="pre">10</span></code> degrees of freedom, at the positions <code class="docutils literal notranslate"><span class="pre">c</span></code> to
-<code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">+</span> <span class="pre">9</span></code> of the global vectors and matrices, with <code class="docutils literal notranslate"><span class="pre">c</span></code> the attribute
-<code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code> or <code class="docutils literal notranslate"><span class="pre">c4</span></code> of the element for the nodes 1 to 4:</p>
+<section id="hermite-polynomials-and-interpolation-functions">
+<h2><span class="section-number">2.3. </span>Hermite polynomials and interpolation functions<a class="headerlink" href="#hermite-polynomials-and-interpolation-functions" title="Link to this heading">#</a></h2>
+<p>For a node at <span class="math notranslate nohighlight">\(\xi_i = \pm 1\)</span>, the two cubic Hermite polynomials of that
+end of the interval <span class="math notranslate nohighlight">\([-1, 1]\)</span> are</p>
+<div class="math notranslate nohighlight" id="equation-el-hermite-1d">
+<span class="eqno">(2.2)<a class="headerlink" href="#equation-el-hermite-1d" title="Link to this equation">#</a></span>\[f_i(\xi) = \frac{1}{4} (\xi + \xi_i)^2 (2 - \xi \xi_i), \qquad
+g_i(\xi) = \frac{1}{4} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)\]</div>
+<p>with <span class="math notranslate nohighlight">\(f_i(\xi_i) = 1\)</span>, <span class="math notranslate nohighlight">\(f_i'(\xi_i) = 0\)</span>, <span class="math notranslate nohighlight">\(g_i(\xi_i) = 0\)</span>, <span class="math notranslate nohighlight">\(g_i'(\xi_i) =
+1\)</span>, and <span class="math notranslate nohighlight">\(f_i\)</span>, <span class="math notranslate nohighlight">\(f_i'\)</span>, <span class="math notranslate nohighlight">\(g_i\)</span>, <span class="math notranslate nohighlight">\(g_i'\)</span> all null at the other end, <span class="math notranslate nohighlight">\(\xi =
+-\xi_i\)</span>: <span class="math notranslate nohighlight">\(f_i\)</span> carries the value and <span class="math notranslate nohighlight">\(g_i\)</span> the derivative with respect to
+<span class="math notranslate nohighlight">\(\xi\)</span> at the node. The interpolation functions of node <span class="math notranslate nohighlight">\(i\)</span> are their
+products, with the factors <span class="math notranslate nohighlight">\(lex/2\)</span> and <span class="math notranslate nohighlight">\(ley/2\)</span> that turn a derivative with
+respect to <span class="math notranslate nohighlight">\(\xi\)</span> or <span class="math notranslate nohighlight">\(\eta\)</span> into one with respect to <span class="math notranslate nohighlight">\(x\)</span> or <span class="math notranslate nohighlight">\(y\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-el-shape-functions">
+<span class="eqno">(2.3)<a class="headerlink" href="#equation-el-shape-functions" title="Link to this equation">#</a></span>\[H_i = f_i(\xi) f_i(\eta), \qquad
+H_{x,i} = \frac{lex}{2} g_i(\xi) f_i(\eta), \qquad
+H_{y,i} = \frac{ley}{2} f_i(\xi) g_i(\eta), \qquad
+H_{xy,i} = \frac{lex \, ley}{4} g_i(\xi) g_i(\eta)\]</div>
+<p>Each function is 1 for the nodal degree of freedom it multiplies, e.g.
+<span class="math notranslate nohighlight">\(\partial H_{x,i}/\partial x = 1\)</span> and <span class="math notranslate nohighlight">\(\partial^2 H_{xy,i}/\partial x
+\partial y = 1\)</span> at node <span class="math notranslate nohighlight">\(i\)</span>, and 0 for every other nodal degree of freedom of
+the element. Expanded, Eq. <a class="reference internal" href="#equation-el-shape-functions">(2.3)</a> is the form given in
+the Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a> <a class="reference internal" href="references.html#ochoareddy1992" id="id4"><span>[OchoaReddy1992]</span></a>, e.g. <span class="math notranslate nohighlight">\(H_i =
+(\xi + \xi_i)^2 (\xi \xi_i - 2) (\eta + \eta_i)^2 (\eta \eta_i - 2)/16\)</span>. The
+functions are bicubic, of degree 3 in <span class="math notranslate nohighlight">\(\xi\)</span> and in <span class="math notranslate nohighlight">\(\eta\)</span>, which sets the
+number of integration points of each matrix, see <a class="reference internal" href="element_matrices.html"><span class="doc">Element matrices and internal forces</span></a>.</p>
+</section>
+<section id="degrees-of-freedom-and-interpolation">
+<h2><span class="section-number">2.4. </span>Degrees of freedom and interpolation<a class="headerlink" href="#degrees-of-freedom-and-interpolation" title="Link to this heading">#</a></h2>
+<p>In the BFSC element the in-plane displacements are interpolated with the
+same functions as <span class="math notranslate nohighlight">\(w\)</span>, without the cross derivatives <a class="reference internal" href="references.html#castrojansen2021" id="id5"><span>[CastroJansen2021]</span></a>:</p>
+<div class="math notranslate nohighlight" id="equation-el-interpolation">
+<span class="eqno">(2.4)<a class="headerlink" href="#equation-el-interpolation" title="Link to this equation">#</a></span>\[ \begin{align}\begin{aligned}u = \sum_{i=1}^{4} \left( H_i u_i + H_{x,i} u_{,x i} + H_{y,i} u_{,y i}
+    \right), \qquad
+v = \sum_{i=1}^{4} \left( H_i v_i + H_{x,i} v_{,x i} + H_{y,i} v_{,y i}
+    \right),\\w = \sum_{i=1}^{4} \left( H_i w_i + H_{x,i} w_{,x i} + H_{y,i} w_{,y i}
+    + H_{xy,i} w_{,xy i} \right)\end{aligned}\end{align} \]</div>
+<p>Each node has therefore <code class="docutils literal notranslate"><span class="pre">DOF</span> <span class="pre">=</span> <span class="pre">10</span></code> degrees of freedom, at the positions
+<code class="docutils literal notranslate"><span class="pre">c</span></code> to <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">+</span> <span class="pre">9</span></code> of the global vectors and matrices, <code class="docutils literal notranslate"><span class="pre">c</span></code> being the
+attribute <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code> or <code class="docutils literal notranslate"><span class="pre">c4</span></code> of the node:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Position</p></th>
@@ -602,61 +733,160 @@ element knows neither <span class="math notranslate nohighlight">\(x_1\)</span> 
 </tbody>
 </table>
 </div>
-<p><span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> are the displacements of the reference surface along <span class="math notranslate nohighlight">\(x\)</span>,
-<span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span>. The cross derivative <span class="math notranslate nohighlight">\(w_{,xy}\)</span> is a degree of freedom of <span class="math notranslate nohighlight">\(w\)</span>
-only, as in the element of Bogner, Fox and Schmit; <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> have no cross
-derivative. With <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">DOF*i</span></code> for the node of index <code class="docutils literal notranslate"><span class="pre">i</span></code>, the usual choice
-of the tests, the slice <code class="docutils literal notranslate"><span class="pre">u[6::DOF]</span></code> of a global vector gives <span class="math notranslate nohighlight">\(w\)</span> at all
-the nodes, <code class="docutils literal notranslate"><span class="pre">u[0::DOF]</span></code> gives <span class="math notranslate nohighlight">\(u\)</span>, and so on, which is how the boundary
-conditions and the loads are applied, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p>
-<p>The 40 degrees of freedom of the element, e.g. its attribute <code class="docutils literal notranslate"><span class="pre">u</span></code>, are
-those of the nodes 1, 2, 3 and 4 in sequence, 10 per node in the order of
-the table.</p>
+<p>The 40 degrees of freedom of the element, the vector <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>
+(<code class="docutils literal notranslate"><span class="pre">ue</span></code> in the code, the attribute <code class="docutils literal notranslate"><span class="pre">u</span></code> of the element), are those of the
+nodes 1, 2, 3 and 4 in sequence, 10 per node in the order of the table. In
+matrix form</p>
+<div class="math notranslate nohighlight" id="equation-el-rows">
+<span class="eqno">(2.5)<a class="headerlink" href="#equation-el-rows" title="Link to this equation">#</a></span>\[u = \boldsymbol{S}^u \boldsymbol{u}_e, \qquad
+v = \boldsymbol{S}^v \boldsymbol{u}_e, \qquad
+w = \boldsymbol{S}^w \boldsymbol{u}_e\]</div>
+<p>with the rows of 40 entries <code class="docutils literal notranslate"><span class="pre">Su</span></code>, <code class="docutils literal notranslate"><span class="pre">Sv</span></code> and <code class="docutils literal notranslate"><span class="pre">Sw</span></code>, computed at a point
+<span class="math notranslate nohighlight">\((\xi, \eta)\)</span> by <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Su()</span></code></a>,
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sv" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sv()</span></code></a> and <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sw()</span></code></a>.</p>
+<p>Every function of Eq. <a class="reference internal" href="#equation-el-shape-functions">(2.3)</a> has a null cross
+derivative at the four nodes, except <span class="math notranslate nohighlight">\(H_{xy,i}\)</span> at node <span class="math notranslate nohighlight">\(i\)</span>. Without
+<span class="math notranslate nohighlight">\(H_{xy,i}\)</span>, the interpolation of <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> therefore gives <span class="math notranslate nohighlight">\(u_{,xy} =
+v_{,xy} = 0\)</span> at the nodes: the 12 functions of <span class="math notranslate nohighlight">\(u\)</span> (and of <span class="math notranslate nohighlight">\(v\)</span>) contain the
+linear polynomials, hence the states of constant membrane strain, and e.g.
+<span class="math notranslate nohighlight">\(x^2\)</span> and <span class="math notranslate nohighlight">\(y^3\)</span>, but not <span class="math notranslate nohighlight">\(xy\)</span>, whose cross derivative is 1 everywhere.</p>
+<p>The cross derivatives are left out by the design of the element
+<a class="reference internal" href="references.html#castrojansen2021" id="id6"><span>[CastroJansen2021]</span></a>. The BFS element, with 6 degrees of freedom per node,
+interpolates <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> linearly, which converges poorly for the
+second-order displacement fields of Koiter’s method of initial
+post-buckling and for the quantities computed from them. The BFSC element
+was made to reach a third-order interpolation also for <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> with
+the 4 nodes of the BFS element, by adding to each node only the first
+derivatives <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span> and <span class="math notranslate nohighlight">\(v_{,y}\)</span>, which gives 10
+degrees of freedom per node; a node carrying <span class="math notranslate nohighlight">\(u_{,xy}\)</span> and <span class="math notranslate nohighlight">\(v_{,xy}\)</span> too
+would have 12.</p>
+<p>The degrees of freedom mix lengths, dimensionless slopes and the cross
+derivative of dimension one over length. Norms of vectors of degrees of
+freedom, e.g. in a convergence criterion, depend on the units unless they
+are scaled, see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>.</p>
+</section>
+<section id="derivatives-and-strain-operators">
+<h2><span class="section-number">2.5. </span>Derivatives and strain operators<a class="headerlink" href="#derivatives-and-strain-operators" title="Link to this heading">#</a></h2>
+<p>With the constant mapping of Eq. <a class="reference internal" href="#equation-el-mapping">(2.1)</a>, the derivatives of the
+rows are</p>
+<div class="math notranslate nohighlight" id="equation-el-row-derivatives">
+<span class="eqno">(2.6)<a class="headerlink" href="#equation-el-row-derivatives" title="Link to this equation">#</a></span>\[\boldsymbol{S}^u_{,x} = \frac{2}{lex}
+    \frac{\partial \boldsymbol{S}^u}{\partial \xi}, \quad
+\boldsymbol{S}^u_{,y} = \frac{2}{ley}
+    \frac{\partial \boldsymbol{S}^u}{\partial \eta}, \quad
+\boldsymbol{S}^w_{,xx} = \frac{4}{lex^2}
+    \frac{\partial^2 \boldsymbol{S}^w}{\partial \xi^2}, \quad
+\boldsymbol{S}^w_{,xy} = \frac{4}{lex \, ley}
+    \frac{\partial^2 \boldsymbol{S}^w}{\partial \xi \partial \eta}, \quad
+\ldots\]</div>
+<p>the rows <code class="docutils literal notranslate"><span class="pre">Su_x</span></code>, <code class="docutils literal notranslate"><span class="pre">Su_y</span></code>, <code class="docutils literal notranslate"><span class="pre">Sv_x</span></code>, <code class="docutils literal notranslate"><span class="pre">Sv_y</span></code>, <code class="docutils literal notranslate"><span class="pre">Sw_x</span></code> and <code class="docutils literal notranslate"><span class="pre">Sw_y</span></code> of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su_x" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su_x"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Su_x()</span></code></a> to <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw_y" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sw_y()</span></code></a>.
+Substituted in Eq. <a class="reference internal" href="plate_theory.html#equation-pt-strains">(1.2)</a>, they give the strains in terms of the
+element degrees of freedom:</p>
+<div class="math notranslate nohighlight" id="equation-el-strain-operators">
+<span class="eqno">(2.7)<a class="headerlink" href="#equation-el-strain-operators" title="Link to this equation">#</a></span>\[\boldsymbol{\epsilon} = \left( \boldsymbol{B}_m + \frac{1}{2}
+    \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e, \qquad
+\delta\boldsymbol{\epsilon} = \left( \boldsymbol{B}_m +
+    \boldsymbol{B}_{NL} \right) \delta\boldsymbol{u}_e, \qquad
+\boldsymbol{\kappa} = \boldsymbol{B}_b \boldsymbol{u}_e\]</div>
+<p>with the operators, named as in the code:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Code</p></th>
+<th class="head"><p>Rows</p></th>
+<th class="head"><p>Gives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bm</span></code>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bm" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Bm()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{S}^u_{,x}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{S}^v_{,y}\)</span>,
+<span class="math notranslate nohighlight">\(\boldsymbol{S}^u_{,y} + \boldsymbol{S}^v_{,x}\)</span></p></td>
+<td><p>linear membrane strains</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Bb</span></code>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bb" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Bb()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(-\boldsymbol{S}^w_{,xx}\)</span>, <span class="math notranslate nohighlight">\(-\boldsymbol{S}^w_{,yy}\)</span>,
+<span class="math notranslate nohighlight">\(-2\boldsymbol{S}^w_{,xy}\)</span></p></td>
+<td><p>curvatures</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">G</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{S}^w_{,x}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{S}^w_{,y}\)</span></p></td>
+<td><p>slopes <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span> (<code class="docutils literal notranslate"><span class="pre">w_x</span></code>, <code class="docutils literal notranslate"><span class="pre">w_y</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BmL</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(w_{,x}\boldsymbol{S}^w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\boldsymbol{S}^w_{,y}\)</span>,
+<span class="math notranslate nohighlight">\(w_{,x}\boldsymbol{S}^w_{,y} + w_{,y}\boldsymbol{S}^w_{,x}\)</span></p></td>
+<td><p>nonlinear membrane strains</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Since the nonlinear strains are quadratic in <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>,
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\boldsymbol{u}_e\)</span> is twice the nonlinear strains,
+whereas their variation is <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\delta\boldsymbol{u}_e\)</span>,
+hence the factors <span class="math notranslate nohighlight">\(1/2\)</span> and <span class="math notranslate nohighlight">\(1\)</span> of Eq. <a class="reference internal" href="#equation-el-strain-operators">(2.7)</a>.
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> have nonzero
+entries only in the 16 columns of <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, and
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span> only in the 24 columns of <span class="math notranslate nohighlight">\(u\)</span> to <span class="math notranslate nohighlight">\(v_{,y}\)</span>. In the
+functions of the module the nonzero entries are local variables named after
+the operator, the row and the column, both counted from 1: <code class="docutils literal notranslate"><span class="pre">Bm1_01</span></code> is the
+entry of <span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span> in the row 1 and the column 1 (<span class="math notranslate nohighlight">\(u\)</span> of node 1),
+<code class="docutils literal notranslate"><span class="pre">Bb3_40</span></code> the entry of <span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> in the row 3 and the column 40
+(<span class="math notranslate nohighlight">\(w_{,xy}\)</span> of node 4).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of the module evaluate the operators themselves
+and do not use the rows stored in the element. The methods of the element
+serve the user, e.g. to integrate a distributed load with <code class="docutils literal notranslate"><span class="pre">Sw</span></code> or <code class="docutils literal notranslate"><span class="pre">Su</span></code>,
+see <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>, or to recover from a solution the linear membrane
+strains <code class="docutils literal notranslate"><span class="pre">Bm</span> <span class="pre">&#64;</span> <span class="pre">ue</span></code> and the curvatures <code class="docutils literal notranslate"><span class="pre">Bb</span> <span class="pre">&#64;</span> <span class="pre">ue</span></code> at a point, with <code class="docutils literal notranslate"><span class="pre">ue</span></code>
+the 40 degrees of freedom of the element, and from them the membrane forces
+and moments of Eq. <a class="reference internal" href="plate_theory.html#equation-pt-abd">(1.3)</a>.</p>
 </section>
 <section id="continuity-between-elements">
-<h2>Continuity between elements<a class="headerlink" href="#continuity-between-elements" title="Link to this heading">#</a></h2>
-<p>Along an edge, <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and their first derivatives depend only on the
-degrees of freedom of the two nodes of that edge, which makes them
-continuous between neighbouring elements: the element is conforming for
-the classical plate theory. Along an edge <span class="math notranslate nohighlight">\(x\)</span> = constant, for instance, <span class="math notranslate nohighlight">\(w\)</span>
-is interpolated from <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> of the two nodes, and the normal
-slope <span class="math notranslate nohighlight">\(w_{,x}\)</span> from <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>. A displacement vanishes along a
-whole edge only when both its value and its derivative along the edge are
-constrained at the nodes of the edge, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p>
+<h2><span class="section-number">2.6. </span>Continuity between elements<a class="headerlink" href="#continuity-between-elements" title="Link to this heading">#</a></h2>
+<p>On the edge <span class="math notranslate nohighlight">\(\xi = \xi_i\)</span> of an element, <span class="math notranslate nohighlight">\(f_j(\xi_i)\)</span> is 1 for the two
+nodes <span class="math notranslate nohighlight">\(j\)</span> of that edge and 0 for the other two, and <span class="math notranslate nohighlight">\(g_j(\xi_i) = 0\)</span> for
+all nodes. Along the edge, Eq. <a class="reference internal" href="#equation-el-interpolation">(2.4)</a> reduces to</p>
+<div class="math notranslate nohighlight" id="equation-el-edge">
+<span class="eqno">(2.8)<a class="headerlink" href="#equation-el-edge" title="Link to this equation">#</a></span>\[w = \sum_{j \in \text{edge}} \left( f_j(\eta) w_j
+    + \frac{ley}{2} g_j(\eta) w_{,y j} \right), \qquad
+w_{,x} = \sum_{j \in \text{edge}} \left( f_j(\eta) w_{,x j}
+    + \frac{ley}{2} g_j(\eta) w_{,xy j} \right)\]</div>
+<p>and likewise for an edge <span class="math notranslate nohighlight">\(\eta\)</span> = constant with <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> exchanged. <span class="math notranslate nohighlight">\(w\)</span>
+along an edge, and its slope normal to the edge, depend only on the degrees
+of freedom of the two nodes of the edge, shared by the two neighbouring
+elements: <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> are continuous, and the element is
+conforming for the classical plate theory. By the same argument <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>
+and their first derivatives are continuous; along an edge <span class="math notranslate nohighlight">\(x\)</span> = constant,
+<span class="math notranslate nohighlight">\(u_{,x}\)</span> is interpolated from the nodal <span class="math notranslate nohighlight">\(u_{,x}\)</span> with <span class="math notranslate nohighlight">\(f_j(\eta)\)</span> only,
+since <span class="math notranslate nohighlight">\(u_{,xy}\)</span> is not a degree of freedom. The second derivatives, i.e. the
+curvatures and the moments, are in general discontinuous between elements.</p>
+<p>Eq. <a class="reference internal" href="#equation-el-edge">(2.8)</a> also shows which constraints make a displacement vanish
+along a whole edge, see <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>: <span class="math notranslate nohighlight">\(w = 0\)</span> along an edge <span class="math notranslate nohighlight">\(x\)</span> =
+constant needs <span class="math notranslate nohighlight">\(w = 0\)</span> <strong>and</strong> <span class="math notranslate nohighlight">\(w_{,y} = 0\)</span> at its nodes, and a zero normal
+slope <span class="math notranslate nohighlight">\(w_{,x} = 0\)</span> needs <span class="math notranslate nohighlight">\(w_{,x} = 0\)</span> and <span class="math notranslate nohighlight">\(w_{,xy} = 0\)</span>.</p>
 </section>
-<section id="properties-of-the-element">
-<h2>Properties of the element<a class="headerlink" href="#properties-of-the-element" title="Link to this heading">#</a></h2>
+<section id="attributes-of-the-element">
+<h2><span class="section-number">2.7. </span>Attributes of the element<a class="headerlink" href="#attributes-of-the-element" title="Link to this heading">#</a></h2>
 <p>Before the functions of the module are called, the attributes below are set
 for each element, see <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D" title="bfscplate2d.bfscplate2d.BFSCPlate2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code></a> for their definitions:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, <code class="docutils literal notranslate"><span class="pre">c4</span></code>: positions of the nodes in the global
-vectors;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, <code class="docutils literal notranslate"><span class="pre">c4</span></code>: positions of the first degree of freedom
+of each node in the global vectors;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lex</span></code>, <code class="docutils literal notranslate"><span class="pre">ley</span></code>: lengths of the sides;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ABD</span></code>: the <code class="docutils literal notranslate"><span class="pre">(6,</span> <span class="pre">6)</span></code> constitutive matrix of the laminate, e.g. the
-<code class="docutils literal notranslate"><span class="pre">ABD</span></code> attribute of <code class="xref py py-func docutils literal notranslate"><span class="pre">composites.isotropic_plate()</span></code> or
-<code class="xref py py-func docutils literal notranslate"><span class="pre">composites.laminated_plate()</span></code>, constant over the element;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code>: thickness and density, used only by the mass matrix of
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ABD</span></code>: the <code class="docutils literal notranslate"><span class="pre">(6,</span> <span class="pre">6)</span></code> constitutive matrix of Eq. <a class="reference internal" href="plate_theory.html#equation-pt-abd">(1.3)</a>,
+constant over the element;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code>: thickness and density, read only by <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">init_k_KC0</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KCNL</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KG</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_M</span></code>,
 <code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code>: positions of the element in the sparse arrays of
-each matrix, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p></li>
+each matrix, see <a class="reference internal" href="assembling.html"><span class="doc">Assembly, loads and boundary conditions</span></a>.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">n1</span></code>, <code class="docutils literal notranslate"><span class="pre">n2</span></code>, <code class="docutils literal notranslate"><span class="pre">n3</span></code> and <code class="docutils literal notranslate"><span class="pre">n4</span></code> are identification numbers for the user,
-not read by the functions. The methods <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Su"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Su()</span></code></a> to
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw_y" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Sw_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Sw_y()</span></code></a>, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bm" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Bm()</span></code></a> and
-<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bb" title="bfscplate2d.bfscplate2d.BFSCPlate2D.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCPlate2D.update_Bb()</span></code></a> evaluate the interpolation functions and the
-strain operators at a point <span class="math notranslate nohighlight">\((\xi, \eta)\)</span>, e.g. to integrate a load or to
-recover the strains; the <code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of the module do not use
-them.</p>
-</section>
-<section id="integration-points">
-<h2>Integration points<a class="headerlink" href="#integration-points" title="Link to this heading">#</a></h2>
-<p>All the functions except <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> integrate over the element with
-<code class="docutils literal notranslate"><span class="pre">nint</span></code> by <code class="docutils literal notranslate"><span class="pre">nint</span></code> Gauss-Legendre points, the products of the
-one-dimensional points and weights of
-<a class="reference internal" href="api_quadrature.html#bfscplate2d.quadrature.get_points_weights" title="bfscplate2d.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfscplate2d.quadrature.get_points_weights()</span></code></a>, given to each function.
-The number of points that integrates each matrix exactly is given in the
-Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a>.</p>
+not read by the functions. A laminate that varies over the plate is
+represented by a different <code class="docutils literal notranslate"><span class="pre">ABD</span></code> in each element.</p>
 </section>
 </section>
 
@@ -671,20 +901,20 @@ Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscpla
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="plate_theory.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">BFSC plate finite element - bfscplate2d</p>
+        <p class="prev-next-title"><span class="section-number">1. </span>Plate theory</p>
       </div>
     </a>
     <a class="right-next"
-       href="assembling.html"
+       href="element_matrices.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Assembling a model</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Element matrices and internal forces</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -695,7 +925,7 @@ Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscpla
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -707,11 +937,13 @@ Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscpla
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node-ordering">Node ordering</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#degrees-of-freedom-of-a-node">Degrees of freedom of a node</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuity-between-elements">Continuity between elements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-the-element">Properties of the element</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-points">Integration points</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-interpolation-of-w-must-be-c1">2.1. Why the interpolation of <span class="math notranslate nohighlight">\(w\)</span> must be C<sup>1</sup></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry-and-natural-coordinates">2.2. Geometry and natural coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hermite-polynomials-and-interpolation-functions">2.3. Hermite polynomials and interpolation functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#degrees-of-freedom-and-interpolation">2.4. Degrees of freedom and interpolation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivatives-and-strain-operators">2.5. Derivatives and strain operators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuity-between-elements">2.6. Continuity between elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes-of-the-element">2.7. Attributes of the element</a></li>
 </ul>
   </nav></div>
 
@@ -737,8 +969,8 @@ Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscpla
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -771,7 +1003,7 @@ Notes of <a class="reference internal" href="api_bfscplate2d.html#module-bfscpla
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>

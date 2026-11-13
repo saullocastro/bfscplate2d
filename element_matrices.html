@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Element matrices and internal forces &#8212; bfscplate2d 0.5.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'element_matrices';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Follower pressure" href="follower_pressure.html" />
+    <link rel="prev" title="2. The BFSC plate element" href="element.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.5.1" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="plate_theory.html">
+    Plate theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC plate element
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembly, loads and boundary conditions
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfscplate2d
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">3. </span>Element matrices and internal forces</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="element-matrices-and-internal-forces">
+<h1><span class="section-number">3. </span>Element matrices and internal forces<a class="headerlink" href="#element-matrices-and-internal-forces" title="Link to this heading">#</a></h1>
+<p>With the interpolation of <a class="reference internal" href="element.html"><span class="doc">The BFSC plate element</span></a>, the strain energy of
+Eq. <a class="reference internal" href="plate_theory.html#equation-pt-strain-energy">(1.5)</a> becomes a function of the 40 element degrees of
+freedom <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>. Its gradient is the internal force vector, and
+its Hessian the tangent stiffness matrix, which the library splits into the
+matrices that the linear and nonlinear analyses of <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a> need.
+This chapter derives them, as computed by the functions of
+<a class="reference internal" href="api_bfscplate2d.html#module-bfscplate2d.bfscplate2d" title="bfscplate2d.bfscplate2d"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfscplate2d.bfscplate2d</span></code></a>, and the numerical integration that the
+functions use.</p>
+<section id="discrete-strain-energy-and-internal-forces">
+<h2><span class="section-number">3.1. </span>Discrete strain energy and internal forces<a class="headerlink" href="#discrete-strain-energy-and-internal-forces" title="Link to this heading">#</a></h2>
+<p>Substituting Eq. <a class="reference internal" href="element.html#equation-el-strain-operators">(2.7)</a> in Eq. <a class="reference internal" href="plate_theory.html#equation-pt-strain-energy">(1.5)</a>,
+with the membrane forces and moments</p>
+<div class="math notranslate nohighlight" id="equation-em-resultants">
+<span class="eqno">(3.1)<a class="headerlink" href="#equation-em-resultants" title="Link to this equation">#</a></span>\[\boldsymbol{N} = \boldsymbol{A} \left( \boldsymbol{B}_m + \frac{1}{2}
+    \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e
+    + \boldsymbol{B} \boldsymbol{B}_b \boldsymbol{u}_e, \qquad
+\boldsymbol{M} = \boldsymbol{B} \left( \boldsymbol{B}_m + \frac{1}{2}
+    \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e
+    + \boldsymbol{D} \boldsymbol{B}_b \boldsymbol{u}_e\]</div>
+<p>the first variation <span class="math notranslate nohighlight">\(\delta U = \delta\boldsymbol{u}_e^\top
+\boldsymbol{F}_{int}\)</span> gives the internal force vector of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_fint" title="bfscplate2d.bfscplate2d.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a></p>
+<div class="math notranslate nohighlight" id="equation-em-fint">
+<span class="eqno">(3.2)<a class="headerlink" href="#equation-em-fint" title="Link to this equation">#</a></span>\[\boldsymbol{F}_{int} = \frac{\partial U}{\partial \boldsymbol{u}_e}
+    = \int_A \left( (\boldsymbol{B}_m + \boldsymbol{B}_{NL})^\top
+    \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M} \right) dA\]</div>
+<p>which always includes the nonlinear terms. For small displacements
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL} \to \boldsymbol{0}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int} \approx
+\boldsymbol{K}_{C0} \boldsymbol{u}_e\)</span>, the linear relation below.</p>
+</section>
+<section id="tangent-stiffness-matrix">
+<h2><span class="section-number">3.2. </span>Tangent stiffness matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
+<p>The derivative of Eq. <a class="reference internal" href="#equation-em-fint">(3.2)</a> has two parts: the derivative of
+<span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span>, with <span class="math notranslate nohighlight">\(\partial
+\boldsymbol{\epsilon}/\partial \boldsymbol{u}_e = \boldsymbol{B}_m +
+\boldsymbol{B}_{NL}\)</span>, and the derivative of <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}^\top\)</span> at
+constant <span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span>. Writing
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}^\top \boldsymbol{N} = (\boldsymbol{S}^w_{,x})^\top (N_{xx}
+w_{,x} + N_{xy} w_{,y}) + (\boldsymbol{S}^w_{,y})^\top (N_{xy} w_{,x} +
+N_{yy} w_{,y})\)</span>, the second part is</p>
+<div class="math notranslate nohighlight" id="equation-em-geometric-term">
+<span class="eqno">(3.3)<a class="headerlink" href="#equation-em-geometric-term" title="Link to this equation">#</a></span>\[\begin{split}\frac{\partial (\boldsymbol{B}_{NL}^\top \boldsymbol{N})}{\partial
+    \boldsymbol{u}_e} \bigg|_{\boldsymbol{N}} =
+\boldsymbol{G}^\top \begin{bmatrix} N_{xx} &amp; N_{xy} \\ N_{xy} &amp; N_{yy}
+    \end{bmatrix} \boldsymbol{G}\end{split}\]</div>
+<p>and the tangent stiffness matrix is</p>
+<div class="math notranslate nohighlight" id="equation-em-tangent">
+<span class="eqno">(3.4)<a class="headerlink" href="#equation-em-tangent" title="Link to this equation">#</a></span>\[\frac{\partial \boldsymbol{F}_{int}}{\partial \boldsymbol{u}_e}
+= \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}
+  + \boldsymbol{K}_G\]</div>
+<p>with the terms below. It is symmetric, the Hessian of <span class="math notranslate nohighlight">\(U\)</span>.</p>
+<p><strong>Linear constitutive stiffness</strong> <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>,
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, the terms without <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-em-kc0">
+<span class="eqno">(3.5)<a class="headerlink" href="#equation-em-kc0" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{C0} = \int_A \left( \boldsymbol{B}_m^\top \boldsymbol{A}
+    \boldsymbol{B}_m + \boldsymbol{B}_m^\top \boldsymbol{B}
+    \boldsymbol{B}_b + \boldsymbol{B}_b^\top \boldsymbol{B}
+    \boldsymbol{B}_m + \boldsymbol{B}_b^\top \boldsymbol{D}
+    \boldsymbol{B}_b \right) dA\]</div>
+<p>the membrane stiffness, the membrane-bending coupling, null for
+<span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span>, and the bending stiffness; independent of
+the displacements.</p>
+<p><strong>Nonlinear constitutive stiffness</strong> <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} =
+\boldsymbol{K}_{C0L} + \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}\)</span>, the
+terms with <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-em-kcnl">
+<span class="eqno">(3.6)<a class="headerlink" href="#equation-em-kcnl" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{C0L} = \int_A \left( \boldsymbol{B}_m^\top \boldsymbol{A}
+    + \boldsymbol{B}_b^\top \boldsymbol{B} \right) \boldsymbol{B}_{NL}
+    \, dA, \qquad
+\boldsymbol{K}_{CL0} = \boldsymbol{K}_{C0L}^\top, \qquad
+\boldsymbol{K}_{CLL} = \int_A \boldsymbol{B}_{NL}^\top \boldsymbol{A}
+    \boldsymbol{B}_{NL} \, dA\]</div>
+<p>the first two linear, the third quadratic in the slopes.</p>
+<p><strong>Geometric stiffness</strong>, Eq. <a class="reference internal" href="#equation-em-geometric-term">(3.3)</a>, split according to
+the two parts of <span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> in Eq. <a class="reference internal" href="#equation-em-resultants">(3.1)</a>:</p>
+<div class="math notranslate nohighlight" id="equation-em-kg">
+<span class="eqno">(3.7)<a class="headerlink" href="#equation-em-kg" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{K}_G = \int_A \boldsymbol{G}^\top \begin{bmatrix} N_{xx} &amp;
+    N_{xy} \\ N_{xy} &amp; N_{yy} \end{bmatrix} \boldsymbol{G} \, dA,
+\qquad
+\{N_{xx}, N_{yy}, N_{xy}\}^\top = \boldsymbol{A} \boldsymbol{B}_m
+    \boldsymbol{u}_e + \boldsymbol{B} \boldsymbol{B}_b \boldsymbol{u}_e\end{split}\]</div>
+<p>the matrix of the membrane forces of the linear strains, linear in
+<span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL} = \boldsymbol{K}_{GLL}\)</span>, the
+same integral with the membrane forces of the nonlinear strains
+<span class="math notranslate nohighlight">\(\boldsymbol{A} \{w_{,x}^2/2, w_{,y}^2/2, w_{,x} w_{,y}\}^\top\)</span>, quadratic
+in the slopes.</p>
+<p>The functions group the terms as follows:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Matrix</p></th>
+<th class="head"><p>Depends on <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span></p></th>
+<th class="head"><p>Pairs of degrees of freedom written</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KC0" title="bfscplate2d.bfscplate2d.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span></p></td>
+<td><p>no</p></td>
+<td><p>all, 40 by 40</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KCNL" title="bfscplate2d.bfscplate2d.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span>
+(KC0L + KCL0 + KCLL + KGLL)</p></td>
+<td><p>linear and quadratic in the slopes, null for null slopes</p></td>
+<td><p>in-plane with out-of-plane, both orders, and out-of-plane with
+out-of-plane</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of Eq. <a class="reference internal" href="#equation-em-kg">(3.7)</a></p></td>
+<td><p>linear</p></td>
+<td><p>out-of-plane with out-of-plane</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a></p></td>
+<td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of given <code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code>, <code class="docutils literal notranslate"><span class="pre">Nxy</span></code>, uniform over
+the element</p></td>
+<td><p>no</p></td>
+<td><p>out-of-plane with out-of-plane</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL}\)</span> are in one function
+because both vanish in the undeformed state and are needed only by the
+nonlinear analysis, whereas <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is also the matrix of the
+linear buckling analysis. Since <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span>
+have entries only in the columns of <span class="math notranslate nohighlight">\(w\)</span> to <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, no nonlinear term
+couples two in-plane degrees of freedom.</p>
+<p>Because the internal forces and the three stiffness functions use the same
+operators and the same integration points, KC0 + KCNL + KG is the exact
+Jacobian of the internal forces computed with those points, whatever their
+number: Newton-Raphson iterations with this tangent converge quadratically,
+see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>. This is checked by Taylor tests and finite differences
+in <code class="docutils literal notranslate"><span class="pre">tests/test_tangent_consistency.py</span></code>.</p>
+</section>
+<section id="geometric-stiffness-of-a-linear-buckling-analysis">
+<h2><span class="section-number">3.3. </span>Geometric stiffness of a linear buckling analysis<a class="headerlink" href="#geometric-stiffness-of-a-linear-buckling-analysis" title="Link to this heading">#</a></h2>
+<p>At the solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of a linear static analysis, the
+membrane forces of Eq. <a class="reference internal" href="#equation-em-kg">(3.7)</a> are those of the pre-buckling state of
+the plate, with its boundary conditions and the distribution of the load,
+and <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> computed with <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> is proportional to
+the load. <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a> gives the same matrix for membrane forces
+prescribed for each element, positive in tension, without a static
+analysis. The two coincide when the static solution has uniform membrane
+forces; they differ when the edges, the supports or the application of the
+load make the pre-buckling state non-uniform, e.g. nodal forces at an edge
+or constrained in-plane displacements, see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>.</p>
+</section>
+<section id="mass-matrix">
+<h2><span class="section-number">3.4. </span>Mass matrix<a class="headerlink" href="#mass-matrix" title="Link to this heading">#</a></h2>
+<p>The kinetic energy of the displacements of Eq. <a class="reference internal" href="plate_theory.html#equation-pt-displacements">(1.1)</a>, for
+a density <code class="docutils literal notranslate"><span class="pre">rho</span></code> uniform through the thickness <code class="docutils literal notranslate"><span class="pre">h</span></code> and the reference
+surface at mid-thickness, gives the consistent mass matrix of
+<a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a></p>
+<div class="math notranslate nohighlight" id="equation-em-m">
+<span class="eqno">(3.8)<a class="headerlink" href="#equation-em-m" title="Link to this equation">#</a></span>\[\boldsymbol{M} = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^\top
+    \boldsymbol{S}^u + (\boldsymbol{S}^v)^\top \boldsymbol{S}^v
+    + (\boldsymbol{S}^w)^\top \boldsymbol{S}^w \right)
+    + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^\top
+    \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^w_{,y})^\top
+    \boldsymbol{S}^w_{,y} \right) \right) dA\]</div>
+<p>The terms with <span class="math notranslate nohighlight">\(h^3/12\)</span> are the rotary inertia of the normal, small for thin
+plates. The terms with <span class="math notranslate nohighlight">\(\int \rho z \, dz\)</span>, which couple <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> with
+the slopes of <span class="math notranslate nohighlight">\(w\)</span>, vanish for the reference surface at mid-thickness and
+are not included: <code class="docutils literal notranslate"><span class="pre">M</span></code> has no entries between in-plane and out-of-plane
+degrees of freedom. For a laminate of plies of different densities, <code class="docutils literal notranslate"><span class="pre">rho</span></code>
+can be the mean density, which gives the mass per unit area <span class="math notranslate nohighlight">\(\rho h\)</span>
+exactly, but not the rotary inertia <span class="math notranslate nohighlight">\(\int \rho z^2 dz\)</span>. The integrands are
+polynomials, integrated in closed form: <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> takes no
+integration points. The matrix is independent of <code class="docutils literal notranslate"><span class="pre">ABD</span></code> and of the
+displacements.</p>
+</section>
+<section id="numerical-integration">
+<h2><span class="section-number">3.5. </span>Numerical integration<a class="headerlink" href="#numerical-integration" title="Link to this heading">#</a></h2>
+<p>All the functions except <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_M" title="bfscplate2d.bfscplate2d.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> integrate over the element with
+the products of the one-dimensional Gauss-Legendre points and weights of
+<a class="reference internal" href="api_quadrature.html#bfscplate2d.quadrature.get_points_weights" title="bfscplate2d.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfscplate2d.quadrature.get_points_weights()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">nint</span></code> along each of
+<span class="math notranslate nohighlight">\(\xi\)</span> and <span class="math notranslate nohighlight">\(\eta\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-em-quadrature">
+<span class="eqno">(3.9)<a class="headerlink" href="#equation-em-quadrature" title="Link to this equation">#</a></span>\[\int_A f \, dA = \frac{lex \, ley}{4} \int_{-1}^{1} \int_{-1}^{1} f \,
+    d\xi \, d\eta \approx \frac{lex \, ley}{4} \sum_{i=1}^{nint}
+    \sum_{j=1}^{nint} weights_i \, weights_j \, f(points_i, points_j)\]</div>
+<p>with <code class="docutils literal notranslate"><span class="pre">0.25*lex*ley*weight</span></code> of the code the factor of each point. The
+points are the roots of the Legendre polynomial of degree <code class="docutils literal notranslate"><span class="pre">nint</span></code>, and the
+rule integrates exactly the polynomials of degree up to <span class="math notranslate nohighlight">\(2 \, nint - 1\)</span> in
+each variable. Since the interpolation functions are bicubic, the integrand
+of each matrix is a polynomial whose degree, counted from those of the
+operators (<span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span> and the
+membrane forces of the linear strains of degree at most 3 in each variable,
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> of degree at most 6), gives the number of points for
+an exact integration with a constant <code class="docutils literal notranslate"><span class="pre">ABD</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Matrix or vector</p></th>
+<th class="head"><p>Maximum degree in <span class="math notranslate nohighlight">\(\xi\)</span> or <span class="math notranslate nohighlight">\(\eta\)</span></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">nint</span></code> for exact integration</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>KC0, <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG_cte_N" title="bfscplate2d.bfscplate2d.update_KG_cte_N"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_cte_N()</span></code></a></p></td>
+<td><p>6</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>KG of <a class="reference internal" href="api_bfscplate2d.html#bfscplate2d.bfscplate2d.update_KG" title="bfscplate2d.bfscplate2d.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a></p></td>
+<td><p>9</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>KCNL, internal forces</p></td>
+<td><p>12</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>follower pressure, first-order area vector, see
+<a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a></p></td>
+<td><p>6</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>follower pressure, complete area vector</p></td>
+<td><p>8</p></td>
+<td><p>5</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With fewer points the matrices are approximate but remain consistent with
+each other, as stated above. The same <code class="docutils literal notranslate"><span class="pre">points</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> are passed
+to every function of an analysis that combines them, e.g. <code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">=</span> <span class="pre">7</span></code>,
+which integrates exactly every term of a nonlinear static analysis.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="element.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>The BFSC plate element</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="follower_pressure.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Follower pressure</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-strain-energy-and-internal-forces">3.1. Discrete strain energy and internal forces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">3.2. Tangent stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-stiffness-of-a-linear-buckling-analysis">3.3. Geometric stiffness of a linear buckling analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrix">3.4. Mass matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-integration">3.5. Numerical integration</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/element_matrices.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
