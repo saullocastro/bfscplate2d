@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.5.0 (2026-10-26)
+## 0.5.1 (2026-11-13)
 
 ### Breaking
 
@@ -54,13 +54,23 @@ The dates of the released versions are those of their tagged commits.
 - D2: Notes and References of the theory: Hermite interpolation of the
   BFSC element, classical laminated plate theory with the von Karman
   strains, the element matrices, the internal forces and the quadrature.
-- D3: Sphinx documentation in `doc/`, with a user guide (the element,
-  assembling a model, the analyses, the follower pressure) and usage
-  examples `ex_*.rst` with the code of the tests.
+- D3: Sphinx documentation in `doc/`, with the theory in numbered
+  chapters (plate theory, the BFSC element, the element matrices, the
+  follower pressure, assembling a model, the analyses) and worked
+  examples, the notebooks `notebooks/ex_*.ipynb` rendered with
+  nbsphinx-link: the code at the top level, the theory before each step,
+  plots and tables against the references, with the boundary conditions
+  and the number of integration points of the tests.
+- Examples in the docstrings of `BFSCPlate2D`, `update_KC0`,
+  `update_KCNL`, `update_KG`, `update_M`, `update_fint`,
+  `update_fext_follower` and `get_points_weights`.
+- `element.rst` gives the reason the in-plane interpolation has no cross
+  derivatives (Castro and Jansen 2021, Sec. 6); a page describes the
+  documentation levels.
 - Solving with structsolve: the callables of `structsolve.Analysis` for an
   element loop, the boundary conditions, the follower pressure and the
-  convergence criterion, in `analyses.rst` and
-  `ex_structsolve_nonlinear.rst`.
+  convergence criterion, in `analyses.rst` and the notebook
+  `ex_structsolve_nonlinear.ipynb`.
 - The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
   `\boldsymbol{S}^w` and their derivatives, e.g. `\boldsymbol{S}^w_{,x}`,
   as in pyfe3d.
@@ -119,6 +129,23 @@ The dates of the released versions are those of their tagged commits.
 - `structsolve.lb` and `structsolve.freq` cross-check the solutions of
   `tests/test_linear_buckling_iso_SSSS.py` and
   `tests/test_natural_frequency.py`.
+- Module docstrings, Notes and References of the tests, and a source for
+  every reference value: the clamped and simply supported plate in
+  compression against the exact buckling coefficient of Pflueger (1975)
+  instead of the value read from the figure of Bruhn; the centre
+  deflection of the plate under a central point load against Eq. (147)
+  of Timoshenko and Woinowsky-Krieger (1959), where only the sum of the
+  forces was checked; the plate built in at one edge, free at the
+  opposite one and simply supported at the other two under a uniform
+  pressure against Art. 46, Table 39, of the same book, instead of the
+  cantilever under nodal edge forces, whose reference value had no
+  source; the closed form of the natural frequency from Leissa (1969).
+- Simply supported edges constrain `w` and its derivative along the
+  edge; the non-linear axial-load test uses `nint = 7`.
+
+### Continuous integration
+
+- The test matrix runs every job to the end (`fail-fast: false`).
 
 ## 0.4.1 (2026-10-22)
 
