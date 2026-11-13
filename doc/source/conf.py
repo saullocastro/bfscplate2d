@@ -43,6 +43,7 @@ extensions = [
     'numpydoc',
     'sphinx.ext.mathjax',
     'nbsphinx',
+    'nbsphinx_link',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -54,6 +55,13 @@ templates_path = ['_templates']
 exclude_patterns = ['**.ipynb_checkpoints']
 
 default_role = 'math'
+
+# equations numbered per chapter of the numbered theory toctree, e.g. (3.2),
+# and referred to as Eq. (3.2) with ``Eq. :eq:`label```
+numfig = True
+math_numfig = True
+numfig_secnum_depth = 1
+math_eqref_format = '({number})'
 
 # the methods of the element class are documented by autodoc, with
 # ``:members:``, and its attributes in the docstring of the class

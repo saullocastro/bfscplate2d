@@ -4,7 +4,8 @@ The package metadata, including the version, is in ``pyproject.toml``.
 This file keeps only what ``pyproject.toml`` cannot express: the Cython
 extension with its compiler flags per platform and the file
 ``bfscplate2d/version.py``, written from the version of ``pyproject.toml``
-and read by ``bfscplate2d.version`` and ``doc/source/conf.py``.
+and read by ``bfscplate2d.version`` and by the Sphinx configuration of the
+documentation.
 """
 import platform
 import os

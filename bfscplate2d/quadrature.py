@@ -53,6 +53,15 @@ def get_points_weights(nint):
     integrate each element matrix exactly are given in the Notes of
     :mod:`bfscplate2d.bfscplate2d`.
 
+    Examples
+    --------
+    >>> from bfscplate2d.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(3)
+    >>> print(points)
+    [-0.77459667  0.          0.77459667]
+    >>> print(weights.sum())
+    2.0
+
     """
     points = [0]*nint
     weights = [0]*nint

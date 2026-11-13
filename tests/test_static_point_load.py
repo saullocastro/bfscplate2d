@@ -1,3 +1,52 @@
+r"""Linear static analysis of a plate under a central point load
+
+A rectangular isotropic plate of ``a = 3`` by ``b = 7``, thickness
+``h = 0.005``, on a mesh of 29 by 29 nodes, simply supported, with `w`
+and its derivative along the edge constrained at the nodes of the four
+edges, and `u` and `v` at every node, under a unit
+transverse force at the central node. The stiffness matrix is assembled
+with :func:`bfscplate2d.bfscplate2d.update_KC0`. The test checks that the
+force vector sums to the applied force, and the deflection at the centre
+against the series solution of Timoshenko and Woinowsky-Krieger (1959),
+Eq. (147), with a relative tolerance of ``1e-3``.
+
+Units: N, m, Pa.
+
+Notes
+-----
+The deflection at the centre of the simply supported rectangular plate of
+sides `a` and `b \ge a` under a load `P` at its centre is Eq. (147) of [1]_
+
+.. math::
+
+    w_{max} = \frac{P a^2}{2 \pi^3 D} \sum_{m = 1, 3, ...} \frac{1}{m^3}
+        \left( \tanh \alpha_m - \frac{\alpha_m}{\cosh^2 \alpha_m} \right)
+        = \alpha \frac{P a^2}{D}, \qquad
+    \alpha_m = \frac{m \pi b}{2 a}, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+For `b/a = 7/3` the series gives `\alpha = 0.016785`, with the terms up to
+`m = 1001`, between the values 0.01651 for `b/a = 2` and 0.01690 for `b/a =
+3` of Table 23 of [1]_; for the ratios of the table the series agrees with
+it within 0.2 %. For the plate of the test, `w_{max} = 6.5986 \times
+10^{-5}`.
+
+Along an edge `x` = constant the interpolated `w` depends only on `w` and
+`w_{,y}` at the two nodes of the edge, so `w = 0` on the whole edge needs
+both nodal values constrained (`w` and `w_{,x}` on an edge `y` =
+constant). The deflection under the point load converges from below with
+the mesh, with relative errors of -0.92 %, -0.23 % and -0.057 % with 5 by
+9, 9 by 17 and 17 by 33 nodes, -0.056 % with the 29 by 29 nodes of the
+test and -0.006 % with 49 by 97 nodes, which justifies the tolerance. With
+`w` alone constrained at the nodes of the edges the errors differ by less
+than 0.07 % of the deflection.
+
+References
+----------
+.. [1] Timoshenko, S., and Woinowsky-Krieger, S., Theory of Plates and
+   Shells, 2nd ed., McGraw-Hill, New York, 1959.
+
+"""
 import sys
 sys.path.append('..')
 
@@ -74,9 +123,12 @@ def test_static_point_load(plot=False):
     # applying boundary conditions
     bk = np.zeros(KC0.shape[0], dtype=bool)
 
-    # simply supported
-    check = isclose(x, 0) | isclose(x, a) | isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] = check
+    # simply supported: w and its derivative along the edge
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
 
     # eliminating all u,v displacements
     bk[0::DOF] = True
@@ -114,6 +166,12 @@ def test_static_point_load(plot=False):
         plt.contourf(xmesh, ymesh, w, levels=levels)
         plt.colorbar()
         plt.show()
+
+    # reference deflection of the Notes, b/a = 7/3
+    D = E*h**3/(12*(1 - nu**2))
+    w_ref = 0.016785*fmid*a**2/D
+    assert isclose(w.max(), u[6::DOF][check][0])
+    assert isclose(w.max(), w_ref, rtol=1e-3)
 
 if __name__ == '__main__':
     test_static_point_load(plot=True)

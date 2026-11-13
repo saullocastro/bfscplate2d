@@ -1,20 +1,22 @@
-"""Nonlinear static analysis of an axially compressed plate
+r"""Nonlinear static analysis of an axially compressed plate
 
-The plate is simply supported, compressed along x and given a small
-transverse load at the centre, so that it deflects out of plane instead of
-sitting on the trivial flat branch.
+The plate is simply supported, with `w` and its derivative along the edge
+constrained at the nodes of the four edges, compressed along x and given a
+small transverse load at the centre, so that it deflects out of plane
+instead of sitting on the trivial flat branch. The element matrices and
+the internal forces are integrated with ``nint = 7`` points along each
+direction. The first buckling load and the maximum deflections are also
+checked against the values stored in the test, with a relative tolerance of
+``1e-3``.
 
 Two regimes are checked:
 
 ``test_static``
     a transverse load small enough that the response is still the linearised
-    one, so it can be compared against ``(KC0 + KG(P))**-1 f``, the exact
-    answer of the eigenvalue-free buckling amplification problem. That pins
-    the result to physics rather than to a recorded number. The old
-    reference value for this case was 6.56e-5, an amplification of 10.4 over
-    the transverse-load-only response, where ``1/(1 - P/Pcr) = 2.49`` is the
-    theoretical ceiling; it was an artefact of an internal force vector that
-    counted its geometric term twice.
+    one, so it can be compared against the solution of the linear static
+    problem with the stiffness reduced by the geometric stiffness of the
+    axial load, the exact answer of the buckling amplification problem.
+    That pins the result to physics rather than to a recorded number.
 
 ``test_large_deflection``
     a transverse load large enough to reach w/h of about 2.6, where the
@@ -26,6 +28,48 @@ structsolve.Analysis, whose callables are those of ``Callables``, and also
 assert that Newton-Raphson converges quadratically, which only happens when
 KC0 + KCNL(u) + KG(u) is the exact derivative of fint. See
 test_tangent_consistency.py, which checks that property directly.
+
+Notes
+-----
+The linearised answer of ``test_static`` is
+
+.. math::
+
+    \boldsymbol{u} = \left( \boldsymbol{K}_{C0} + \boldsymbol{K}_G(P)
+    \right)^{-1} \boldsymbol{F}_{ext}
+
+with `\boldsymbol{K}_G(P)` of the static solution of the axial load `P`
+alone. Its amplification over the response to the transverse load alone is
+below the single-mode ceiling `1/(1 - P/P_{cr})`, `P_{cr}` the first
+buckling load, since a point load excites many modes.
+
+Along an edge `x` = constant the interpolated `w` depends only on `w` and
+`w_{,y}` at the two nodes of the edge, so `w = 0` on the whole edge needs
+both nodal values constrained (`w` and `w_{,x}` on an edge `y` =
+constant). ``nint = 7`` integrates `\boldsymbol{F}_{int}` and
+`\boldsymbol{K}_{CNL}` exactly, see the Notes of
+:mod:`bfscplate2d.bfscplate2d`. The test gives `P_{cr} = 501.72` N, 2.0 %
+below the closed-form value of the simply supported plate under a uniform
+compression [1]_,
+
+.. math::
+
+    P_{cr} = k_c \frac{\pi^2 D}{b}, \qquad
+    k_c = \left( \frac{m b}{a} + \frac{a}{m b} \right)^2, \qquad
+    D = \frac{E h^3}{12 (1 - \nu^2)}
+
+with `m = 2` half-waves along `x`, `k_c = 4.0446` and `P_{cr} = 511.77`
+N; the test has `v` constrained on the loaded edges and the force `P/n_y`
+at each node of the loaded edges, not a uniform compression. With `w` alone
+constrained at the nodes of the edges and ``nint = 4``, `P_{cr}` is
+501.59 N, and the deflections of ``test_static`` and
+``test_large_deflection`` are 0.008 % larger.
+
+References
+----------
+.. [1] Timoshenko, S. P., and Gere, J. M., Theory of Elastic Stability,
+   2nd ed., McGraw-Hill, New York, 1961.
+
 """
 import sys
 
@@ -64,7 +108,7 @@ class Model(object):
 
 
 def build_model():
-    points, weights = get_points_weights(nint=4)
+    points, weights = get_points_weights(nint=7)
     lam = isotropic_plate(thickness=h, E=E, nu=nu)
 
     xlin = np.linspace(0, a, nx)
@@ -128,13 +172,15 @@ def build_model():
     KC0 = coo_matrix((KC0v, (KC0r, KC0c)), shape=(N, N)).tocsc()
 
     # applying boundary conditions
-    # simply supported
+    # simply supported: w and its derivative along the edge
     bk = np.zeros(N, dtype=bool)
-    checkSS = isclose(x, 0) | isclose(x, a)
-    bk[3::DOF] = checkSS
-    bk[6::DOF] = checkSS
-    checkSS = isclose(y, 0) | isclose(y, b)
-    bk[6::DOF] += checkSS
+    edges_x = isclose(x, 0) | isclose(x, a)
+    edges_y = isclose(y, 0) | isclose(y, b)
+    bk[6::DOF] = edges_x | edges_y
+    bk[8::DOF] = edges_x
+    bk[7::DOF] = edges_y
+    # v on the loaded edges
+    bk[3::DOF] = edges_x
     check = isclose(x, a/2.)
     bk[0::DOF] = check
     bu = ~bk
@@ -322,7 +368,7 @@ def test_static(plot=False):
 
     load_cr, u_axial = linear_buckling_load(m, load)
     print('load_cr', load_cr)
-    assert isclose(load_cr, 501.59022126865693, rtol=1e-3)
+    assert isclose(load_cr, 501.7188523594032, rtol=1e-3)
     assert load < load_cr
 
     # the exact linearised answer: the transverse load resisted by the
@@ -361,11 +407,11 @@ def test_static(plot=False):
     assert isclose(w.max(), w_lin, rtol=1e-3)
 
     # a point load excites many modes, so the amplification stays below the
-    # single-mode ceiling 1/(1 - P/Pcr); it must still exceed one
+    # single-mode ceiling; it must still exceed one
     amplification = w.max()/w_bend
     assert 1. < amplification < 1./(1. - load/load_cr)
 
-    assert isclose(w.max(), 1.1104539457685102e-05, rtol=1e-3)
+    assert isclose(w.max(), 1.1103643117599563e-05, rtol=1e-3)
 
 
 def test_large_deflection(plot=False):
@@ -410,7 +456,7 @@ def test_large_deflection(plot=False):
     # prediction, by a wide margin at this deflection
     assert w.max() < 0.6*w_lin
 
-    assert isclose(w.max(), 2.5826494310546447e-03, rtol=1e-3)
+    assert isclose(w.max(), 2.5824497926192685e-03, rtol=1e-3)
 
 
 if __name__ == '__main__':
