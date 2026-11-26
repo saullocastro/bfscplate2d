@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.5.1 (2026-11-13)
+## 0.5.2 (2026-11-26)
 
 ### Breaking
 
@@ -99,6 +99,9 @@ The dates of the released versions are those of their tagged commits.
   `derive_bfscplate2d_follower_pressure.py`, which contains a backslash, is
   a raw string. Code identifiers, plain-text comments and README.md are
   unchanged.
+- The installation page refers to `requirements.txt` for the required
+  version of structsolve, without repeating the number.
+- Typo "Integration poins" in the Parameters of the `update_*` functions.
 
 ### Derivations
 
@@ -142,6 +145,14 @@ The dates of the released versions are those of their tagged commits.
   source; the closed form of the natural frequency from Leissa (1969).
 - Simply supported edges constrain `w` and its derivative along the
   edge; the non-linear axial-load test uses `nint = 7`.
+- The docstrings of `tests/test_static_axial_load_nonlinear.py`,
+  `tests/test_tangent_consistency.py` and
+  `test_cantilever_large_deflection_against_panels` of
+  `tests/test_follower_pressure.py` say what is verified and against what,
+  with the explanations in Notes. The Notes of `skew_reference` of
+  `tests/test_follower_pressure.py` state the contour and area integrals
+  of the skew part of the load stiffness matrix that the function
+  computes. No test added or removed, no asserted value changed.
 
 ### Continuous integration
 

@@ -2,8 +2,7 @@ r"""Nonlinear static analysis of an axially compressed plate
 
 The plate is simply supported, with `w` and its derivative along the edge
 constrained at the nodes of the four edges, compressed along x and given a
-small transverse load at the centre, so that it deflects out of plane
-instead of sitting on the trivial flat branch. The element matrices and
+small transverse load at the centre. The element matrices and
 the internal forces are integrated with ``nint = 7`` points along each
 direction. The first buckling load and the maximum deflections are also
 checked against the values stored in the test, with a relative tolerance of
@@ -12,25 +11,30 @@ checked against the values stored in the test, with a relative tolerance of
 Two regimes are checked:
 
 ``test_static``
-    a transverse load small enough that the response is still the linearised
-    one, so it can be compared against the solution of the linear static
-    problem with the stiffness reduced by the geometric stiffness of the
-    axial load, the exact answer of the buckling amplification problem.
-    That pins the result to physics rather than to a recorded number.
+    a transverse load small enough that the response is the linearised
+    one, compared against the solution of the linear static problem with
+    the stiffness reduced by the geometric stiffness of the axial load.
 
 ``test_large_deflection``
-    a transverse load large enough to reach w/h of about 2.6, where the
-    membrane stretching of the von Karman terms actually carries the load.
-    Here the plate must come out *stiffer* than the linearised prediction.
+    a transverse load large enough to reach w/h of about 2.6, for which the
+    plate must be stiffer than the linearised prediction.
 
 Both solve the nonlinear equilibrium with the full Newton-Raphson method of
 structsolve.Analysis, whose callables are those of ``Callables``, and also
-assert that Newton-Raphson converges quadratically, which only happens when
-KC0 + KCNL(u) + KG(u) is the exact derivative of fint. See
-test_tangent_consistency.py, which checks that property directly.
+assert that Newton-Raphson converges quadratically.
 
 Notes
 -----
+The transverse load makes the plate deflect out of plane instead of
+staying on the trivial flat branch. In ``test_static`` the reference is the
+exact solution of the buckling amplification problem, such that the result
+is anchored in the theory and not in a stored number. In
+``test_large_deflection`` the membrane stretching of the von Karman terms
+carries the load, hence the stiffer response. The Newton-Raphson method
+converges quadratically only when KC0 + KCNL(u) + KG(u) is the exact
+derivative of fint, the property that test_tangent_consistency.py checks
+directly.
+
 The linearised answer of ``test_static`` is
 
 .. math::
@@ -290,12 +294,17 @@ def newton_raphson(m, fext, increments=1):
     equal load increments. Returns the solution and the residual history of
     the last increment.
 
-    The tangent is rebuilt every iteration, so the residual history is the
-    direct evidence of whether KT is the derivative of fint: a consistent
-    tangent squares the residual each step, an inconsistent one multiplies
-    it by a constant factor instead. The residual is measured with
+    The tangent is rebuilt every iteration. The residual is measured with
     Crisfield's criterion, the convergence criterion of structsolve, with
     its default tolerance of 1e-9.
+
+    Notes
+    -----
+    With the tangent rebuilt every iteration, the residual history shows
+    whether KT is the derivative of fint: a consistent tangent squares the
+    residual each step, an inconsistent one multiplies it by a constant
+    factor instead.
+
     """
     callables = Callables(m, fext)
     an = Analysis(calc_fext=callables.calc_fext,
@@ -319,8 +328,13 @@ def newton_raphson(m, fext, increments=1):
 
 
 def assert_quadratic_convergence(history, epsilon=1.e-9):
-    """The last Newton step must square the residual, not merely shrink it.
+    """Checks that the last Newton step squares the residual
 
+    ``history`` is the residual history of an increment and ``epsilon`` the
+    tolerance that its last entry must reach, in at most 6 iterations.
+
+    Notes
+    -----
     Quadratic convergence is an asymptotic statement, so it is the final
     transition that carries it: the step that takes the iterate from above
     the tolerance to below it. Earlier steps are not a fair test here,
@@ -329,7 +343,12 @@ def assert_quadratic_convergence(history, epsilon=1.e-9):
     still far from converged.
 
     With an inconsistent tangent the residual falls by a roughly constant
-    factor throughout, so no step ever squares it and this fails.
+    factor throughout, so no step ever squares it and the check fails. The
+    floor of 1e-13 keeps the check meaningful once the square of the
+    previous residual drops below the round-off level of the residual
+    itself, about 1e-14: the last increment of ``test_large_deflection``
+    goes from 2.7e-8 to 1.5e-14.
+
     """
     assert history[-1] < epsilon, 'did not reach the tolerance'
     assert len(history) <= 6, (
@@ -337,9 +356,7 @@ def assert_quadratic_convergence(history, epsilon=1.e-9):
         'handful' % len(history))
     assert len(history) >= 2, 'no Newton step was taken'
     prev, curr = history[-2], history[-1]
-    # the floor keeps the test meaningful once prev**2 drops below the
-    # round-off level of the residual itself, about 1e-14 here: the last
-    # increment of test_large_deflection goes 2.7e-8 -> 1.5e-14
+    # quadratic step, with a floor at the round-off level of the residual
     assert curr < max(10.*prev**2, 1.e-13), (
         'the last step took the residual %.3e -> %.3e, which is linear '
         'rather than quadratic; the tangent is not the derivative of fint'
