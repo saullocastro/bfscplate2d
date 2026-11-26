@@ -1044,7 +1044,7 @@ cpdef void update_KC0(BFSCPlate2D plate,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KC0`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -9297,7 +9297,7 @@ cpdef void update_KCNL(double [::1] u,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KCNL`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -14796,7 +14796,7 @@ cpdef void update_KG(double [::1] u,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley``,
         ``ABD`` and ``init_k_KG`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -16384,7 +16384,7 @@ cpdef void update_KG_cte_N(double Nxx,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``init_k_KG`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -20631,7 +20631,7 @@ cpdef void update_fint(double [::1] u,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``ABD`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -21001,7 +21001,7 @@ cpdef void update_fext_follower(double [::1] u,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex`` and ``ley``
         are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
@@ -21407,7 +21407,7 @@ cpdef void update_KCfollower(double [::1] u,
         Its attributes ``c1``, ``c2``, ``c3``, ``c4``, ``lex``, ``ley`` and
         ``init_k_KCfollower`` are read and must have been set.
     points : np.array
-        Integration poins
+        Integration points
         1-D array of size ``nint`` with the points of the one-dimensional
         quadrature in natural coordinates, dimensionless, from ``-1`` to
         ``1``, e.g. from :func:`bfscplate2d.quadrature.get_points_weights`.
