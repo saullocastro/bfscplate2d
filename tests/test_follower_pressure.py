@@ -19,7 +19,7 @@ checks, for both truncations:
    cylinders) applies to a flat plate, hence:
 
    - the skew part of the load stiffness matrix against the contour and
-     area integrals of the follower-pressure derivation of panels, and its
+     area integrals of ``skew_reference``, and its
      symmetry for the boundary conditions and pressures for which those
      integrals vanish;
    - a large-deflection Newton-Raphson analysis of a cantilever plate, in
@@ -54,7 +54,7 @@ mid-surface. The checks above are, in the same order:
 5. the skew part `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
    \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d}` against the contour
    integral over the boundary of the plate and the area integral of the
-   derivatives of `p` of the follower-pressure derivation of panels;
+   derivatives of `p` of the Notes of ``skew_reference``;
 6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
    \boldsymbol{K}_G + \boldsymbol{K}_F` is the Jacobian of the residual
    `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`.
@@ -415,8 +415,39 @@ def skew_reference(m, d, D, p, px, py, npts=8):
 
     Notes
     -----
-    `P(d, D) - P(D, d)`, with the contour and area integrals of the
-    follower-pressure derivation of panels."""
+    With the first-order area vector `\boldsymbol{a}_1 = \{-w_{,x},
+    -w_{,y}, u_{,x} + v_{,y}\}^\top`, the derivative of the virtual work of
+    the pressure for the virtual displacement `d` in the direction `D` is
+
+    .. math::
+
+        P(d, D) = \int_A p \left( -d_u D_{w,x} - d_v D_{w,y}
+        + d_w (D_{u,x} + D_{v,y}) \right) dA
+
+    with `d_u`, `d_v`, `d_w` and `D_u`, `D_v`, `D_w` the displacement
+    fields of ``d`` and ``D``. Its skew part is a divergence,
+
+    .. math::
+
+        P(d, D) - P(D, d) = -\int_A p \left( (d_u D_w - d_w D_u)_{,x}
+        + (d_v D_w - d_w D_v)_{,y} \right) dA
+
+    and, the fields being continuous across the elements, the divergence
+    theorem gives the two integrals computed here,
+
+    .. math::
+
+        P(d, D) - P(D, d) = -\oint_\Gamma p \left( (d_u D_w - d_w D_u) n_x
+        + (d_v D_w - d_w D_v) n_y \right) ds
+        + \int_A \left( p_{,x} (d_u D_w - d_w D_u)
+        + p_{,y} (d_v D_w - d_w D_v) \right) dA
+
+    with `\Gamma` the boundary of the plate and `(n_x, n_y)` its outward
+    normal. The skew part vanishes for a uniform pressure when, on every
+    edge, either `w` or the in-plane displacement normal to the edge is
+    constrained.
+
+    """
     pts, wts = leggauss(npts)
     contour = 0.
     area = 0.
