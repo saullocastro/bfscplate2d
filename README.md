@@ -32,7 +32,7 @@ usage examples solve the nonlinear analyses with
 Citing this library
 ===================
 
-Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.5.1). https://github.com/saullocastro/bfscplate2d.
+Saullo G. P. Castro (2026). Implementation of the BFSC plate finite element in 2D (Version 0.5.2). https://github.com/saullocastro/bfscplate2d.
 
 
 Documentation
@@ -46,7 +46,7 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.5.1 (2026-11-13)
+* version 0.5.2 (2026-11-26)
     - The shape functions renamed from `N` to `S`, as in bfsccylinder: the
       attributes `Nu`, ..., `Nw_y` and the methods `update_Nu`, ...,
       `update_Nw_y` of `BFSCPlate2D` are `Su`, ..., `Sw_y` and
@@ -62,6 +62,8 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       of the analyses with `structsolve.Analysis`
     - Tests against values of the literature with their sources: Pflueger
       (1975), Timoshenko and Woinowsky-Krieger (1959) and Leissa (1969)
+    - Docstrings of the tests: what is verified and against what, with the
+      explanations in Notes
     - The tests solve the nonlinear analyses with `structsolve.Analysis` and
       cross-check the buckling loads and natural frequencies with
       `structsolve.lb` and `structsolve.freq`, requiring `structsolve>=0.9.3`
