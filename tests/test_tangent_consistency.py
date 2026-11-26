@@ -1,21 +1,23 @@
 r"""The tangent stiffness matrix must be the derivative of the internal force
 
-KT = KC0 + KCNL(u) + KG(u) is what every Newton-Raphson built on this element
-uses as the Jacobian of fint. If the two drift apart, the analyses still
-converge, but linearly instead of quadratically, with a contraction factor
-set by how far KT is from the true Jacobian, which on a fine mesh is close
-enough to one to exhaust the iteration cap at every load step.
-
-The check is a directional Taylor test, whose relative error falls
-proportionally to the step h for a consistent tangent and plateaus for an
-inconsistent one. It runs over several random states and directions, in a
-deformed state of the order of the plate thickness so that the nonlinear
-terms actually carry weight, and over a symmetric, an unsymmetric and an
-isotropic laminate, so that the B matrix coupling membrane and bending is
-exercised rather than sitting at zero.
+Checks that KT = KC0 + KCNL(u) + KG(u) is the Jacobian of fint, with a
+directional Taylor test of one element: the relative error of the
+linearization must fall proportionally to the step h. The test runs over
+several random states and directions, in a deformed state of the order of
+the plate thickness, and over a symmetric, an unsymmetric and an isotropic
+laminate.
 
 Notes
 -----
+KT is what every Newton-Raphson method built on this element uses as the
+Jacobian of fint. If the two differ, the analyses still converge, but
+linearly instead of quadratically, with a contraction factor set by how far
+KT is from the true Jacobian, which on a fine mesh is close enough to one
+to exhaust the iteration cap at every load step. The deformed state of the
+order of the plate thickness gives weight to the nonlinear terms, and the
+unsymmetric laminate has a nonzero matrix `\boldsymbol{B}`, such that the
+coupling between membrane and bending is checked as well.
+
 The relative error of the Taylor test in the direction `\boldsymbol{d}` is
 
 .. math::
@@ -27,7 +29,11 @@ The relative error of the Taylor test in the direction `\boldsymbol{d}` is
 with `\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u})
 + \boldsymbol{K}_G(\boldsymbol{u})`. The remainder is `O(h^2)` for the
 exact Jacobian, a relative error `O(h)`, and `O(h)` for an inconsistent
-tangent, a relative error that does not fall with `h`.
+tangent, a relative error that does not fall with `h`. For the exact
+Jacobian the error falls by ten for every decade of `h`, and the ratio
+error/`h`, the constant that multiplies the second derivative, does not
+vary with `h`; an inconsistent tangent spreads this ratio over four orders
+of magnitude.
 
 """
 import sys
@@ -128,17 +134,13 @@ def test_tangent_is_derivative_of_fint(laminate, seed):
     errors = [np.linalg.norm(fint(u + h*d) - f0 - h*KTd)/(h*scale)
               for h in steps]
 
-    # a consistent tangent leaves a second order remainder, so the error
-    # falls by ten for every decade of h; an inconsistent one leaves a first
-    # order remainder, so the error plateaus instead
+    # the error falls by ten for every decade of h
     for h, prev, err in zip(steps[1:], errors[:-1], errors[1:]):
         assert err < 0.2*prev, (
             'error did not fall by ten going to h=%.0e: %.3e -> %.3e; the '
             'tangent is not the derivative of fint' % (h, prev, err))
 
-    # the same statement without an arbitrary scale: error/h is the constant
-    # that multiplies the second derivative, so it must not drift with h.
-    # An inconsistent tangent spreads this over four orders of magnitude
+    # error/h does not vary with h
     coefficients = [err/h for h, err in zip(steps, errors)]
     spread = max(coefficients)/min(coefficients)
     assert spread < 2., (

@@ -54,8 +54,7 @@ mid-surface. The checks above are, in the same order:
 5. the skew part `\boldsymbol{d}^\top \boldsymbol{K}_F \boldsymbol{D} -
    \boldsymbol{D}^\top \boldsymbol{K}_F \boldsymbol{d}` against the contour
    integral over the boundary of the plate and the area integral of the
-   derivatives of `p` of ``theory/shells/follower_pressure/follower_pressure.md``
-   of panels;
+   derivatives of `p` of the follower-pressure derivation of panels;
 6. `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} +
    \boldsymbol{K}_G + \boldsymbol{K}_F` is the Jacobian of the residual
    `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`.
@@ -416,8 +415,8 @@ def skew_reference(m, d, D, p, px, py, npts=8):
 
     Notes
     -----
-    `P(d, D) - P(D, d)`, with the contour and area integrals of
-    ``theory/shells/follower_pressure/follower_pressure.md`` of panels."""
+    `P(d, D) - P(D, d)`, with the contour and area integrals of the
+    follower-pressure derivation of panels."""
     pts, wts = leggauss(npts)
     contour = 0.
     area = 0.
@@ -666,25 +665,29 @@ def newton_raphson(m, bu, func, load, increments=5, tol=1.e-9,
 def test_cantilever_large_deflection_against_panels():
     r"""Square isotropic cantilever, clamped at `x = 0`, the other edges
     free, under a uniform pressure pushing along `+z`, with the tip
-    deflection about 20 times the thickness, `w/a = 0.13`. The follower
-    pressure tilts with the plate and its in-plane component `-p w_{,x}`
-    pulls the tip towards the clamp: the tip deflection is 0.92% larger and
-    the tip displacement `u` 1.9% larger in magnitude than under the dead
-    pressure, against panels within 5e-4 for `w`, i.e. the follower effect
-    itself within 1%. The load stiffness is unsymmetric (free edges) and
-    Newton-Raphson converges quadratically with it
+    deflection about 20 times the thickness, `w/a = 0.13`: the tip
+    displacements `w` and `u` under the dead and the follower pressure
+    against the values ``PANELS`` of the plate_clpt_donnell model of
+    panels, within 1e-3, the follower effect on `w` within 1%, and the
+    quadratic convergence of Newton-Raphson with the unsymmetric load
+    stiffness
 
     Notes
     -----
+    The follower pressure tilts with the plate and its in-plane component
+    `-p w_{,x}` pulls the tip towards the clamp: the tip deflection is
+    0.92% larger and the tip displacement `u` 1.9% larger in magnitude than
+    under the dead pressure. The load stiffness is unsymmetric because of
+    the free edges.
+
     The quadratic convergence is checked as `e_{k+1} \le 10 \, e_k^{1.8}`
     for the relative residuals `e_k` between ``1e-10`` and ``1e-3``. The
     two truncations of the area vector give the same deflection, as the
-    follower-pressure derivation of panels
-    (``theory/shells/follower_pressure/follower_pressure.md``) predicts for
+    follower-pressure derivation of panels predicts for
     the moderate rotations of the von Karman strains.
 
     The reference values ``PANELS`` are those of the plate_clpt_donnell
-    model of panels (commit f7a4275), the same von Karman strains and area
+    model of panels, the same von Karman strains and area
     vector discretized with `m = n = 16` Bardell functions [1]_ and `nx =
     ny = 20` Gauss points, solved with the Newton-Raphson method of
     structsolve with 10 increments and ``relTOL = 1e-11``. Refining from `m
