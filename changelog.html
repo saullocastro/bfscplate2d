@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; bfscplate2d 0.5.1 documentation</title>
+    <title>Changelog &#8212; bfscplate2d 0.5.2 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=b9afe91b"></script>
+    <script src="_static/documentation_options.js?v=8e576371"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -50,7 +50,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.5.1" />
+  <meta name="docsearch:version" content="0.5.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -118,7 +118,7 @@
   
   
   
-    <p class="title logo__title">bfscplate2d 0.5.1 documentation</p>
+    <p class="title logo__title">bfscplate2d 0.5.2 documentation</p>
   
 </a></div>
     
@@ -564,7 +564,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-<span class="gu">## 0.5.1 (2026-11-13)</span>
+<span class="gu">## 0.5.2 (2026-11-26)</span>
 
 <span class="gu">### Breaking</span>
 
@@ -661,6 +661,9 @@ The dates of the released versions are those of their tagged commits.
   <span class="sb">`derive_bfscplate2d_follower_pressure.py`</span>, which contains a backslash, is
   a raw string. Code identifiers, plain-text comments and README.md are
   unchanged.
+<span class="k">-</span><span class="w"> </span>The installation page refers to <span class="sb">`requirements.txt`</span> for the required
+  version of structsolve, without repeating the number.
+<span class="k">-</span><span class="w"> </span>Typo "Integration poins" in the Parameters of the <span class="sb">`update_*`</span> functions.
 
 <span class="gu">### Derivations</span>
 
@@ -704,6 +707,14 @@ The dates of the released versions are those of their tagged commits.
   source; the closed form of the natural frequency from Leissa (1969).
 <span class="k">-</span><span class="w"> </span>Simply supported edges constrain <span class="sb">`w`</span> and its derivative along the
   edge; the non-linear axial-load test uses <span class="sb">`nint = 7`</span>.
+<span class="k">-</span><span class="w"> </span>The docstrings of <span class="sb">`tests/test_static_axial_load_nonlinear.py`</span>,
+  <span class="sb">`tests/test_tangent_consistency.py`</span> and
+  <span class="sb">`test_cantilever_large_deflection_against_panels`</span> of
+  <span class="sb">`tests/test_follower_pressure.py`</span> say what is verified and against what,
+  with the explanations in Notes. The Notes of <span class="sb">`skew_reference`</span> of
+  <span class="sb">`tests/test_follower_pressure.py`</span> state the contour and area integrals
+  of the skew part of the load stiffness matrix that the function
+  computes. No test added or removed, no asserted value changed.
 
 <span class="gu">### Continuous integration</span>
 
