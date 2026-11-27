@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.5.2 (2026-11-26)
+## 0.5.3 (2026-11-28)
 
 ### Breaking
 
@@ -102,6 +102,13 @@ The dates of the released versions are those of their tagged commits.
 - The installation page refers to `requirements.txt` for the required
   version of structsolve, without repeating the number.
 - Typo "Integration poins" in the Parameters of the `update_*` functions.
+- The notebook `ex_follower_pressure.ipynb` re-executed with the present
+  versions of bfscplate2d and its dependencies: the differences between the
+  tangent stiffness matrix and its central differences, at the round-off
+  level, are 7.3e-10 and 7.8e-10 of their norm (were 8.5e-10 and 8.2e-10)
+  and 3.2e-7 and 3.4e-7 of the norm of the load stiffness matrix (were
+  3.7e-7 and 3.6e-7), and the text quotes these values. The other notebooks
+  give their stored outputs to the round-off.
 
 ### Derivations
 
